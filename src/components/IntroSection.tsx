@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, useAnimate, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
 import { LegoFace } from './LegoFace';
+import { LegoFace3D } from './LegoFace3D';
 
 const COLORS = [
   '#8F1E20', '#F25F09', '#FCBB09', '#8E00BD', '#2B7000', '#B7156C', '#8F1E20'
@@ -1643,7 +1644,11 @@ const IntroSection: React.FC = () => {
         )}
 
         <motion.div className="w-full h-full" style={{ transformStyle: "preserve-3d" }}>
-          <LegoFace className="w-full h-full drop-shadow-2xl" />
+          {/* <LegoFace className="w-full h-full drop-shadow-2xl" /> */}
+          <LegoFace3D
+            className="w-full h-full drop-shadow-2xl"
+            followMouse={phase >= 2 && phase <= 8}
+          />
         </motion.div>
       </motion.div>
 

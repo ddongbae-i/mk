@@ -7,6 +7,8 @@ export const LegoFace: React.FC<{ className?: string }> = ({ className }) => {
     const handleMouseMove = (e: MouseEvent) => {
       const xNorm = (e.clientX / window.innerWidth) - 0.5;
       const yNorm = (e.clientY / window.innerHeight) - 0.5;
+
+      // 움직임 범위 (30px)
       const MOVE_RANGE = 30;
 
       setPos({
@@ -20,18 +22,27 @@ export const LegoFace: React.FC<{ className?: string }> = ({ className }) => {
   }, []);
 
   return (
-    <div className={className} style={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center", overflow: "visible" }}>
+    <div
+      className={className}
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        // [중요 1] 부모 영역 밖으로 나가도 보이도록 설정 (혹시 모를 안전장치)
+        overflow: "visible"
+      }}
+    >
       <img
+        // 파일 경로는 본인 설정에 맞게 유지
         src={`${import.meta.env.BASE_URL}images/lego_face.svg`}
         alt="Lego Face"
         style={{
-          // [수정됨] 100%로 꽉 채우면 움직일 때 잘립니다. 
-          // 85% 정도로 줄여서 사방에 여유 공간을 주세요.
-          width: "85%",
-          height: "auto",
-          maxWidth: "500px", // 필요시 크기 조절
+          width: "100%",
+          height: "100%",
+          objectFit: "contain",
 
-          objectFit: "contain", // 비율 유지하며 포함
           transform: `translate(${pos.x}px, ${pos.y}px)`,
           transition: "transform 0.1s ease-out",
           willChange: "transform"

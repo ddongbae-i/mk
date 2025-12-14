@@ -14,13 +14,13 @@ const PROJECT_TEXT_COLOR = "#8E00BD";
 const S2_CONTENT = [
   {
     keyword: "LAYOUT",
-    splits: ["LA", "YO", "UT"],
+    splits: ["LAY", "O", "UT"],
     top: "불편한",
     bottom: "에 생기를 불어넣어"
   },
   {
     keyword: "PLAY",
-    splits: ["P", "LA", "Y"],
+    splits: ["P", "LAY"],
     top: "사용자가 즐겁게",
     bottom: "하는 흐름을 만들며,"
   },
@@ -984,9 +984,9 @@ const IntroSection: React.FC = () => {
     splitAnimations.push(animate("#face-container", { y: [0, -20, 0], scale: [1, 0.95, 1] }, { duration: 0.4, ease: "easeOut" }));
     splitAnimations.push(animate(".split-part", { color: "#F0F0F0", fontWeight: 900, fontStyle: "italic" }, { duration: 0.2, ease: "easeOut" }));
     splitAnimations.push(animate(".hidden-char", { opacity: 1, width: "auto", scale: 1 }, { duration: 0.2, delay: 0.05 }));
-    splitAnimations.push(animate("#split-play", { x: "-12vw" }, { duration: 0.5, ease: "backOut" }));
-    splitAnimations.push(animate("#split-out", { x: "12vw" }, { duration: 0.5, ease: "backOut" }));
-    splitAnimations.push(animate(scope.current, { backgroundColor: COLORS }, { duration: 3, ease: "linear" }));
+    splitAnimations.push(animate("#split-play", { x: "-18vw" }, { duration: 0.5, ease: "backOut" }));
+    splitAnimations.push(animate("#split-out", { x: "18vw" }, { duration: 0.5, ease: "backOut" }));
+    splitAnimations.push(animate(scope.current, { backgroundColor: COLORS }, { duration: 2, ease: "linear" }));
     await Promise.all(splitAnimations);
   };
 
@@ -1004,7 +1004,7 @@ const IntroSection: React.FC = () => {
 
   const runMergeAnimation = async () => {
     const anims: any[] = [];
-    anims.push(animate("#split-play", { x: "12vw" }, { duration: 0.5, ease: [0.22, 1, 0.36, 1] }));
+    anims.push(animate("#split-play", { x: "18vw" }, { duration: 0.5, ease: [0.22, 1, 0.36, 1] }));
     anims.push(animate("#face-container", { x: "-30vw" }, { duration: 0.5, ease: "easeInOut" }));
     anims.push(animate("#bang-char", { x: "20vw", opacity: 0 }, { duration: 0.2, delay: 0.35, ease: "easeOut" }));
     await Promise.all(anims);
@@ -1012,7 +1012,7 @@ const IntroSection: React.FC = () => {
 
   const runUnmergeAnimation = async () => {
     const anims: any[] = [];
-    anims.push(animate("#split-play", { x: "-12vw" }, { duration: 0.6, ease: "backOut" }));
+    anims.push(animate("#split-play", { x: "-18vw" }, { duration: 0.6, ease: "backOut" }));
     anims.push(animate("#face-container", { x: 0 }, { duration: 0.6, ease: "easeInOut" }));
     anims.push(animate("#bang-char", { x: 0, opacity: 1 }, { duration: 0.4, ease: "easeOut", delay: 0.2 }));
     await Promise.all(anims);
@@ -1594,8 +1594,8 @@ const IntroSection: React.FC = () => {
         id="face-container"
         className="absolute"
         style={{
-          width: "500px",
-          height: "500px",
+          width: "480px",
+          height: "480px",
           perspective: 1000,
           zIndex: 100,
         }}

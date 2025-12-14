@@ -234,7 +234,7 @@ const PartTooltip = ({
 
 // --- COMPONENTS ---
 
-const StrokedWordmark = ({ className, style, animateStroke = false }: { className?: string, style?: any, animateStroke?: boolean }) => {
+const StrokedWordmark = ({ className, style }: { className?: string, style?: any }) => {
   const textProps = {
     x: "50%",
     y: "55%",
@@ -251,37 +251,19 @@ const StrokedWordmark = ({ className, style, animateStroke = false }: { classNam
   return (
     <motion.div className={`relative inline-block ${className || ''}`} style={style}>
       <svg viewBox="0 0 600 180" className="w-[80vw] max-w-[600px] h-auto overflow-visible">
-        <defs>
-          <mask id="conic-sweep-mask">
-            <motion.circle
-              cx="300"
-              cy="90"
-              r="350"
-              fill="none"
-              stroke="white"
-              strokeWidth="700"
-              pathLength="1"
-              style={{ transformOrigin: "300px 90px" }}
-              initial={{ pathLength: animateStroke ? 0 : 1, rotate: 180 }}
-              animate={{ pathLength: 1, rotate: 180 }}
-              transition={{ duration: 1.2, ease: "easeInOut" }}
-            />
-          </mask>
-        </defs>
+        {/* 흰색 외곽선 (가장 바깥) */}
+        <text
+          {...textProps}
+          fill="none"
+          stroke="#F0F0F0"
+          strokeWidth="28"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        >
+          PLAYOUT
+        </text>
 
-        <g mask={animateStroke ? "url(#conic-sweep-mask)" : undefined}>
-          <text
-            {...textProps}
-            fill="none"
-            stroke="#F0F0F0"
-            strokeWidth="28"
-            strokeLinejoin="round"
-            strokeLinecap="round"
-          >
-            PLAYOUT
-          </text>
-        </g>
-
+        {/* 빨간색 외곽선 (중간) */}
         <text
           {...textProps}
           fill="none"
@@ -293,21 +275,18 @@ const StrokedWordmark = ({ className, style, animateStroke = false }: { classNam
           PLAYOUT
         </text>
 
-        <motion.text
+        {/* 흰색 채우기 (가장 안쪽) */}
+        <text
           {...textProps}
           fill="#F0F0F0"
           stroke="none"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1.2, duration: 0.5 }}
         >
           PLAYOUT
-        </motion.text>
+        </text>
       </svg>
     </motion.div>
   );
 };
-
 // --- LEGO BRICK COMPONENT ---
 
 const LegoBrick = ({ label, color, className }: { label: string, color: { top: string, side: string, main: string }, className?: string }) => {

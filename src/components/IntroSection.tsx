@@ -12,23 +12,23 @@ const PROJECT_TEXT_COLOR = "#8E00BD";
 
 // S2 DATA
 const S2_CONTENT = [
-  { 
-    keyword: "LAYOUT", 
+  {
+    keyword: "LAYOUT",
     splits: ["LA", "YO", "UT"],
-    top: "불편한", 
-    bottom: "에 생기를 불어넣어" 
+    top: "불편한",
+    bottom: "에 생기를 불어넣어"
   },
-  { 
-    keyword: "PLAY", 
+  {
+    keyword: "PLAY",
     splits: ["P", "LA", "Y"],
-    top: "사용자가 즐겁게", 
-    bottom: "하는 흐름을 만들며," 
+    top: "사용자가 즐겁게",
+    bottom: "하는 흐름을 만들며,"
   },
-  { 
-    keyword: "OUT", 
+  {
+    keyword: "OUT",
     splits: ["O", "U", "T"],
-    top: "책임감 있게 결과물로", 
-    bottom: "완성하는 디자이너 김민경입니다." 
+    top: "책임감 있게 결과물로",
+    bottom: "완성하는 디자이너 김민경입니다."
   }
 ];
 
@@ -56,39 +56,39 @@ const PART_DESCRIPTIONS = [
 ];
 
 const RESUME_DATA = [
-    {
-      id: "01",
-      title: "FOUNDATION",
-      content: [
-          { type: "text", text: "Media & Film" }
-      ]
-    },
-    {
-      id: "02",
-      title: "SKILL SET",
-      content: [
-          { type: "text", text: "Web Design" },
-          { type: "text", text: "Computer Graphics" }
-      ]
-    },
-    {
-      id: "03",
-      title: "FIELD",
-      content: [
-        { 
-            type: "job", 
-            role: "Founder · namodog",
-            tasks: ["제품 기획 · 제작 관리", "상세페이지 제작 · 쇼핑몰 운영"],
-            achievement: "Achievement: 똑딱이 인식표 최초 개발"
-        },
-        { 
-            type: "job", 
-            role: "SeedGrow",
-            tasks: ["제품 촬영 · 편집", "상세페이지 기획", "제품 · 재고 · 입출고 관리"]
-        }
-      ]
-    }
-  ];
+  {
+    id: "01",
+    title: "FOUNDATION",
+    content: [
+      { type: "text", text: "Media & Film" }
+    ]
+  },
+  {
+    id: "02",
+    title: "SKILL SET",
+    content: [
+      { type: "text", text: "Web Design" },
+      { type: "text", text: "Computer Graphics" }
+    ]
+  },
+  {
+    id: "03",
+    title: "FIELD",
+    content: [
+      {
+        type: "job",
+        role: "Founder · namodog",
+        tasks: ["제품 기획 · 제작 관리", "상세페이지 제작 · 쇼핑몰 운영"],
+        achievement: "Achievement: 똑딱이 인식표 최초 개발"
+      },
+      {
+        type: "job",
+        role: "SeedGrow",
+        tasks: ["제품 촬영 · 편집", "상세페이지 기획", "제품 · 재고 · 입출고 관리"]
+      }
+    ]
+  }
+];
 
 // CONSTANTS
 const BRICK_LABELS = ["BUILD", "PROJECT", "STACK", "GALLERY", "CONTACT"];
@@ -147,62 +147,62 @@ const ProjectKitBox = ({ isVisible }: { isVisible: boolean }) => (
   <motion.div
     className="absolute z-[90]" // Higher than Purple (80)
     style={{
-        left: "40%",
-        top: "60%", 
-        transform: "translate(-50%, -50%) rotate(-5deg)",
+      left: "40%",
+      top: "60%",
+      transform: "translate(-50%, -50%) rotate(-5deg)",
     }}
     initial={{ opacity: 0, scale: 0.8, y: 100 }}
     animate={isVisible ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.8, y: 100 }}
     transition={{ duration: 0.8, delay: 0.2, ease: "backOut" }}
   >
-     <div className="w-[60vw] max-w-[500px] aspect-[16/10] bg-[#e5e5e5] shadow-2xl relative overflow-hidden rounded-sm border border-white/20">
-        <div className="absolute inset-0 bg-[#d4d4d4] flex items-center justify-center overflow-hidden">
-             <div className="absolute w-full h-full bg-[#d6d3cd]"></div>
-             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#b0a89e] blur-3xl opacity-50 rounded-full"></div>
-        </div>
-        
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
-        
-        <div className="absolute top-6 left-6">
-             <div className="bg-[#8F1E20] text-white text-xs font-black italic px-2 py-0.5 inline-block" style={{ fontFamily: FONT_FAMILY }}>PLAYOUT</div>
-        </div>
-        <div className="absolute top-6 right-6 text-white font-serif tracking-widest text-sm opacity-90 font-bold">
-            BEAUTY OF JOSEON
-        </div>
-        
-        <div className="absolute inset-0 flex items-center justify-center">
-             <div className="text-white/20 text-6xl font-black">KIT</div>
-        </div>
+    <div className="w-[60vw] max-w-[500px] aspect-[16/10] bg-[#e5e5e5] shadow-2xl relative overflow-hidden rounded-sm border border-white/20">
+      <div className="absolute inset-0 bg-[#d4d4d4] flex items-center justify-center overflow-hidden">
+        <div className="absolute w-full h-full bg-[#d6d3cd]"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#b0a89e] blur-3xl opacity-50 rounded-full"></div>
+      </div>
 
-        <div className="absolute bottom-6 left-6 text-white" style={{ fontFamily: FONT_FAMILY }}>
-             <div className="text-4xl font-black mb-0 leading-none">10+</div>
-             <div className="text-[10px] opacity-70 mb-3 tracking-wider">2509191024</div>
-             <div className="h-0.5 w-8 bg-white/70 mb-2"></div>
-             <div className="flex items-baseline gap-1">
-                 <span className="text-lg font-bold">840</span>
-                 <span className="text-[10px] opacity-70">hours/pcs</span>
-             </div>
+      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
+
+      <div className="absolute top-6 left-6">
+        <div className="bg-[#8F1E20] text-white text-xs font-black italic px-2 py-0.5 inline-block" style={{ fontFamily: FONT_FAMILY }}>PLAYOUT</div>
+      </div>
+      <div className="absolute top-6 right-6 text-white font-serif tracking-widest text-sm opacity-90 font-bold">
+        BEAUTY OF JOSEON
+      </div>
+
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="text-white/20 text-6xl font-black">KIT</div>
+      </div>
+
+      <div className="absolute bottom-6 left-6 text-white" style={{ fontFamily: FONT_FAMILY }}>
+        <div className="text-4xl font-black mb-0 leading-none">10+</div>
+        <div className="text-[10px] opacity-70 mb-3 tracking-wider">2509191024</div>
+        <div className="h-0.5 w-8 bg-white/70 mb-2"></div>
+        <div className="flex items-baseline gap-1">
+          <span className="text-lg font-bold">840</span>
+          <span className="text-[10px] opacity-70">hours/pcs</span>
         </div>
-     </div>
+      </div>
+    </div>
   </motion.div>
 );
 
 // --- TOOLTIP COMPONENT ---
 
-const PartTooltip = ({ 
-  title, 
-  description, 
-  isVisible 
-}: { 
-  title: string; 
-  description: string; 
+const PartTooltip = ({
+  title,
+  description,
+  isVisible
+}: {
+  title: string;
+  description: string;
   isVisible: boolean;
 }) => (
   <AnimatePresence>
     {isVisible && (
       <motion.div
         className="absolute bg-[#FDE047] border-2 border-gray-800 p-4 rounded-sm shadow-lg"
-        style={{ 
+        style={{
           width: "280px",
           left: "calc(100% + 20px)",
           top: "50%",
@@ -235,14 +235,14 @@ const PartTooltip = ({
 const StrokedWordmark = ({ className, style, animateStroke = false }: { className?: string, style?: any, animateStroke?: boolean }) => {
   const textProps = {
     x: "50%",
-    y: "55%", 
+    y: "55%",
     dominantBaseline: "central" as const,
     textAnchor: "middle" as const,
     style: {
       fontFamily: FONT_FAMILY,
       fontWeight: 900,
       fontStyle: 'italic',
-      fontSize: "130px", 
+      fontSize: "130px",
     }
   };
 
@@ -251,13 +251,13 @@ const StrokedWordmark = ({ className, style, animateStroke = false }: { classNam
       <svg viewBox="0 0 600 180" className="w-[80vw] max-w-[600px] h-auto overflow-visible">
         <defs>
           <mask id="conic-sweep-mask">
-            <motion.circle 
-              cx="300" 
-              cy="90" 
-              r="350" 
-              fill="none" 
-              stroke="white" 
-              strokeWidth="700" 
+            <motion.circle
+              cx="300"
+              cy="90"
+              r="350"
+              fill="none"
+              stroke="white"
+              strokeWidth="700"
               pathLength="1"
               style={{ transformOrigin: "300px 90px" }}
               initial={{ pathLength: animateStroke ? 0 : 1, rotate: 180 }}
@@ -272,14 +272,14 @@ const StrokedWordmark = ({ className, style, animateStroke = false }: { classNam
             {...textProps}
             fill="none"
             stroke="#F0F0F0"
-            strokeWidth="28" 
+            strokeWidth="28"
             strokeLinejoin="round"
             strokeLinecap="round"
           >
             PLAYOUT
           </text>
         </g>
-        
+
         <text
           {...textProps}
           fill="none"
@@ -290,7 +290,7 @@ const StrokedWordmark = ({ className, style, animateStroke = false }: { classNam
         >
           PLAYOUT
         </text>
-         
+
         <motion.text
           {...textProps}
           fill="#F0F0F0"
@@ -324,28 +324,28 @@ const LegoBrick = ({ label, color, className }: { label: string, color: { top: s
         <path d="M195,40 L195,90 L175,70 L175,20 Z" fill={color.side} />
         <path d="M45,40 L195,40 L195,90 L45,90 Z" fill={color.main} />
         <path d="M25,20 L45,40 L45,90 L25,70 Z" fill={color.side} />
-        <text 
-          x="120" 
-          y="72" 
-          fontFamily={FONT_FAMILY} 
-          fontWeight="900" 
+        <text
+          x="120"
+          y="72"
+          fontFamily={FONT_FAMILY}
+          fontWeight="900"
           fontStyle="italic"
-          fontSize="24" 
-          fill="white" 
+          fontSize="24"
+          fill="white"
           textAnchor="middle"
           filter="drop-shadow(1px 1px 0px rgba(0,0,0,0.3))"
           style={{ letterSpacing: '1px' }}
         >
           {label}
         </text>
-        <text 
-          x="120" 
-          y="72" 
-          fontFamily={FONT_FAMILY} 
-          fontWeight="900" 
+        <text
+          x="120"
+          y="72"
+          fontFamily={FONT_FAMILY}
+          fontWeight="900"
           fontStyle="italic"
-          fontSize="24" 
-          fill="none" 
+          fontSize="24"
+          fill="none"
           stroke={color.side}
           strokeWidth="1.5"
           textAnchor="middle"
@@ -363,10 +363,10 @@ const SplitWordLayer = ({ parts, visibleIndex }: { parts: string[], visibleIndex
   return (
     <div className="flex select-none whitespace-nowrap">
       {parts.map((part, i) => (
-        <span 
-          key={i} 
-          style={{ 
-            opacity: i === visibleIndex ? 1 : 0, 
+        <span
+          key={i}
+          style={{
+            opacity: i === visibleIndex ? 1 : 0,
             color: i === visibleIndex ? '#F0F0F0' : 'transparent',
             WebkitTextStroke: "0px transparent"
           }}
@@ -378,12 +378,12 @@ const SplitWordLayer = ({ parts, visibleIndex }: { parts: string[], visibleIndex
   );
 };
 
-const SlotReel = ({ 
-  activeIndex, 
-  prevIndex 
-}: { 
-  activeIndex: number, 
-  prevIndex: number 
+const SlotReel = ({
+  activeIndex,
+  prevIndex
+}: {
+  activeIndex: number,
+  prevIndex: number
 }) => {
   const content = S2_CONTENT[activeIndex];
   return (
@@ -392,13 +392,13 @@ const SlotReel = ({
         {[0, 1, 2].map((layerIndex) => (
           <motion.div
             key={`${content.keyword}-${layerIndex}`}
-            initial={{ y: "-100%" }} 
+            initial={{ y: "-100%" }}
             animate={{ y: "0%" }}
-            exit={{ y: "100%", opacity: 0 }} 
-            transition={{ 
-              duration: 0.5, 
-              ease: [0.34, 1.56, 0.64, 1], 
-              delay: layerIndex * 0.08 
+            exit={{ y: "100%", opacity: 0 }}
+            transition={{
+              duration: 0.5,
+              ease: [0.34, 1.56, 0.64, 1],
+              delay: layerIndex * 0.08
             }}
             className="absolute left-0 top-0 origin-center whitespace-nowrap"
             style={{
@@ -423,11 +423,11 @@ const S2SlotMachine = ({ activeIndex }: { activeIndex: number }) => {
 
   return (
     <div className="relative flex flex-col items-start justify-center">
-      <div 
+      <div
         className="opacity-0 pointer-events-none select-none"
-        style={{ 
-          fontFamily: FONT_FAMILY, 
-          fontSize: FONT_SIZE_CSS, 
+        style={{
+          fontFamily: FONT_FAMILY,
+          fontSize: FONT_SIZE_CSS,
           lineHeight: 1.2,
           fontWeight: 900,
           fontStyle: 'italic',
@@ -444,9 +444,9 @@ const S2SlotMachine = ({ activeIndex }: { activeIndex: number }) => {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3 }}
             className="whitespace-nowrap origin-bottom-left"
-            style={{ 
+            style={{
               fontFamily: FONT_FAMILY, fontWeight: 400, fontSize: '48px',
-              color: '#F0F0F0', lineHeight: 1.2, transform: "skewX(-10deg)" 
+              color: '#F0F0F0', lineHeight: 1.2, transform: "skewX(-10deg)"
             }}
           >
             {content.top}
@@ -465,9 +465,9 @@ const S2SlotMachine = ({ activeIndex }: { activeIndex: number }) => {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.3, delay: 0.1 }}
             className="whitespace-nowrap origin-top-left"
-            style={{ 
+            style={{
               fontFamily: FONT_FAMILY, fontWeight: 400, fontSize: '48px',
-              color: '#F0F0F0', lineHeight: 1.2, transform: "skewX(-10deg)" 
+              color: '#F0F0F0', lineHeight: 1.2, transform: "skewX(-10deg)"
             }}
           >
             {content.bottom}
@@ -511,10 +511,10 @@ const FloatingMenuBlock: React.FC<{
         scale: { duration: 0.8, delay: randomDelay },
         ...(shouldFloat
           ? {
-              y: { duration: durationY, repeat: Infinity, ease: "easeInOut", delay: randomDelay + 0.5 },
-              x: { duration: durationX, repeat: Infinity, ease: "easeInOut", delay: randomDelay + 0.5 },
-              rotate: { duration: durationR, repeat: Infinity, ease: "easeInOut", delay: randomDelay + 0.5 },
-            }
+            y: { duration: durationY, repeat: Infinity, ease: "easeInOut", delay: randomDelay + 0.5 },
+            x: { duration: durationX, repeat: Infinity, ease: "easeInOut", delay: randomDelay + 0.5 },
+            rotate: { duration: durationR, repeat: Infinity, ease: "easeInOut", delay: randomDelay + 0.5 },
+          }
           : {}),
       }}
       whileHover={shouldFloat ? { scale: 1.1, rotate: 0 } : {}}
@@ -526,14 +526,14 @@ const FloatingMenuBlock: React.FC<{
 };
 
 const HamburgerIcon = ({ className, isOpen, onClick }: { className?: string, isOpen: boolean, onClick: () => void }) => (
-  <div 
+  <div
     onClick={onClick}
     className={`w-12 h-12 flex flex-col justify-center items-end gap-1.5 cursor-pointer pointer-events-auto ${className}`}
   >
     <div className="w-8 h-1 bg-white rounded-full" />
     <div className="w-12 h-1 bg-white rounded-full" />
-    <motion.div 
-      className="w-8 h-1 bg-white rounded-full origin-right" 
+    <motion.div
+      className="w-8 h-1 bg-white rounded-full origin-right"
       animate={isOpen ? { rotate: 45, y: 5 } : { rotate: 0, y: 0 }}
       transition={{ duration: 0.3 }}
     />
@@ -555,7 +555,7 @@ const IntroSection: React.FC = () => {
   const [isNaturalScrolling, setIsNaturalScrolling] = useState(false);
   const [naturalScrollY, setNaturalScrollY] = useState(0);
 
-  const [phase, setPhase] = useState(0); 
+  const [phase, setPhase] = useState(0);
   const phaseRef = useRef(phase);
 
   const isAnimatingRef = useRef(false);
@@ -566,14 +566,14 @@ const IntroSection: React.FC = () => {
   const faceRotateY = useTransform(mouseX, [-window.innerWidth / 2, window.innerWidth / 2], [-25, 25]);
   const faceRotateX = useTransform(mouseY, [-window.innerHeight / 2, window.innerHeight / 2], [20, -20]);
 
-  const TEXT_ANCHOR_X = "12vw"; 
+  const TEXT_ANCHOR_X = "12vw";
 
   const BLOCK_POSITIONS: React.CSSProperties[] = [
-    { top: "25%", left: "15%" }, 
-    { top: "20%", right: "15%" }, 
-    { top: "60%", left: "10%" },  
-    { top: "55%", right: "12%" }, 
-    { top: "80%", left: "55%" }   
+    { top: "25%", left: "15%" },
+    { top: "20%", right: "15%" },
+    { top: "60%", left: "10%" },
+    { top: "55%", right: "12%" },
+    { top: "80%", left: "55%" }
   ];
 
   const getTranslationToAlignCenters = (element: HTMLElement, targetCenter: { x: number, y: number }, container: HTMLElement) => {
@@ -581,7 +581,7 @@ const IntroSection: React.FC = () => {
     const c = container.getBoundingClientRect();
     const style = window.getComputedStyle(element);
     let matrix;
-    try { matrix = new DOMMatrix(style.transform); } catch(e) { matrix = new DOMMatrix(); }
+    try { matrix = new DOMMatrix(style.transform); } catch (e) { matrix = new DOMMatrix(); }
     const currentTx = matrix.m41;
     const currentTy = matrix.m42;
     const visualCenterX = (r.left - c.left) + r.width / 2;
@@ -600,11 +600,11 @@ const IntroSection: React.FC = () => {
     const c = container.getBoundingClientRect();
     const hbCenterX = (hb.left - c.left) + hb.width / 2;
     const screenBottom = window.innerHeight;
-    const containerTop = c.top; 
+    const containerTop = c.top;
     const relativeBottom = screenBottom - containerTop;
-    const marginBottom = 40; 
-    const blockHeight = el.offsetHeight; 
-    const overlap = blockHeight * 0.25; 
+    const marginBottom = 40;
+    const blockHeight = el.offsetHeight;
+    const overlap = blockHeight * 0.25;
     const effectiveHeight = blockHeight - overlap;
     const bottomBlockCenterY = (relativeBottom - marginBottom) - (blockHeight / 2);
     const targetCenterY = bottomBlockCenterY - ((4 - index) * effectiveHeight);
@@ -708,7 +708,7 @@ const IntroSection: React.FC = () => {
         isAnimatingRef.current = true;
         setPhase(21);
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
-     } else if (currentPhase === 21) {
+      } else if (currentPhase === 21) {
         isAnimatingRef.current = true;
         setPhase(22);  // 보라색 진입 (Partial)
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
@@ -873,9 +873,9 @@ const IntroSection: React.FC = () => {
       for (let i = 0; i < 5; i++) {
         const coords = getHamburgerAbsorbPosition(i);
         absorbAnims.push(
-          safeAnimate(`#block-${i}`, 
+          safeAnimate(`#block-${i}`,
             { x: coords.x, y: coords.y, scale: 0.2, opacity: 0 },
-            { duration: 0.4, ease: "backIn", delay: (4-i) * 0.05 }
+            { duration: 0.4, ease: "backIn", delay: (4 - i) * 0.05 }
           )
         );
       }
@@ -891,8 +891,8 @@ const IntroSection: React.FC = () => {
       const coords = getStackPosition(i);
       const delay = (4 - i) * 0.15;
       pourAnims.push(
-        safeAnimate(`#block-${i}`, 
-          { x: coords.x, y: coords.y, scale: 1, opacity: 1 }, 
+        safeAnimate(`#block-${i}`,
+          { x: coords.x, y: coords.y, scale: 1, opacity: 1 },
           { delay: delay, duration: 0.5, ease: "backOut" }
         )
       );
@@ -912,20 +912,20 @@ const IntroSection: React.FC = () => {
   // 자연 스크롤 감지
   useEffect(() => {
     if (!isNaturalScrolling || phase !== 15) return;
-    
+
     const container = scrollContainerRef.current;
     if (!container) return;
-    
+
     const handleNaturalScroll = () => {
       const scrollTop = container.scrollTop;
       setNaturalScrollY(scrollTop);
-      
+
       if (scrollTop >= 300) {
         setIsNaturalScrolling(false);
         setPhase(16);
       }
     };
-    
+
     container.addEventListener('scroll', handleNaturalScroll);
     return () => container.removeEventListener('scroll', handleNaturalScroll);
   }, [isNaturalScrolling, phase]);
@@ -948,7 +948,7 @@ const IntroSection: React.FC = () => {
       if (Math.abs(diff) > 30) handleScrollActionRef.current(diff > 0 ? 1 : -1);
       touchStartRef.current = null;
     };
-    
+
     const onKeyDown = (e: KeyboardEvent) => {
       if (isNaturalScrolling) return;
       if (e.key === "ArrowDown" || e.key === "ArrowRight") {
@@ -959,12 +959,12 @@ const IntroSection: React.FC = () => {
         handleScrollActionRef.current(-1);
       }
     };
-    
+
     window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("touchstart", onTouchStart, { passive: false });
     window.addEventListener("touchend", onTouchEnd, { passive: false });
     window.addEventListener("keydown", onKeyDown);
-    
+
     return () => {
       window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
@@ -1030,12 +1030,13 @@ const IntroSection: React.FC = () => {
   const globalY = phase >= 23 ? "-80vh" : "0px";
 
   return (
-    <div 
+    <div
       ref={scope}
       tabIndex={0}
       onMouseMove={handleMouseMove}
       className="relative w-full h-full flex flex-col items-center justify-center bg-[#E5E5E5] overflow-hidden outline-none"
     >
+
       {/* Phase 15에서 자연 스크롤을 위한 내부 컨테이너 */}
       <div
         ref={scrollContainerRef}
@@ -1066,108 +1067,108 @@ const IntroSection: React.FC = () => {
         transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
       >
         <motion.div
-           className="relative w-full h-full"
-           animate={{ y: globalY }}
-           transition={{ duration: 1.2, ease: "easeInOut" }}
+          className="relative w-full h-full"
+          animate={{ y: globalY }}
+          transition={{ duration: 1.2, ease: "easeInOut" }}
         >
-            {/* 크림 사다리꼴 배경 */}
-            <div
-              className="absolute w-[200vw] bg-[#FFF2D5]"
-              style={{
-                height: "300vh",
-                top: "85vh",
-                left: "-50vw",
-                transform: "skewY(8deg)",
-                transformOrigin: "center top",
-              }}
-            />
-            
-            {/* 타이틀 */}
-            <div
-              className="absolute font-black italic whitespace-nowrap"
-              style={{
-                fontSize: "clamp(48px, 11vw, 210px)",
-                color: BG_CREAM,
-                fontFamily: FONT_FAMILY,
-                transform: "rotate(8deg)",
-                transformOrigin: "left center",
-                left: "4vw",
-                top: "calc(85vh - 1.76em)",
-                zIndex: 30,
-              }}
-            >
-              HOW TO BUILD MK
-            </div>
+          {/* 크림 사다리꼴 배경 */}
+          <div
+            className="absolute w-[200vw] bg-[#FFF2D5]"
+            style={{
+              height: "300vh",
+              top: "85vh",
+              left: "-50vw",
+              transform: "skewY(8deg)",
+              transformOrigin: "center top",
+            }}
+          />
+
+          {/* 타이틀 */}
+          <div
+            className="absolute font-black italic whitespace-nowrap"
+            style={{
+              fontSize: "clamp(48px, 11vw, 210px)",
+              color: BG_CREAM,
+              fontFamily: FONT_FAMILY,
+              transform: "rotate(8deg)",
+              transformOrigin: "left center",
+              left: "4vw",
+              top: "calc(85vh - 1.76em)",
+              zIndex: 30,
+            }}
+          >
+            HOW TO BUILD MK
+          </div>
         </motion.div>
       </motion.div>
 
       {/* Project Kits Beam (Yellow) - Z-Index 85 */}
-<motion.div
-  className="absolute"
-  style={{
-    top: 0,
-    left: 0,
-    width: "100vw",
-    height: "100vh",
-    background: BEAM_COLOR,
-    clipPath: "polygon(75% 0%, 95% 100%, 10% 100%)",
-    zIndex: 85,
-  }}
-  initial={{ opacity: 0 }}
-  animate={phase >= 24 ? { opacity: 1 } : { opacity: 0 }}
-  transition={{ duration: 0.8, ease: "easeOut" }}
->
-  <div 
-    className="absolute font-black italic"
-    style={{
-      fontFamily: FONT_FAMILY,
-      fontSize: "clamp(32px, 4vw, 60px)",
-      color: PROJECT_TEXT_COLOR,
-      top: "25%",
-      left: "40%",
-      transform: "rotate(-57deg)",
-      transformOrigin: "center center",
-      whiteSpace: "nowrap"
-    }}
-  >
-    PROJECT KITS
-  </div>
-</motion.div>
+      <motion.div
+        className="absolute"
+        style={{
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          background: BEAM_COLOR,
+          clipPath: "polygon(75% 0%, 95% 100%, 10% 100%)",
+          zIndex: 85,
+        }}
+        initial={{ opacity: 0 }}
+        animate={phase >= 24 ? { opacity: 1 } : { opacity: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
+      >
+        <div
+          className="absolute font-black italic"
+          style={{
+            fontFamily: FONT_FAMILY,
+            fontSize: "clamp(32px, 4vw, 60px)",
+            color: PROJECT_TEXT_COLOR,
+            top: "25%",
+            left: "40%",
+            transform: "rotate(-57deg)",
+            transformOrigin: "center center",
+            whiteSpace: "nowrap"
+          }}
+        >
+          PROJECT KITS
+        </div>
+      </motion.div>
 
       {/* PROJECT KIT BOX - Z-Index 90 */}
-      <ProjectKitBox isVisible={phase >= 25} /> 
+      <ProjectKitBox isVisible={phase >= 25} />
 
-       {/* Purple Background Section - Z-Index 80 */}
-<motion.div
-  className="absolute w-full h-full"
-  style={{ zIndex: 80 }}
-  initial={{ x: "120%" }} 
-  animate={
-    phase >= 23
-      ? { x: 0, y: "-130vh" }  // Move up drastically in Phase 23 to cover full screen
-      : phase >= 22
-        ? { x: 0, y: 0 }  // Enters screen
-        : { x: "120%", y: 0 }
-  }
-  transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
->
-  {/* Purple Shape */}
-  <div
-    className="absolute w-[200vw] bg-[#8E00BD]"
-    style={{
-      height: "300vh",
-      top: "85vh",
-      left: "-50vw",
-      transform: "skewY(-8deg)", 
-      transformOrigin: "center top",
-    }}
-  />
-</motion.div>
+      {/* Purple Background Section - Z-Index 80 */}
+      <motion.div
+        className="absolute w-full h-full"
+        style={{ zIndex: 80 }}
+        initial={{ x: "120%" }}
+        animate={
+          phase >= 23
+            ? { x: 0, y: "-130vh" }  // Move up drastically in Phase 23 to cover full screen
+            : phase >= 22
+              ? { x: 0, y: 0 }  // Enters screen
+              : { x: "120%", y: 0 }
+        }
+        transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
+      >
+        {/* Purple Shape */}
+        <div
+          className="absolute w-[200vw] bg-[#8E00BD]"
+          style={{
+            height: "300vh",
+            top: "85vh",
+            left: "-50vw",
+            transform: "skewY(-8deg)",
+            transformOrigin: "center top",
+          }}
+        />
+      </motion.div>
 
 
       {/* 조립 가이드 섹션 (Parts Wrapper) - Z-Index 70 (Behind Purple) */}
       {phase >= 15 && (
-        <motion.div 
+        <motion.div
           className="absolute z-[70] pointer-events-none"
           initial={{ left: "50%", top: "50%", x: "-50%", y: "-50%" }}
           animate={
@@ -1188,21 +1189,21 @@ const IntroSection: React.FC = () => {
           transition={{ duration: 1.2, ease: "easeInOut" }}
         >
           {/* 캐릭터 파츠 - 스크롤 적용 */}
-          <motion.div 
+          <motion.div
             className="relative"
             initial={{ x: "-32vw", y: "12vh" }}
             animate={
-               phase >= 23 
-               ? { x: 0, y: 0 } 
-               : { x: "-32vw", y: `calc(12vh + ${scrollOffset}px)` }
+              phase >= 23
+                ? { x: 0, y: 0 }
+                : { x: "-32vw", y: `calc(12vh + ${scrollOffset}px)` }
             }
             transition={{ duration: 0.8, ease: "easeInOut" }}
           >
             {/* 1. 모자 (Hidden in Phase 21+ to transfer to Face Container) */}
-           <motion.div
+            <motion.div
               className="absolute"
-              style={{ 
-                left: "50%", 
+              style={{
+                left: "50%",
                 transform: "translateX(-50%)",
               }}
               animate={{
@@ -1214,7 +1215,7 @@ const IntroSection: React.FC = () => {
               <div className="flex flex-col items-center relative">
                 <AnimatePresence>
                   {phase < 21 && (
-                    <motion.div 
+                    <motion.div
                       className="flex items-center gap-2 mb-2"
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
@@ -1223,22 +1224,22 @@ const IntroSection: React.FC = () => {
                     </motion.div>
                   )}
                 </AnimatePresence>
-                
+
                 <HardHat className="w-[140px] h-[100px]" />
-                
+
                 <AnimatePresence>
                   {phase < 21 && (
-                    <motion.svg 
+                    <motion.svg
                       width="20" height="50" viewBox="0 0 20 50"
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <path d="M10,0 L10,45 M5,40 L10,45 L15,40" stroke="#333" strokeWidth="2" fill="none"/>
+                      <path d="M10,0 L10,45 M5,40 L10,45 L15,40" stroke="#333" strokeWidth="2" fill="none" />
                     </motion.svg>
                   )}
                 </AnimatePresence>
-                
-                <PartTooltip 
+
+                <PartTooltip
                   title={PART_DESCRIPTIONS[0].title}
                   description={PART_DESCRIPTIONS[0].description}
                   isVisible={phase === 16}
@@ -1253,7 +1254,7 @@ const IntroSection: React.FC = () => {
             >
               <AnimatePresence>
                 {phase < 21 && (
-                  <motion.span 
+                  <motion.span
                     className="absolute -left-10 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-700"
                     exit={{ opacity: 0 }}
                   >
@@ -1261,21 +1262,21 @@ const IntroSection: React.FC = () => {
                   </motion.span>
                 )}
               </AnimatePresence>
-              
+
               <AnimatePresence>
                 {phase < 21 && (
-                  <motion.div 
+                  <motion.div
                     className="absolute left-1/2 -translate-x-1/2 -bottom-14"
                     exit={{ opacity: 0 }}
                   >
                     <svg width="20" height="50" viewBox="0 0 20 50">
-                      <path d="M10,0 L10,45 M5,40 L10,45 L15,40" stroke="#333" strokeWidth="2" fill="none"/>
+                      <path d="M10,0 L10,45 M5,40 L10,45 L15,40" stroke="#333" strokeWidth="2" fill="none" />
                     </svg>
                   </motion.div>
                 )}
               </AnimatePresence>
-              
-              <PartTooltip 
+
+              <PartTooltip
                 title={PART_DESCRIPTIONS[1].title}
                 description={PART_DESCRIPTIONS[1].description}
                 isVisible={phase === 17}
@@ -1285,8 +1286,8 @@ const IntroSection: React.FC = () => {
             {/* 3. 상체 */}
             <motion.div
               className="absolute"
-              style={{ 
-                left: "50%", 
+              style={{
+                left: "50%",
                 transform: "translateX(-50%)",
               }}
               animate={{
@@ -1298,7 +1299,7 @@ const IntroSection: React.FC = () => {
               <div className="relative">
                 <AnimatePresence>
                   {phase < 21 && (
-                    <motion.span 
+                    <motion.span
                       className="absolute -left-10 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-700"
                       exit={{ opacity: 0 }}
                     >
@@ -1306,24 +1307,24 @@ const IntroSection: React.FC = () => {
                     </motion.span>
                   )}
                 </AnimatePresence>
-                
+
                 <Torso className="w-[180px] h-[140px]" />
-                
+
                 <AnimatePresence>
                   {phase < 21 && (
-                    <motion.div 
+                    <motion.div
                       className="absolute left-1/2 -translate-x-1/2 -bottom-14"
                       exit={{ opacity: 0 }}
                     >
                       <svg width="20" height="50" viewBox="0 0 20 50">
-                        <path d="M10,0 L10,45 M5,40 L10,45 L15,40" stroke="#333" strokeWidth="2" fill="none"/>
+                        <path d="M10,0 L10,45 M5,40 L10,45 L15,40" stroke="#333" strokeWidth="2" fill="none" />
                       </svg>
                     </motion.div>
                   )}
                 </AnimatePresence>
-                
+
                 {/* 돋보기 */}
-                <motion.div 
+                <motion.div
                   className="absolute flex items-center"
                   animate={{
                     right: phase >= 21 ? "-60px" : "-128px",
@@ -1335,13 +1336,13 @@ const IntroSection: React.FC = () => {
                   <AnimatePresence>
                     {phase < 21 && (
                       <>
-                        <motion.svg 
+                        <motion.svg
                           width="40" height="20" viewBox="0 0 40 20" className="mr-2"
                           exit={{ opacity: 0 }}
                         >
-                          <path d="M40,10 L5,10 M10,5 L5,10 L10,15" stroke="#333" strokeWidth="2" fill="none"/>
+                          <path d="M40,10 L5,10 M10,5 L5,10 L10,15" stroke="#333" strokeWidth="2" fill="none" />
                         </motion.svg>
-                        <motion.span 
+                        <motion.span
                           className="absolute -top-6 left-12 text-sm font-bold text-gray-700"
                           exit={{ opacity: 0 }}
                         >
@@ -1350,18 +1351,18 @@ const IntroSection: React.FC = () => {
                       </>
                     )}
                   </AnimatePresence>
-                  
+
                   <div className="relative">
                     <MagnifyingGlass className="w-[80px] h-[80px]" />
-                    <PartTooltip 
+                    <PartTooltip
                       title={PART_DESCRIPTIONS[4].title}
                       description={PART_DESCRIPTIONS[4].description}
                       isVisible={phase === 20}
                     />
                   </div>
                 </motion.div>
-                
-                <PartTooltip 
+
+                <PartTooltip
                   title={PART_DESCRIPTIONS[2].title}
                   description={PART_DESCRIPTIONS[2].description}
                   isVisible={phase === 18}
@@ -1372,8 +1373,8 @@ const IntroSection: React.FC = () => {
             {/* 5. 하체 */}
             <motion.div
               className="absolute"
-              style={{ 
-                left: "50%", 
+              style={{
+                left: "50%",
                 transform: "translateX(-50%)",
               }}
               animate={{
@@ -1385,7 +1386,7 @@ const IntroSection: React.FC = () => {
               <div className="relative">
                 <AnimatePresence>
                   {phase < 21 && (
-                    <motion.span 
+                    <motion.span
                       className="absolute -left-10 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-700"
                       exit={{ opacity: 0 }}
                     >
@@ -1393,10 +1394,10 @@ const IntroSection: React.FC = () => {
                     </motion.span>
                   )}
                 </AnimatePresence>
-                
+
                 <Legs className="w-[160px] h-[120px]" />
-                
-                <PartTooltip 
+
+                <PartTooltip
                   title={PART_DESCRIPTIONS[3].title}
                   description={PART_DESCRIPTIONS[3].description}
                   isVisible={phase === 19}
@@ -1406,7 +1407,7 @@ const IntroSection: React.FC = () => {
           </motion.div>
 
           {/* 오른쪽 플레이스홀더 (고정) - Sibling to character wrapper to detach from scroll */}
-          <motion.div 
+          <motion.div
             className="absolute"
             style={{
               left: "220px",
@@ -1418,39 +1419,39 @@ const IntroSection: React.FC = () => {
           >
             <div className="relative w-[540px] flex flex-col items-center justify-center p-8">
               {/* Corner Borders Animation */}
-               {/* Top Line */}
-              <motion.div 
-                  className="absolute bg-gray-800"
-                  style={{ top: 0, left: 0, height: 2 }}
-                  initial={{ width: 48 }}
-                  animate={{ width: phase >= 21 ? "100%" : 48 }}
-                  transition={{ duration: 0.8, ease: "easeInOut" }}
+              {/* Top Line */}
+              <motion.div
+                className="absolute bg-gray-800"
+                style={{ top: 0, left: 0, height: 2 }}
+                initial={{ width: 48 }}
+                animate={{ width: phase >= 21 ? "100%" : 48 }}
+                transition={{ duration: 0.8, ease: "easeInOut" }}
               />
               {/* Left Line */}
-              <motion.div 
-                  className="absolute bg-gray-800"
-                  style={{ top: 0, left: 0, width: 2 }}
-                  initial={{ height: 48 }}
-                  animate={{ height: phase >= 21 ? "100%" : 48 }}
-                  transition={{ duration: 0.8, ease: "easeInOut" }}
+              <motion.div
+                className="absolute bg-gray-800"
+                style={{ top: 0, left: 0, width: 2 }}
+                initial={{ height: 48 }}
+                animate={{ height: phase >= 21 ? "100%" : 48 }}
+                transition={{ duration: 0.8, ease: "easeInOut" }}
               />
               {/* Bottom Line */}
-              <motion.div 
-                  className="absolute bg-gray-800"
-                  style={{ bottom: 0, right: 0, height: 2 }}
-                  initial={{ width: 48 }}
-                  animate={{ width: phase >= 21 ? "100%" : 48 }}
-                  transition={{ duration: 0.8, ease: "easeInOut" }}
+              <motion.div
+                className="absolute bg-gray-800"
+                style={{ bottom: 0, right: 0, height: 2 }}
+                initial={{ width: 48 }}
+                animate={{ width: phase >= 21 ? "100%" : 48 }}
+                transition={{ duration: 0.8, ease: "easeInOut" }}
               />
               {/* Right Line */}
-              <motion.div 
-                  className="absolute bg-gray-800"
-                  style={{ bottom: 0, right: 0, width: 2 }}
-                  initial={{ height: 48 }}
-                  animate={{ height: phase >= 21 ? "100%" : 48 }}
-                  transition={{ duration: 0.8, ease: "easeInOut" }}
+              <motion.div
+                className="absolute bg-gray-800"
+                style={{ bottom: 0, right: 0, width: 2 }}
+                initial={{ height: 48 }}
+                animate={{ height: phase >= 21 ? "100%" : 48 }}
+                transition={{ duration: 0.8, ease: "easeInOut" }}
               />
-              
+
               <AnimatePresence mode="wait">
                 {phase < 21 ? (
                   <motion.div
@@ -1472,42 +1473,42 @@ const IntroSection: React.FC = () => {
                     className="w-full text-left"
                   >
                     <div className="text-center mb-8">
-                        <h2 className="text-3xl font-black text-gray-800 font-kanit mb-1">ASSEMBLED CHARACTER</h2>
-                        <p className="text-sm text-gray-500 font-medium">이 캐릭터는 다음 요소로 구성되어 있습니다.</p>
+                      <h2 className="text-3xl font-black text-gray-800 font-kanit mb-1">ASSEMBLED CHARACTER</h2>
+                      <p className="text-sm text-gray-500 font-medium">이 캐릭터는 다음 요소로 구성되어 있습니다.</p>
                     </div>
 
                     <div className="space-y-6">
-                        {RESUME_DATA.map((section) => (
-                            <div key={section.id} className="border-t border-gray-300 pt-4 first:border-none first:pt-0">
-                                <h3 className="text-sm font-bold text-gray-400 font-kanit mb-1">BUILD {section.id} · {section.title}</h3>
-                                <div className="pl-0">
-                                    {section.content.map((item: any, idx) => (
-                                        <div key={idx} className="mb-3 last:mb-0">
-                                            {item.type === 'text' && (
-                                                <div className="text-lg font-bold text-gray-800">{item.text}</div>
-                                            )}
-                                            {item.type === 'job' && (
-                                                <div className="mb-4 last:mb-0">
-                                                    <div className="text-lg font-bold text-gray-800 mb-1">{item.role}</div>
-                                                    <ul className="list-none space-y-1 text-sm text-gray-600 pl-0">
-                                                        {item.tasks.map((task: string, tIdx: number) => (
-                                                            <li key={tIdx} className="before:content-['–'] before:mr-2 before:text-gray-400">
-                                                                {task}
-                                                            </li>
-                                                        ))}
-                                                        {item.achievement && (
-                                                            <li className="text-gray-800 font-semibold mt-1">
-                                                                * {item.achievement.replace('Achievement: ', '')}
-                                                            </li>
-                                                        )}
-                                                    </ul>
-                                                </div>
-                                            )}
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        ))}
+                      {RESUME_DATA.map((section) => (
+                        <div key={section.id} className="border-t border-gray-300 pt-4 first:border-none first:pt-0">
+                          <h3 className="text-sm font-bold text-gray-400 font-kanit mb-1">BUILD {section.id} · {section.title}</h3>
+                          <div className="pl-0">
+                            {section.content.map((item: any, idx) => (
+                              <div key={idx} className="mb-3 last:mb-0">
+                                {item.type === 'text' && (
+                                  <div className="text-lg font-bold text-gray-800">{item.text}</div>
+                                )}
+                                {item.type === 'job' && (
+                                  <div className="mb-4 last:mb-0">
+                                    <div className="text-lg font-bold text-gray-800 mb-1">{item.role}</div>
+                                    <ul className="list-none space-y-1 text-sm text-gray-600 pl-0">
+                                      {item.tasks.map((task: string, tIdx: number) => (
+                                        <li key={tIdx} className="before:content-['–'] before:mr-2 before:text-gray-400">
+                                          {task}
+                                        </li>
+                                      ))}
+                                      {item.achievement && (
+                                        <li className="text-gray-800 font-semibold mt-1">
+                                          * {item.achievement.replace('Achievement: ', '')}
+                                        </li>
+                                      )}
+                                    </ul>
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </motion.div>
                 )}
@@ -1520,7 +1521,7 @@ const IntroSection: React.FC = () => {
       {/* 햄버거 메뉴 */}
       <div className="absolute top-0 left-0 w-full h-full max-w-[1920px] pointer-events-none px-6 md:px-16 xl:px-[180px] z-50">
         <div className="w-full h-24 flex items-center justify-between">
-          <div className="w-20 h-20" /> 
+          <div className="w-20 h-20" />
           <div id="hamburger" className="w-20 h-20 flex items-center justify-end pointer-events-auto">
             {(phase >= 9 && phase <= 12) && <HamburgerIcon isOpen={phase >= 12} onClick={handleHamburgerClick} />}
           </div>
@@ -1589,20 +1590,20 @@ const IntroSection: React.FC = () => {
         </div>
       </div>
 
-    {/* 얼굴 컨테이너 - Z-Index 100 (ALWAYS TOP, MOVED TO ROOT) */}
-    <motion.div 
-      id="face-container" 
-      className="absolute" 
-      style={{ 
-        width: "240px",
-        height: "240px",
-        perspective: 1000,
-        zIndex: 100,  
-      }}
-      initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}
-      animate={
-        phase >= 23
-          ? { 
+      {/* 얼굴 컨테이너 - Z-Index 100 (ALWAYS TOP, MOVED TO ROOT) */}
+      <motion.div
+        id="face-container"
+        className="absolute"
+        style={{
+          width: "240px",
+          height: "240px",
+          perspective: 1000,
+          zIndex: 100,
+        }}
+        initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}
+        animate={
+          phase >= 23
+            ? {
               left: "90%",
               top: "10%",
               x: "-50%",
@@ -1610,43 +1611,51 @@ const IntroSection: React.FC = () => {
               scale: 0.5,
               rotateZ: -15,
             }
-          : phase >= 14
-            ? { 
+            : phase >= 14
+              ? {
                 left: "50%",
                 top: "50%",
-                x: "calc(-50% - 32vw)",  
+                x: "calc(-50% - 32vw)",
                 y: `calc(-50% + 12vh + ${scrollOffset}px)`,
                 scale: 1,
                 rotateZ: 0,
-              } 
-          : phase >= 9 
-            ? { x: "-50%", y: "-50%", left: "50%", top: "50%", scale: 1, rotateZ: 0 } 
-            : { y: "150vh" } 
-      }
-      transition={{ duration: 1.0, ease: "easeInOut" }} 
-    >
+              }
+              : phase >= 9
+                ? { x: "-50%", y: "-50%", left: "50%", top: "50%", scale: 1, rotateZ: 0 }
+                : { y: "150vh" }
+        }
+        transition={{ duration: 1.0, ease: "easeInOut" }}
+      >
 
-      {/* Hat attached to Face (Visible Phase 21+) */}
-      {phase >= 21 && (
+        {/* Hat attached to Face (Visible Phase 21+) */}
+        {phase >= 21 && (
+          <motion.div
+            className="absolute"
+            style={{
+              left: "50%",
+              transform: "translateX(-50%)",
+            }}
+            initial={{ top: "-100px", opacity: 0 }}
+            animate={{ top: "-50px", opacity: 1 }}
+            transition={{ duration: 0.4, ease: "backOut" }}
+          >
+            <HardHat className="w-[140px] h-[100px]" />
+          </motion.div>
+        )}
+
         <motion.div
-          className="absolute"
+          className="w-full h-full"
           style={{
-            left: "50%",
-            transform: "translateX(-50%)",
+            transformStyle: "preserve-3d",
+            position: "relative", // ✅ Canvas absolute 채우기 위해 필요
           }}
-          initial={{ top: "-100px", opacity: 0 }}
-          animate={{ top: "-50px", opacity: 1 }}
-          transition={{ duration: 0.4, ease: "backOut" }}
         >
-          <HardHat className="w-[140px] h-[100px]" />
+          <LegoFace
+            className="absolute inset-0 w-full h-full"
+          />
         </motion.div>
-      )}
-      
-      <motion.div className="w-full h-full" style={{ transformStyle: "preserve-3d" }}>
-        <LegoFace className="w-full h-full drop-shadow-2xl" />
       </motion.div>
-    </motion.div>
-      
+
       {/* 하단 안내 문구 */}
       {phase === 0 && <motion.div className="absolute bottom-10 text-gray-400 font-kanit font-semibold text-sm animate-bounce uppercase tracking-widest">Scroll to Start</motion.div>}
       {(phase === 3) && <motion.div className="absolute bottom-10 text-white/50 font-kanit text-xs uppercase tracking-widest" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>Scroll to Merge</motion.div>}

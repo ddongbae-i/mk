@@ -1,12 +1,9 @@
-import React from 'react';
-import IntroSection from './components/IntroSection';
+import IntroSection from "./src/components/IntroSection";
 
-const App: React.FC = () => {
+export default function App() {
   return (
-    <main className="w-full h-screen overflow-hidden">
+    <div style={{ width: "100vw", height: "100vh" }}>
       <IntroSection />
-    </main>
+    </div>
   );
-};
-
-export default App;
+}

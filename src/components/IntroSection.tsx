@@ -11,6 +11,7 @@ const BG_CREAM = "#FFF2D5";
 const BEAM_COLOR = "#FCBB09";
 const PROJECT_TEXT_COLOR = "#8E00BD";
 
+
 // S2 DATA
 const S2_CONTENT = [
   {
@@ -243,7 +244,7 @@ const StrokedWordmark = ({ className, style, animateStroke = false }: { classNam
       fontFamily: FONT_FAMILY,
       fontWeight: 900,
       fontStyle: 'italic',
-      fontSize: "130px",
+      fontSize: "200px",
     }
   };
 
@@ -1549,17 +1550,33 @@ const IntroSection: React.FC = () => {
             </motion.div>
           )}
 
+
           <AnimatePresence>
             {phase >= 8 && phase < 13 && (
               <motion.div
-                className="absolute z-50 origin-top-left"
-                initial={{ left: "50%", top: "50%", x: "-50%", y: "-50%", scale: 1 }}
+                className="absolute z-50"
+                initial={{
+                  x: TEXT_ANCHOR_X,
+                  top: "50%",
+                  y: "-50%",
+                  scale: 2.5,      // 크게 시작
+                  opacity: 0,
+                }}
                 animate={phase >= 9
-                  ? { left: "0px", top: "40px", x: "0%", y: "0%", scale: 0.25 }
-                  : { left: "50%", top: "50%", x: "-50%", y: "-50%", scale: 1 }
+                  ? { left: "0px", top: "40px", x: "0%", y: "0%", scale: 0.25, opacity: 1 }
+                  : {
+                    x: TEXT_ANCHOR_X,
+                    top: "50%",
+                    y: "-50%",
+                    scale: 1,        // 바운스하며 정상 크기로
+                    opacity: 1,
+                  }
                 }
                 exit={{ opacity: 0, x: -100 }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                transition={{
+                  duration: 0.6,
+                  ease: [0.34, 1.56, 0.64, 1],  // 바운스 이징
+                }}
               >
                 <StrokedWordmark animateStroke={phase === 8} />
               </motion.div>
@@ -1595,10 +1612,11 @@ const IntroSection: React.FC = () => {
         id="face-container"
         className="absolute"
         style={{
-          width: "480px",
-          height: "480px",
+          width: "700px",   // 500 → 700
+          height: "700px",  // 500 → 700
           perspective: 1000,
           zIndex: 100,
+          overflow: "visible",
         }}
         initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}
         animate={

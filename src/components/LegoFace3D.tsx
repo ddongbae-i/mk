@@ -28,11 +28,10 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse }) => {
 
         const handleMouseMove = (e: MouseEvent) => {
             const xNorm = (e.clientX / window.innerWidth) - 0.5;
-            const yNorm = (e.clientY / window.innerHeight) - 0.5;
 
             setTargetRotation({
-                y: xNorm * 1.2,      // 좌우 회전
-                z: -xNorm * 0.3,     // Z축 기울기 (고개 갸웃)
+                y: xNorm * 0.8,
+                z: -xNorm * 0.2,
             });
         };
 
@@ -49,7 +48,7 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse }) => {
 
     return (
         <group ref={modelRef}>
-            <primitive object={scene} scale={2} />
+            <primitive object={scene} scale={1.3} />
         </group>
     );
 };
@@ -64,15 +63,14 @@ export const LegoFace3D: React.FC<{
             style={{
                 width: "100%",
                 height: "100%",
-                overflow: "visible",  // 추가
-                pointerEvents: "none"  // 클릭 이벤트 통과 (필요시)
+                overflow: "visible",
             }}
         >
             <Canvas
                 camera={{ position: [0, 0, 8], fov: 45 }}
                 style={{
                     background: 'transparent',
-                    overflow: "visible",  // 추가
+                    overflow: "visible",
                 }}
                 gl={{
                     alpha: true,
@@ -81,7 +79,14 @@ export const LegoFace3D: React.FC<{
                 }}
                 linear
             >
-                {/* ... 조명, 모델 등 */}
+                <ambientLight intensity={1.8} />
+                <directionalLight position={[5, 5, 5]} intensity={1.8} />
+                <directionalLight position={[-5, 5, -5]} intensity={1.2} />
+                <hemisphereLight intensity={1.2} groundColor="#ffffff" />
+
+                <Center>
+                    <LegoModel followMouse={followMouse} />
+                </Center>
             </Canvas>
         </div>
     );

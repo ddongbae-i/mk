@@ -1036,7 +1036,6 @@ const IntroSection: React.FC = () => {
       onMouseMove={handleMouseMove}
       className="relative w-full h-full flex flex-col items-center justify-center bg-[#E5E5E5] overflow-hidden outline-none"
     >
-
       {/* Phase 15에서 자연 스크롤을 위한 내부 컨테이너 */}
       <div
         ref={scrollContainerRef}
@@ -1595,8 +1594,8 @@ const IntroSection: React.FC = () => {
         id="face-container"
         className="absolute"
         style={{
-          width: "240px",
-          height: "240px",
+          width: "500px",
+          height: "500px",
           perspective: 1000,
           zIndex: 100,
         }}
@@ -1643,16 +1642,8 @@ const IntroSection: React.FC = () => {
           </motion.div>
         )}
 
-        <motion.div
-          className="w-full h-full"
-          style={{
-            transformStyle: "preserve-3d",
-            position: "relative", // ✅ Canvas absolute 채우기 위해 필요
-          }}
-        >
-          <LegoFace
-            className="absolute inset-0 w-full h-full"
-          />
+        <motion.div className="w-full h-full" style={{ transformStyle: "preserve-3d" }}>
+          <LegoFace className="w-full h-full drop-shadow-2xl" />
         </motion.div>
       </motion.div>
 

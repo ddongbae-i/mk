@@ -1,54 +1,42 @@
-import React, { Suspense, useEffect } from "react";
-import { Canvas } from "@react-three/fiber";
-import { Environment, useGLTF } from "@react-three/drei";
+import React, { useEffect, useState } from 'react';
 
-export type LegoFaceProps = {
-  className?: string;
-};
-
-function Model() {
-  // ✅ GitHub Pages + 로컬 모두 안전한 경로
-  const url = `${import.meta.env.BASE_URL}models/lego.glb`;
-  const { scene } = useGLTF(url);
+export const LegoFace: React.FC<{ className?: string }> = ({ className }) => {
+  const [pos, setPos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    scene.traverse((obj: any) => {
-      if (obj.isMesh) {
-        obj.castShadow = true;
-        obj.receiveShadow = true;
-      }
-    });
-  }, [scene]);
+    const handleMouseMove = (e: MouseEvent) => {
+      const xNorm = (e.clientX / window.innerWidth) - 0.5;
+      const yNorm = (e.clientY / window.innerHeight) - 0.5;
+      const MOVE_RANGE = 30;
+
+      setPos({
+        x: xNorm * MOVE_RANGE,
+        y: yNorm * MOVE_RANGE
+      });
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
 
   return (
-    <primitive
-      object={scene}
-      position={[0, -0.6, 0]}
-      scale={1}
-    />
-  );
-}
+    <div className={className} style={{ width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center", overflow: "visible" }}>
+      <img
+        src={`${import.meta.env.BASE_URL}images/lego_face.svg`}
+        alt="Lego Face"
+        style={{
+          // [수정됨] 100%로 꽉 채우면 움직일 때 잘립니다. 
+          // 85% 정도로 줄여서 사방에 여유 공간을 주세요.
+          width: "85%",
+          height: "auto",
+          maxWidth: "500px", // 필요시 크기 조절
 
-export const LegoFace: React.FC<LegoFaceProps> = ({ className }) => {
-  return (
-    <div className={className} style={{ width: "100%", height: "100%" }}>
-      <Canvas
-        style={{ width: "100%", height: "100%" }}
-        camera={{ position: [0, 0.2, 2.2], fov: 35 }}
-        gl={{ alpha: true, antialias: true }}
-      >
-        <ambientLight intensity={0.9} />
-        <directionalLight position={[3, 4, 3]} intensity={1.2} />
-        <directionalLight position={[-2, 1, 1]} intensity={0.6} />
-
-        <Suspense fallback={null}>
-          <Model />
-          <Environment preset="studio" />
-        </Suspense>
-      </Canvas>
+          objectFit: "contain", // 비율 유지하며 포함
+          transform: `translate(${pos.x}px, ${pos.y}px)`,
+          transition: "transform 0.1s ease-out",
+          willChange: "transform"
+        }}
+      />
     </div>
   );
 };
-
-// ✅ preload도 동일 경로
-useGLTF.preload(`${import.meta.env.BASE_URL}models/lego.glb`);

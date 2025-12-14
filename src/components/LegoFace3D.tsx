@@ -14,7 +14,12 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse }) => {
 
     useEffect(() => {
         if (scene) {
+            // 디버깅: 모델 크기 확인
             const box = new THREE.Box3().setFromObject(scene);
+            const size = box.getSize(new THREE.Vector3());
+            console.log('모델 크기:', size);  // 콘솔에서 확인!
+            console.log('모델 중심:', box.getCenter(new THREE.Vector3()));
+
             const center = box.getCenter(new THREE.Vector3());
             scene.position.sub(center);
         }
@@ -28,7 +33,7 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse }) => {
 
         const handleMouseMove = (e: MouseEvent) => {
             const xNorm = (e.clientX / window.innerWidth) - 0.5;
-            setTargetRotation(xNorm * 0.4);  // Y축(좌우)만 회전
+            setTargetRotation(xNorm * 0.4);
         };
 
         window.addEventListener("mousemove", handleMouseMove);
@@ -55,7 +60,7 @@ export const LegoFace3D: React.FC<{
     return (
         <div className={className} style={{ width: "100%", height: "100%" }}>
             <Canvas
-                camera={{ position: [0, 0, 15], fov: 45 }}
+                camera={{ position: [0, 0, 8], fov: 45 }}  // 50 → 8로 가깝게
                 style={{ background: 'transparent' }}
                 gl={{
                     alpha: true,
@@ -64,10 +69,11 @@ export const LegoFace3D: React.FC<{
                 }}
                 linear
             >
-                <ambientLight intensity={1.5} />
-                <directionalLight position={[5, 5, 5]} intensity={2} />
-                <directionalLight position={[-5, 5, -5]} intensity={1} />
-                <hemisphereLight intensity={1} groundColor="#ffffff" />
+                {/* 조명 줄이기 */}
+                <ambientLight intensity={1.8} />
+                <directionalLight position={[5, 5, 5]} intensity={1.8} />
+                <directionalLight position={[-5, 5, -5]} intensity={1.2} />
+                <hemisphereLight intensity={1.2} groundColor="#ffffff" />
 
                 <Center>
                     <LegoModel followMouse={followMouse} />

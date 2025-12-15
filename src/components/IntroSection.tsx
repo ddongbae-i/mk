@@ -128,7 +128,7 @@ const FONT_FAMILY = 'Kanit, sans-serif';
 // --- PROJECT KIT BOX ---
 const ProjectKitBox = ({ isVisible }: { isVisible: boolean }) => (
   <motion.div
-    className="absolute z-[90]" // Higher than Purple (80)
+    className="absolute z-[90]"
     style={{
       left: "40%",
       top: "60%",
@@ -276,6 +276,7 @@ const LegoBrick = ({ label, index, className }: { label: string, index: number, 
     </div>
   );
 };
+
 // --- S2 SLOT MACHINE COMPONENTS ---
 const SplitWordLayer = ({ parts, visibleIndex }: { parts: string[], visibleIndex: number }) => {
   return (
@@ -417,17 +418,14 @@ const FloatingMenuBlock: React.FC<{
     rotate: [0, index % 2 === 0 ? 5 : -5, 0],
   };
 
-  // 메뉴 열렸을 때 호버 offset 계산
   const getHoverOffset = () => {
     if (!isMenuOpen || hoveredIndex === null) return 0;
     if (index === hoveredIndex) return 0;
-    if (index < hoveredIndex) return -20;  // 위 블럭들
-    return 20;  // 아래 블럭들
+    if (index < hoveredIndex) return -20;
+    return 20;
   };
 
   const isHovered = isMenuOpen && hoveredIndex === index;
-
-  // z-index: 빨간색(0)이 가장 위, 보라색(4)이 가장 아래
   const baseZIndex = isHovered ? 60 : 50 - index;
 
   return (
@@ -456,7 +454,6 @@ const FloatingMenuBlock: React.FC<{
       onMouseLeave={() => isMenuOpen && onHover?.(null)}
       className="absolute w-40 h-24 md:w-52 md:h-32 cursor-pointer pointer-events-auto"
     >
-      {/* 메뉴 열렸을 때 호버 효과를 위한 내부 div */}
       <motion.div
         className="w-full h-full"
         animate={isMenuOpen ? {
@@ -470,44 +467,6 @@ const FloatingMenuBlock: React.FC<{
     </motion.div>
   );
 };
-
-
-// const StackedMenuBlock: React.FC<{
-//   index: number;
-//   hoveredIndex: number | null;
-//   onHover: (index: number | null) => void;
-// }> = ({ index, hoveredIndex, onHover }) => {
-//   const label = BRICK_LABELS[index % BRICK_LABELS.length];
-
-//   const getHoverOffset = () => {
-//     if (hoveredIndex === null) return 0;
-//     if (index === hoveredIndex) return 0;
-//     if (index < hoveredIndex) return -20;
-//     return 20;
-//   };
-
-//   const isHovered = hoveredIndex === index;
-
-//   // z-index: 빨간색(0)이 가장 위, 보라색(4)이 가장 아래
-//   // 기본: 50, 49, 48, 47, 46 → 빨간색이 50으로 가장 위
-//   const baseZIndex = 50 - index;
-
-//   return (
-//     <motion.div
-//       animate={{
-//         y: getHoverOffset(),
-//         scale: isHovered ? 1.05 : 1,
-//       }}
-//       transition={{ type: "spring", stiffness: 300, damping: 25 }}
-//       onMouseEnter={() => onHover(index)}
-//       onMouseLeave={() => onHover(null)}
-//       style={{ zIndex: isHovered ? 60 : baseZIndex }}
-//       className="w-40 h-24 md:w-52 md:h-32 cursor-pointer"
-//     >
-//       <LegoBrick label={label} index={index} />
-//     </motion.div>
-//   );
-// };
 
 const HamburgerIcon = ({
   className,
@@ -561,7 +520,7 @@ const IntroSection: React.FC = () => {
   const followParts = phase >= 2 && phase <= 12;
   const fixedPartsY = phase >= 14 && phase < 23 ? 25 : 0;
   const partsRotateY = followParts ? 0 : fixedPartsY;
-  const [hoveredBlockIndex, setHoveredBlockIndex] = useState<number | null>(null);  // ✅ 여기에 추가!
+  const [hoveredBlockIndex, setHoveredBlockIndex] = useState<number | null>(null);
 
   const phaseRef = useRef(phase);
 
@@ -637,7 +596,6 @@ const IntroSection: React.FC = () => {
     const currentPhase = phaseRef.current;
 
     if (direction > 0) {
-      // --- SCROLL DOWN / NEXT ---
       if (currentPhase === 0) {
         isAnimatingRef.current = true;
         setPhase(1);
@@ -717,24 +675,23 @@ const IntroSection: React.FC = () => {
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
       } else if (currentPhase === 21) {
         isAnimatingRef.current = true;
-        setPhase(22);  // 보라색 진입 (Partial)
+        setPhase(22);
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
       } else if (currentPhase === 22) {
         isAnimatingRef.current = true;
-        setPhase(23);  // 보라색 전체 (Upward) + 캐릭터 이동
+        setPhase(23);
         setTimeout(() => { isAnimatingRef.current = false; }, 1000);
       } else if (currentPhase === 23) {
         isAnimatingRef.current = true;
-        setPhase(24);  // 빛 + 텍스트
+        setPhase(24);
         setTimeout(() => { isAnimatingRef.current = false; }, 1000);
       } else if (currentPhase === 24) {
         isAnimatingRef.current = true;
-        setPhase(25);  // 프로젝트 박스
+        setPhase(25);
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
       }
 
     } else {
-      // --- SCROLL UP / PREV ---
       if (currentPhase === 25) {
         isAnimatingRef.current = true;
         setPhase(24);
@@ -832,7 +789,7 @@ const IntroSection: React.FC = () => {
 
   const runStepA_StackAndEnter = async () => {
     const stackAnims: Promise<any>[] = [];
-    const order = [4, 3, 2, 1, 0];  // 아래부터 위로 쌓이도록
+    const order = [4, 3, 2, 1, 0];
 
     for (let i = 0; i < order.length; i++) {
       const idx = order[i];
@@ -840,19 +797,18 @@ const IntroSection: React.FC = () => {
 
       stackAnims.push(
         (async () => {
-          // 위에서 떨어지듯이 내려오고, 착지할 때 살짝만 눌림
           await safeAnimate(
             `#block-${idx}`,
             {
               x: coords.x,
-              y: [coords.y - 100, coords.y + 3, coords.y],  // 위에서 내려와서 살짝 눌렸다가 제자리
+              y: [coords.y - 100, coords.y + 3, coords.y],
               rotate: 0,
-              scale: [1, 1.02, 1]  // 착지 시 살짝 눌리는 느낌
+              scale: [1, 1.02, 1]
             },
             {
-              delay: i * 0.12,  // 순차적으로 착착착
+              delay: i * 0.12,
               duration: 0.3,
-              ease: [0.25, 0.1, 0.25, 1],  // 자연스러운 착지
+              ease: [0.25, 0.1, 0.25, 1],
               times: [0, 0.7, 1]
             }
           );
@@ -926,7 +882,6 @@ const IntroSection: React.FC = () => {
     handleScrollActionRef.current = handleScrollAction;
   });
 
-  // 자연 스크롤 감지
   useEffect(() => {
     if (!isNaturalScrolling || phase !== 15) return;
 
@@ -1041,9 +996,7 @@ const IntroSection: React.FC = () => {
     mouseY.set(clientY - window.innerHeight / 2);
   };
 
-  // 스크롤 오프셋 계산
   const scrollOffset = phase >= 16 ? -300 : (isNaturalScrolling ? Math.max(-300, -naturalScrollY) : 0);
-  // Phase 23 Global Y scroll simulation: Move everything up significantly
   const globalY = phase >= 23 ? "-80vh" : "0px";
 
   return (
@@ -1058,15 +1011,14 @@ const IntroSection: React.FC = () => {
         ref={scrollContainerRef}
         className="absolute inset-0"
         style={{
-          overflowY: "scroll",                 // ✅ 항상 scroll (폭 고정)
+          overflowY: "scroll",
           overflowX: "hidden",
-          scrollbarGutter: "stable",           // ✅ 스크롤바 공간 고정
+          scrollbarGutter: "stable",
           pointerEvents: isNaturalScrolling ? "auto" : "none",
-          opacity: isNaturalScrolling ? 1 : 0, // 안 쓸 땐 보이지 않게
+          opacity: isNaturalScrolling ? 1 : 0,
           zIndex: isNaturalScrolling ? 100 : -1,
         }}
       >
-        {/* 스크롤 길이만 제공 */}
         <div style={{ height: 'calc(100% + 400px)', pointerEvents: 'none' }} />
       </div>
 
@@ -1089,7 +1041,6 @@ const IntroSection: React.FC = () => {
           animate={{ y: globalY }}
           transition={{ duration: 1.2, ease: "easeInOut" }}
         >
-          {/* 크림 사다리꼴 배경 */}
           <div
             className="absolute w-[200vw] bg-[#FFF2D5]"
             style={{
@@ -1101,7 +1052,6 @@ const IntroSection: React.FC = () => {
             }}
           />
 
-          {/* 타이틀 */}
           <div
             className="absolute font-black italic whitespace-nowrap"
             style={{
@@ -1120,7 +1070,7 @@ const IntroSection: React.FC = () => {
         </motion.div>
       </motion.div>
 
-      {/* Project Kits Beam (Yellow) - Z-Index 85 */}
+      {/* Project Kits Beam (Yellow) */}
       <motion.div
         className="absolute"
         style={{
@@ -1153,24 +1103,23 @@ const IntroSection: React.FC = () => {
         </div>
       </motion.div>
 
-      {/* PROJECT KIT BOX - Z-Index 90 */}
+      {/* PROJECT KIT BOX */}
       <ProjectKitBox isVisible={phase >= 25} />
 
-      {/* Purple Background Section - Z-Index 80 */}
+      {/* Purple Background Section */}
       <motion.div
         className="absolute w-full h-full"
         style={{ zIndex: 80 }}
         initial={{ x: "120%" }}
         animate={
           phase >= 23
-            ? { x: 0, y: "-130vh" }  // Move up drastically in Phase 23 to cover full screen
+            ? { x: 0, y: "-130vh" }
             : phase >= 22
-              ? { x: 0, y: 0 }  // Enters screen
+              ? { x: 0, y: 0 }
               : { x: "120%", y: 0 }
         }
         transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
       >
-        {/* Purple Shape */}
         <div
           className="absolute w-[200vw] bg-[#8E00BD]"
           style={{
@@ -1183,8 +1132,7 @@ const IntroSection: React.FC = () => {
         />
       </motion.div>
 
-
-      {/* 조립 가이드 섹션 (Parts Wrapper) - Z-Index 70 (Behind Purple) */}
+      {/* 조립 가이드 섹션 (Parts Wrapper) */}
       {phase >= 15 && (
         <motion.div
           className="absolute z-[110] pointer-events-none"
@@ -1195,7 +1143,7 @@ const IntroSection: React.FC = () => {
               x: "-50%", y: "-50%",
               scale: 0.6,
               rotateZ: -25, rotateX: 30, rotateY: 15,
-              opacity: 0 // Fade out wrapper contents as they are covered or moved
+              opacity: 0
             } : {
               left: "50%", top: "50%",
               x: "-50%", y: "-50%",
@@ -1217,7 +1165,7 @@ const IntroSection: React.FC = () => {
             }
             transition={{ duration: 0.8, ease: "easeInOut" }}
           >
-            {/* 1. 모자 (Hidden in Phase 21+ to transfer to Face Container) */}
+            {/* 1. 모자 */}
             <motion.div
               className="absolute"
               style={{
@@ -1225,33 +1173,44 @@ const IntroSection: React.FC = () => {
                 transform: "translateX(-50%)",
               }}
               animate={{
-                top: phase >= 21 ? "-40px" : "-160px",
-                opacity: phase >= 21 ? 0 : 1, // HIDE as soon as it 'assembles'
+                top: phase >= 21 ? "0px" : "-180px",
+                opacity: phase >= 21 ? 0 : 1,
               }}
               transition={{ duration: 0.6, ease: "backOut" }}
             >
-              <div className="flex flex-col items-center relative w-[240px] h-[240px]">
+              <div className="flex flex-col items-center relative">
                 <AnimatePresence>
                   {phase < 21 && (
-                    <motion.div
-                      className="flex items-center gap-4 mb-2"
+                    <motion.span
+                      className="absolute -left-12 top-[70px] text-[28px] font-bold text-[#2b2b2b]"
                       exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3 }}
                     >
-                    </motion.div>
+                      1
+                    </motion.span>
                   )}
                 </AnimatePresence>
 
-                <PartPNG src="images/hat.png" className="w-full h-full object-cover" alt="hat" />
+                <PartPNG src="images/hat.png" className="w-[180px] h-[140px] object-contain" alt="hat" />
 
+                {/* 모자 아래 화살표 */}
                 <AnimatePresence>
                   {phase < 21 && (
                     <motion.svg
-                      width="20" height="50" viewBox="0 0 20 50"
+                      width="24"
+                      height="40"
+                      viewBox="0 0 24 40"
+                      className="mt-1"
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <path d="M10,0 L10,45 M5,40 L10,45 L15,40" stroke="#333" strokeWidth="2" fill="none" />
+                      <path
+                        d="M12,0 L12,32 M6,26 L12,34 L18,26"
+                        stroke="#2b2b2b"
+                        strokeWidth="3"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
                     </motion.svg>
                   )}
                 </AnimatePresence>
@@ -1266,13 +1225,13 @@ const IntroSection: React.FC = () => {
 
             {/* 2. 얼굴 자리 */}
             <div
-              className="relative"
-              style={{ width: "240px", height: "240px" }}
+              className="relative flex flex-col items-center"
+              style={{ width: "180px", height: "180px" }}
             >
               <AnimatePresence>
                 {phase < 21 && (
                   <motion.span
-                    className="absolute -left-10 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-700"
+                    className="absolute -left-12 top-1/2 -translate-y-1/2 text-[28px] font-bold text-[#2b2b2b]"
                     exit={{ opacity: 0 }}
                   >
                     2
@@ -1280,16 +1239,25 @@ const IntroSection: React.FC = () => {
                 )}
               </AnimatePresence>
 
+              {/* 얼굴 아래 화살표 */}
               <AnimatePresence>
                 {phase < 21 && (
-                  <motion.div
-                    className="absolute left-1/2 -translate-x-1/2 -bottom-14"
+                  <motion.svg
+                    width="24"
+                    height="40"
+                    viewBox="0 0 24 40"
+                    className="absolute -bottom-12 left-1/2 -translate-x-1/2"
                     exit={{ opacity: 0 }}
                   >
-                    <svg width="20" height="50" viewBox="0 0 20 50">
-                      <path d="M10,0 L10,45 M5,40 L10,45 L15,40" stroke="#333" strokeWidth="2" fill="none" />
-                    </svg>
-                  </motion.div>
+                    <path
+                      d="M12,0 L12,32 M6,26 L12,34 L18,26"
+                      stroke="#2b2b2b"
+                      strokeWidth="3"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </motion.svg>
                 )}
               </AnimatePresence>
 
@@ -1308,16 +1276,16 @@ const IntroSection: React.FC = () => {
                 transform: "translateX(-50%)",
               }}
               animate={{
-                top: phase >= 21 ? "200px" : "300px",
-                opacity: phase >= 23 ? 0 : 1, // Hide when moving to corner
+                top: phase >= 21 ? "160px" : "240px",
+                opacity: phase >= 23 ? 0 : 1,
               }}
               transition={{ duration: 0.6, ease: "backOut" }}
             >
-              <div className="relative">
+              <div className="relative flex flex-col items-center">
                 <AnimatePresence>
                   {phase < 21 && (
                     <motion.span
-                      className="absolute -left-10 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-700"
+                      className="absolute -left-12 top-[60px] text-[28px] font-bold text-[#2b2b2b]"
                       exit={{ opacity: 0 }}
                     >
                       3
@@ -1325,34 +1293,52 @@ const IntroSection: React.FC = () => {
                   )}
                 </AnimatePresence>
 
-                <div style={{ width: "180px", height: "140px" }}>
+                {/* 3D 상체 */}
+                <div className="relative" style={{ width: "160px", height: "120px" }}>
                   <LegoPart3D
-                    className="w-[220px] h-[180px]"
+                    className="absolute inset-0"
                     modelPath="models/lego_body.glb"
-                    modelScale={1.2}
+                    modelScale={1.4}
                     rotateY={fixedPartsY}
                   />
                 </div>
 
-
+                {/* 상체 아래 화살표 2개 */}
                 <AnimatePresence>
                   {phase < 21 && (
                     <motion.div
-                      className="absolute left-1/2 -translate-x-1/2 -bottom-14"
+                      className="flex flex-col items-center mt-2"
                       exit={{ opacity: 0 }}
                     >
-                      <svg width="20" height="50" viewBox="0 0 20 50">
-                        <path d="M10,0 L10,45 M5,40 L10,45 L15,40" stroke="#333" strokeWidth="2" fill="none" />
+                      <svg width="24" height="40" viewBox="0 0 24 40">
+                        <path
+                          d="M12,0 L12,32 M6,26 L12,34 L18,26"
+                          stroke="#2b2b2b"
+                          strokeWidth="3"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                      <svg width="24" height="40" viewBox="0 0 24 40">
+                        <path
+                          d="M12,0 L12,32 M6,26 L12,34 L18,26"
+                          stroke="#2b2b2b"
+                          strokeWidth="3"
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
-                {/* 돋보기 */}
+                {/* 돋보기 (4번) */}
                 <motion.div
                   className="absolute flex items-center"
                   animate={{
-                    right: phase >= 21 ? "-60px" : "-128px",
+                    right: phase >= 21 ? "-50px" : "-120px",
                     top: "50%",
                   }}
                   transition={{ duration: 0.6, ease: "backOut" }}
@@ -1362,13 +1348,23 @@ const IntroSection: React.FC = () => {
                     {phase < 21 && (
                       <>
                         <motion.svg
-                          width="40" height="20" viewBox="0 0 40 20" className="mr-2"
+                          width="50"
+                          height="24"
+                          viewBox="0 0 50 24"
+                          className="mr-2"
                           exit={{ opacity: 0 }}
                         >
-                          <path d="M40,10 L5,10 M10,5 L5,10 L10,15" stroke="#333" strokeWidth="2" fill="none" />
+                          <path
+                            d="M48,12 L8,12 M14,6 L6,12 L14,18"
+                            stroke="#2b2b2b"
+                            strokeWidth="3"
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
                         </motion.svg>
                         <motion.span
-                          className="absolute -top-6 left-12 text-sm font-bold text-gray-700"
+                          className="absolute -top-8 left-14 text-[28px] font-bold text-[#2b2b2b]"
                           exit={{ opacity: 0 }}
                         >
                           4
@@ -1378,7 +1374,11 @@ const IntroSection: React.FC = () => {
                   </AnimatePresence>
 
                   <div className="relative">
-                    <PartPNG src="images/magnifier.png" className="w-[80px] h-[80px] object-contain" alt="magnifier" />
+                    <PartPNG
+                      src="images/magnifier.png"
+                      className="w-[70px] h-[70px] object-contain"
+                      alt="magnifier"
+                    />
 
                     <PartTooltip
                       title={PART_DESCRIPTIONS[4].title}
@@ -1404,16 +1404,16 @@ const IntroSection: React.FC = () => {
                 transform: "translateX(-50%)",
               }}
               animate={{
-                top: phase >= 21 ? "320px" : "500px",
-                opacity: phase >= 23 ? 0 : 1, // Hide when moving to corner
+                top: phase >= 21 ? "270px" : "440px",
+                opacity: phase >= 23 ? 0 : 1,
               }}
               transition={{ duration: 0.6, ease: "backOut" }}
             >
-              <div className="relative">
+              <div className="relative flex flex-col items-center">
                 <AnimatePresence>
                   {phase < 21 && (
                     <motion.span
-                      className="absolute -left-10 top-1/2 -translate-y-1/2 text-sm font-bold text-gray-700"
+                      className="absolute -left-12 top-[50px] text-[28px] font-bold text-[#2b2b2b]"
                       exit={{ opacity: 0 }}
                     >
                       5
@@ -1421,11 +1421,12 @@ const IntroSection: React.FC = () => {
                   )}
                 </AnimatePresence>
 
-                <div style={{ width: "160px", height: "120px" }}>
+                {/* 3D 하체 */}
+                <div className="relative" style={{ width: "140px", height: "100px" }}>
                   <LegoPart3D
-                    className="w-[200px] h-[160px]"
+                    className="absolute inset-0"
                     modelPath="models/lego_legs.glb"
-                    modelScale={1.2}
+                    modelScale={1.4}
                     rotateY={fixedPartsY}
                   />
                 </div>
@@ -1439,7 +1440,7 @@ const IntroSection: React.FC = () => {
             </motion.div>
           </motion.div>
 
-          {/* 오른쪽 플레이스홀더 (고정) - Sibling to character wrapper to detach from scroll */}
+          {/* 오른쪽 플레이스홀더 */}
           <motion.div
             className="absolute"
             style={{
@@ -1451,8 +1452,6 @@ const IntroSection: React.FC = () => {
             transition={{ duration: 0.8 }}
           >
             <div className="relative w-[540px] flex flex-col items-center justify-center p-8">
-              {/* Corner Borders Animation */}
-              {/* Top Line */}
               <motion.div
                 className="absolute bg-gray-800"
                 style={{ top: 0, left: 0, height: 2 }}
@@ -1460,7 +1459,6 @@ const IntroSection: React.FC = () => {
                 animate={{ width: phase >= 21 ? "100%" : 48 }}
                 transition={{ duration: 0.8, ease: "easeInOut" }}
               />
-              {/* Left Line */}
               <motion.div
                 className="absolute bg-gray-800"
                 style={{ top: 0, left: 0, width: 2 }}
@@ -1468,7 +1466,6 @@ const IntroSection: React.FC = () => {
                 animate={{ height: phase >= 21 ? "100%" : 48 }}
                 transition={{ duration: 0.8, ease: "easeInOut" }}
               />
-              {/* Bottom Line */}
               <motion.div
                 className="absolute bg-gray-800"
                 style={{ bottom: 0, right: 0, height: 2 }}
@@ -1476,7 +1473,6 @@ const IntroSection: React.FC = () => {
                 animate={{ width: phase >= 21 ? "100%" : 48 }}
                 transition={{ duration: 0.8, ease: "easeInOut" }}
               />
-              {/* Right Line */}
               <motion.div
                 className="absolute bg-gray-800"
                 style={{ bottom: 0, right: 0, width: 2 }}
@@ -1582,16 +1578,14 @@ const IntroSection: React.FC = () => {
             </motion.div>
           )}
 
-
-          {/* LOGO LAYER – header 기준 */}
-          <div className="absolute inset-0 z-50 pointer-events-none
-                px-6 md:px-16 xl:px-[180px]">
+          {/* LOGO LAYER */}
+          <div className="absolute inset-0 z-50 pointer-events-none px-6 md:px-16 xl:px-[180px]">
             <AnimatePresence>
               {phase >= 8 && phase < 13 && (
                 <motion.div
                   className="absolute"
                   initial={{
-                    left: TEXT_ANCHOR_X,   // S2 텍스트랑 같은 기준
+                    left: TEXT_ANCHOR_X,
                     top: "50%",
                     y: "-50%",
                     scale: 1,
@@ -1600,7 +1594,7 @@ const IntroSection: React.FC = () => {
                   animate={
                     phase >= 9
                       ? {
-                        left: "-40px",        // 🔥 핵심
+                        left: "-40px",
                         top: "20px",
                         y: 0,
                         scale: 0.4,
@@ -1628,8 +1622,6 @@ const IntroSection: React.FC = () => {
             </AnimatePresence>
           </div>
 
-
-
           <AnimatePresence>
             {(phase >= 5 && phase <= 7) && (
               <motion.div className="absolute z-30" initial={{ x: TEXT_ANCHOR_X, opacity: 0 }} animate={{ x: TEXT_ANCHOR_X, opacity: 1 }} exit={{ opacity: 0, transition: { duration: 0.3 } }}>
@@ -1654,28 +1646,12 @@ const IntroSection: React.FC = () => {
               ))}
             </div>
           )}
-
-
         </div>
       </div>
 
-      {/* 얼굴 컨테이너 - Z-Index 100 (ALWAYS TOP, MOVED TO ROOT) */}
-      {/* 얼굴 컨테이너 - Z-Index 100 */}
       {/* 얼굴 컨테이너 */}
       <motion.div
         id="face-container"
-        onUpdate={(latest) => {
-          // latest.scale / latest.x / latest.y 가 실제로 변하는지 확인
-          console.log("FACE", {
-            phase,
-            scale: latest.scale,
-            x: latest.x,
-            y: latest.y,
-            left: (latest as any).left,
-            top: (latest as any).top,
-            rotateY: (latest as any).rotateY,
-          });
-        }}
         className="absolute pointer-events-none"
         style={{
           width: "700px",
@@ -1696,15 +1672,15 @@ const IntroSection: React.FC = () => {
               rotateZ: -15,
               rotateY: 0,
             }
-            : phase >= 14  // 🔥 Phase 14부터 바로 작아지고 오른쪽 봄
+            : phase >= 14
               ? {
                 left: "2px",
                 top: "50%",
                 x: "0",
                 y: `calc(-50% + 12vh + ${scrollOffset}px)`,
-                scale: 0.4,      // 🔥 700px * 0.17 ≈ 120px
+                scale: 0.4,
                 rotateZ: 0,
-                rotateY: 25,      // 🔥 오른쪽 바라봄
+                rotateY: 25,
               }
               : phase >= 9
                 ? {
@@ -1720,7 +1696,6 @@ const IntroSection: React.FC = () => {
         }
         transition={{ duration: 1.0, ease: "easeInOut" }}
       >
-        {/* Hat attached to Face (Visible Phase 21+) */}
         {phase >= 21 && (
           <motion.div
             className="absolute"
@@ -1733,16 +1708,14 @@ const IntroSection: React.FC = () => {
             transition={{ duration: 0.4, ease: "backOut" }}
           >
             <PartPNG src="images/hat.png" className="w-[240px] h-[200px] object-contain" alt="hat" />
-
           </motion.div>
         )}
 
         <motion.div className="w-full h-full pointer-events-auto" style={{ transformStyle: "preserve-3d" }}>
-          {/* <LegoFace className="w-full h-full drop-shadow-2xl" /> */}
           <LegoFace3D
             className="w-full h-full drop-shadow-2xl"
             followMouse={phase >= 2 && phase <= 12}
-            fixedRotationY={phase >= 14 && phase < 23 ? 25 : 0}  // 🔥 Phase 14~22에서 오른쪽 봄
+            fixedRotationY={phase >= 14 && phase < 23 ? 25 : 0}
           />
         </motion.div>
       </motion.div>

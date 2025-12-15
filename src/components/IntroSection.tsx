@@ -57,18 +57,22 @@ const PART_DESCRIPTIONS = [
   {
     title: "Navigation Headlight",
     description: "무엇을 가장 먼저 해결해야하는지 찾아냅니다.",
+    details: "프로젝트의 방향성을 설정하고 핵심 문제를 정의하는 역할을 합니다.",
   },
   {
     title: "Insight Mask",
     description: "사용자보다 먼저 불편함을 감지합니다. ",
+    details: "사용성 테스트와 휴리스틱 평가를 통해 잠재적인 UX 문제를 사전에 발견합니다.",
   },
   {
     title: "Layout Harness",
     description: "뒤죽박죽 섞인 정보들을 이해하기 쉬운 구조로 정리합니다.",
+    details: "사용성 테스트와 휴리스틱 평가를 통해 잠재적인 UX 문제를 사전에 발견합니다.",
   },
   {
     title: "Responsibility Legs",
     description: "맡은 일은 마지막까지 책임감을 가지고 작업합니다",
+    details: "사용성 테스트와 휴리스틱 평가를 통해 잠재적인 UX 문제를 사전에 발견합니다.",
   },
 ];
 
@@ -171,46 +175,111 @@ const ProjectKitBox = ({ isVisible }: { isVisible: boolean }) => (
 const PartTooltip = ({
   title,
   description,
-  isVisible
+  details,
+  isVisible,
+  isExpanded = false,
+  onToggle,
+  counterRotateY = 0,
+  counterRotateX = 0,
+  lineLength = 80,
 }: {
   title: string;
   description: string;
+  details?: string;
   isVisible: boolean;
+  isExpanded?: boolean;
+  onToggle?: () => void;
+  counterRotateY?: number;
+  counterRotateX?: number;
+  lineLength?: number;
 }) => (
   <AnimatePresence>
     {isVisible && (
       <motion.div
-        className="absolute bg-[#FDD130] border-[3px] border-[#2b2b2b] shadow-[4px_4px_0_0_#2b2b2b]"
+        className="absolute flex items-center pointer-events-auto"
         style={{
-          width: "280px",
-          paddingBlock: "20px",
-          paddingInline: "24px",
-          left: "calc(100% + 20px)",
+          left: "calc(100% - 40px)",
           top: "50%",
-          transform: "translateY(-50%)",
-          zIndex: 60
+          zIndex: 60,
+          transform: `translateY(-50%) rotateY(${counterRotateY}deg) rotateX(${counterRotateX}deg)`,
+          transformStyle: "preserve-3d",
         }}
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -20 }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
       >
-        <h3 className="font-bold text-[#2b2b2b] italic text-[24px] mb-1 font-" style={{ fontFamily: FONT_FAMILY }}>
-          {title}
-        </h3>
-        <p className="text-[#333333] text-[16px] font-medium leading-[1.4] ">
-          {description}
-        </p>
-        <div className="mt-3 flex justify-center">
-          <div className="w-8 h-8 border-2 border-gray-800 flex items-center justify-center">
-            <span className="text-gray-800 font-bold">+</span>
+        {/* 동그라미 포인트 */}
+        <motion.div
+          className="relative flex-shrink-0"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.2, delay: 0.1 }}
+        >
+          <div
+            className="w-4 h-4 rounded-full bg-[#2b2b2b]"
+            style={{ boxShadow: "0 0 0 3px #FFF2D5" }}
+          />
+        </motion.div>
+
+        {/* 연결선 */}
+        <motion.div
+          className="h-[3px] bg-[#2b2b2b] flex-shrink-0"
+          initial={{ width: 0 }}
+          animate={{ width: lineLength }}
+          transition={{ duration: 0.3, delay: 0.15 }}
+        />
+
+        {/* 카드 */}
+        <motion.div
+          className="bg-[#FDD130] border-[3px] border-[#2b2b2b] shadow-[4px_4px_0_0_#2b2b2b] flex-shrink-0"
+          style={{ width: "280px", padding: "20px 24px" }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.3, delay: 0.2 }}
+        >
+          <h3 className="font-bold text-[#2b2b2b] italic text-[20px] mb-2" style={{ fontFamily: 'Kanit, sans-serif' }}>
+            {title}
+          </h3>
+          <p className="text-[#333] text-[14px] font-medium leading-[1.5]">
+            {description}
+          </p>
+
+          {/* + 버튼 */}
+          <div className="mt-4 flex justify-center">
+            <button
+              onClick={onToggle}
+              className="w-10 h-10 border-[2px] border-[#2b2b2b] bg-white flex items-center justify-center cursor-pointer hover:bg-[#f5f5f5]"
+            >
+              <svg
+                width="20" height="20" viewBox="0 0 20 20" fill="none"
+                style={{ transform: isExpanded ? "rotate(45deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
+              >
+                <path d="M10 4V16M4 10H16" stroke="#2b2b2b" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+            </button>
           </div>
-        </div>
+
+          {/* 확장 컨텐츠 */}
+          <AnimatePresence>
+            {isExpanded && details && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="pt-4 mt-4 border-t-2 border-[#2b2b2b]/30">
+                  <p className="text-[#555] text-[13px] leading-[1.6]">{details}</p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.div>
       </motion.div>
     )}
   </AnimatePresence>
 );
-
 // --- COMPONENTS ---
 
 const StrokedWordmark = ({
@@ -515,6 +584,7 @@ const IntroSection: React.FC = () => {
   const [naturalScrollY, setNaturalScrollY] = useState(0);
 
   const [phase, setPhase] = useState(0);
+  const [expandedTooltip, setExpandedTooltip] = useState<number | null>(null);
 
   const faceScale =
     phase >= 23 ? 0.5 :
@@ -1016,6 +1086,8 @@ const IntroSection: React.FC = () => {
   };
 
   const scrollOffset = phase >= 16 ? -300 : (isNaturalScrolling ? Math.max(-300, -naturalScrollY) : 0);
+  const tooltipCounterRotateY = phase >= 14 && phase < 23 ? -25 : 0;
+  const tooltipCounterRotateX = phase >= 14 && phase < 23 ? -3 : 0;
   const globalY = phase >= 23 ? "-80vh" : "0px";
 
   return (
@@ -1223,6 +1295,12 @@ const IntroSection: React.FC = () => {
                 title={PART_DESCRIPTIONS[1].title}
                 description={PART_DESCRIPTIONS[1].description}
                 isVisible={phase === 17}
+                details={PART_DESCRIPTIONS[1].details}
+                isExpanded={expandedTooltip === 1}
+                onToggle={() => setExpandedTooltip(expandedTooltip === 1 ? null : 1)}
+                counterRotateY={tooltipCounterRotateY}
+                counterRotateX={tooltipCounterRotateX}
+                lineLength={80}
               />
             </div>
 
@@ -1285,6 +1363,12 @@ const IntroSection: React.FC = () => {
                   title={PART_DESCRIPTIONS[2].title}
                   description={PART_DESCRIPTIONS[2].description}
                   isVisible={phase === 18}
+                  details={PART_DESCRIPTIONS[2].details}
+                  isExpanded={expandedTooltip === 2}
+                  onToggle={() => setExpandedTooltip(expandedTooltip === 2 ? null : 2)}
+                  counterRotateY={tooltipCounterRotateY}
+                  counterRotateX={tooltipCounterRotateX}
+                  lineLength={80}
                 />
               </div>
             </motion.div>
@@ -1361,6 +1445,12 @@ const IntroSection: React.FC = () => {
                   title={PART_DESCRIPTIONS[3].title}
                   description={PART_DESCRIPTIONS[3].description}
                   isVisible={phase === 19}
+                  details={PART_DESCRIPTIONS[3].details}
+                  isExpanded={expandedTooltip === 3}
+                  onToggle={() => setExpandedTooltip(expandedTooltip === 3 ? null : 3)}
+                  counterRotateY={tooltipCounterRotateY}
+                  counterRotateX={tooltipCounterRotateX}
+                  lineLength={80}
                 />
               </div>
             </motion.div>
@@ -1661,7 +1751,13 @@ const IntroSection: React.FC = () => {
                 <PartTooltip
                   title={PART_DESCRIPTIONS[0].title}
                   description={PART_DESCRIPTIONS[0].description}
+                  details={PART_DESCRIPTIONS[0].details}
                   isVisible={phase === 16}
+                  isExpanded={expandedTooltip === 0}
+                  onToggle={() => setExpandedTooltip(expandedTooltip === 0 ? null : 0)}
+                  counterRotateY={tooltipCounterRotateY}
+                  counterRotateX={tooltipCounterRotateX}
+                  lineLength={120}
                 />
               </motion.div>
             </div>

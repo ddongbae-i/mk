@@ -56,23 +56,19 @@ const S2_CONTENT = [
 const PART_DESCRIPTIONS = [
   {
     title: "Navigation Headlight",
-    description: "어디로 가야 하는지, 무엇을 해결해야 하는지 가장 먼저 밝힙니다.",
+    description: "무엇을 가장 먼저 해결해야하는지 찾아냅니다.",
   },
   {
-    title: "Friendly Face",
-    description: "사용자와 팀원 모두에게 친근하게 다가가는 소통의 창구입니다.",
+    title: "Insight Mask",
+    description: "사용자보다 먼저 불편함을 감지합니다. ",
   },
   {
-    title: "Builder's Body",
-    description: "아이디어를 실제로 구현하는 실행력의 중심입니다.",
+    title: "Layout Harness",
+    description: "뒤죽박죽 섞인 정보들을 이해하기 쉬운 구조로 정리합니다.",
   },
   {
-    title: "Stable Foundation",
-    description: "흔들림 없는 기초 위에 프로젝트를 세웁니다.",
-  },
-  {
-    title: "Detail Finder",
-    description: "작은 디테일도 놓치지 않고 찾아내는 관찰력입니다.",
+    title: "Responsibility Legs",
+    description: "맡은 일은 마지막까지 책임감을 가지고 작업합니다",
   },
 ];
 
@@ -86,10 +82,10 @@ const RESUME_DATA = [
   },
   {
     id: "02",
-    title: "SKILL SET",
+    title: "CERTIFICATION",
     content: [
-      { type: "text", text: "Web Design" },
-      { type: "text", text: "Computer Graphics" }
+      { type: "text", text: "웹디자인 기능사" },
+      { type: "text", text: "컴퓨터그래픽스 운용기능사" }
     ]
   },
   {
@@ -184,9 +180,11 @@ const PartTooltip = ({
   <AnimatePresence>
     {isVisible && (
       <motion.div
-        className="absolute bg-[#FDE047] border-2 border-gray-800 p-4 rounded-sm shadow-lg"
+        className="absolute bg-[#FDD130] border-[3px] border-[#2b2b2b] shadow-[4px_4px_0_0_#2b2b2b]"
         style={{
           width: "280px",
+          paddingBlock: "20px",
+          paddingInline: "24px",
           left: "calc(100% + 20px)",
           top: "50%",
           transform: "translateY(-50%)",
@@ -197,10 +195,10 @@ const PartTooltip = ({
         exit={{ opacity: 0, x: -20 }}
         transition={{ duration: 0.3 }}
       >
-        <h3 className="font-bold text-gray-900 text-lg mb-2" style={{ fontFamily: FONT_FAMILY }}>
+        <h3 className="font-bold text-[#2b2b2b] italic text-[24px] mb-1 font-" style={{ fontFamily: FONT_FAMILY }}>
           {title}
         </h3>
-        <p className="text-gray-800 text-sm leading-relaxed">
+        <p className="text-[#333333] text-[16px] font-medium leading-[1.4] ">
           {description}
         </p>
         <div className="mt-3 flex justify-center">
@@ -364,7 +362,7 @@ const S2SlotMachine = ({ activeIndex }: { activeIndex: number }) => {
             transition={{ duration: 0.3 }}
             className="whitespace-nowrap origin-bottom-left"
             style={{
-              fontFamily: FONT_FAMILY, fontWeight: 400, fontSize: '48px',
+              fontFamily: FONT_FAMILY, fontWeight: 400, fontSize: '48px', fontStyle: 'italic',
               color: '#F0F0F0', lineHeight: 1.2, transform: "skewX(-10deg)"
             }}
           >
@@ -385,7 +383,7 @@ const S2SlotMachine = ({ activeIndex }: { activeIndex: number }) => {
             transition={{ duration: 0.3, delay: 0.1 }}
             className="whitespace-nowrap origin-top-left"
             style={{
-              fontFamily: FONT_FAMILY, fontWeight: 400, fontSize: '48px',
+              fontFamily: FONT_FAMILY, fontWeight: 400, fontSize: '48px', fontStyle: 'italic',
               color: '#F0F0F0', lineHeight: 1.2, transform: "skewX(-10deg)"
             }}
           >
@@ -1653,13 +1651,22 @@ const IntroSection: React.FC = () => {
               />
 
               {/* ✅ 모자 Tooltip */}
-              <PartTooltip
-                title={PART_DESCRIPTIONS[0].title}
-                description={PART_DESCRIPTIONS[0].description}
-                isVisible={phase === 16} // ← 원하는 phase로 바꿔
-              />
+              <motion.div
+                style={{
+                  rotateY: phase >= 14 && phase < 23 ? -25 : 0,
+                  rotateX: phase >= 14 && phase < 23 ? -2 : 0,
+                  transformOrigin: "50% 50%",
+                }}
+              >
+                <PartTooltip
+                  title={PART_DESCRIPTIONS[0].title}
+                  description={PART_DESCRIPTIONS[0].description}
+                  isVisible={phase === 16}
+                />
+              </motion.div>
             </div>
           </motion.div>
+
         )}
 
 

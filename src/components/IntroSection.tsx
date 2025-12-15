@@ -1868,18 +1868,18 @@ const IntroSection: React.FC = () => {
           <motion.div
             className="absolute pointer-events-none"
             style={{
-              left: "50%",
+              left: "51%",
               x: "-30%",
-              zIndex: 9999,
+              zIndex: 120,
               scale: 1 / faceScale,
             }}
             initial={{ opacity: 0, y: -10 }}
             animate={{
-              top: phase >= 23 ? "40px" : phase >= 21 ? "40px" : "-420px",
+              top: phase >= 23 ? "0px" : phase >= 21 ? "30px" : "-420px",
               opacity: 1,
-              scale: phase >= 21 ? 2 : 1,
+              scale: phase >= 21 ? 2.5 : 2.5,
               y: phase >= 21 ? 20 : -10,
-              x: phase >= 21 ? -100 : 0,
+              x: phase >= 21 ? -100 : -60,
               scaleX: phase >= 23 ? -1 : 1,  // 👈 반전!
             }}
             transition={{ duration: 0.6, ease: "backOut" }}

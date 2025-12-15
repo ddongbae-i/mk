@@ -570,7 +570,7 @@ const IntroSection: React.FC = () => {
     const relativeBottom = screenBottom - containerTop;
     const marginBottom = 40;
     const blockHeight = el.offsetHeight;
-    const overlap = blockHeight * 0.25;
+    const overlap = blockHeight * 0.44;
     const effectiveHeight = blockHeight - overlap;
     const bottomBlockCenterY = (relativeBottom - marginBottom) - (blockHeight / 2);
     const targetCenterY = bottomBlockCenterY - ((4 - index) * effectiveHeight);

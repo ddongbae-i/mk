@@ -489,22 +489,22 @@ const HamburgerIcon = ({
 }) => (
   <div
     onClick={onClick}
-    className={`fixed top-[40px] right-[18vw] z-50 flex flex-col justify-center items-end gap-1.5 cursor-pointer pointer-events-auto ${className}`}
+    className={`fixed top-[40px] right-[18vw] z-50 flex flex-col justify-center items-end gap-1 cursor-pointer pointer-events-auto ${className}`}
   >
     <img
       src={`${import.meta.env.BASE_URL}images/hamburger_line1.svg`}
       alt=""
-      className="h-1"
+      className="w-8 h-[9px]"
     />
     <img
       src={`${import.meta.env.BASE_URL}images/hamburger_line2.svg`}
       alt=""
-      className="h-1"
+      className="w-8 h-[6px]"
     />
     <motion.img
       src={`${import.meta.env.BASE_URL}images/hamburger_line3.svg`}
       alt=""
-      className="h-1 origin-right"
+      className="w-8 h-[6px] origin-right"
       animate={isOpen ? { rotate: 45, y: -6 } : { rotate: 0, y: 0 }}
       transition={{ duration: 0.3 }}
     />
@@ -1544,10 +1544,11 @@ const IntroSection: React.FC = () => {
                 animate={phase >= 9
                   ? { left: "18vw", top: "40px", x: "0%", y: "0%", scale: 0.25, opacity: 1 }
                   : {
-                    x: TEXT_ANCHOR_X,
+                    left: "50%",        // 중앙 정렬 유지
                     top: "50%",
+                    x: "-50%",          // TEXT_ANCHOR_X 대신 중앙 정렬
                     y: "-50%",
-                    scale: 1,        // 바운스하며 정상 크기로
+                    scale: 1,
                     opacity: 1,
                   }
                 }
@@ -1589,7 +1590,7 @@ const IntroSection: React.FC = () => {
       {/* 얼굴 컨테이너 - Z-Index 100 (ALWAYS TOP, MOVED TO ROOT) */}
       <motion.div
         id="face-container"
-        className="absolute"
+        className="absolute pointer-events-none"
         style={{
           width: "700px",   // 500 → 700
           height: "700px",  // 500 → 700
@@ -1640,7 +1641,7 @@ const IntroSection: React.FC = () => {
           </motion.div>
         )}
 
-        <motion.div className="w-full h-full" style={{ transformStyle: "preserve-3d" }}>
+        <motion.div className="w-full h-full pointer-events-auto" style={{ transformStyle: "preserve-3d" }}>
           {/* <LegoFace className="w-full h-full drop-shadow-2xl" /> */}
           <LegoFace3D
             className="w-full h-full drop-shadow-2xl"

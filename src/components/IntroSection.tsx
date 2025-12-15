@@ -1227,7 +1227,7 @@ const IntroSection: React.FC = () => {
           width: "100vw",
           height: "100vh",
           background: BEAM_COLOR,
-          clipPath: "polygon(75% 0%, 95% 100%, 10% 100%)",
+          clipPath: "polygon(78% 0%, 100% 100%, 10% 100%)",
           zIndex: 85,
         }}
         initial={{ opacity: 0 }}
@@ -1252,11 +1252,39 @@ const IntroSection: React.FC = () => {
       </motion.div>
 
       {/* PROJECT KIT BOX */}
-      <ProjectKitBox
-        isVisible={phase >= 25}
-        project={PROJECT_DATA[currentProject]}
-        onOpen={() => setIsProjectOpen(true)}
-      />
+      <AnimatePresence mode="wait">
+        {phase >= 25 && (
+          <motion.div
+            key={PROJECT_DATA[currentProject].id}
+            className="absolute z-[90]"
+            style={{ left: "40%", top: "60%", transform: "translate(-50%, -50%) rotate(-5deg)" }}
+            initial={{
+              opacity: 0,
+              scale: 0.92,
+              filter: "brightness(0.85)",
+            }}
+            animate={{
+              opacity: 1,
+              scale: 1,
+              filter: "brightness(1)",
+              transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
+            }}
+            exit={{
+              opacity: 0,
+              scale: 1.08,              // ✅ 뒤에서 밀듯이 커짐
+              y: -6,                    // ✅ 살짝 떠서 “밀려나감”
+              filter: "brightness(0.8)",
+              transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+            }}
+          >
+            <ProjectKitBox
+              isVisible={true}
+              project={PROJECT_DATA[currentProject]}
+              onOpen={() => setIsProjectOpen(true)}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Purple Background Section */}
       <motion.div
@@ -1284,44 +1312,60 @@ const IntroSection: React.FC = () => {
         />
       </motion.div>
 
-      {/* 프로젝트 전환 오버레이 */}
+
+      {/* 프로젝트 전환 오버레이 (암전 + 빔 깜빡) */}
       <AnimatePresence>
         {phase >= 25 && (
-          <motion.div
-            className="absolute pointer-events-none"
-            style={{
-              zIndex: 86,
-              top: 0,
-              left: 0,
-              width: "100vw",
-              height: "100vh",
-              background:
-                "linear-gradient(to bottom left, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.15) 35%, transparent 65%)",
-              clipPath: "polygon(75% 0%, 95% 100%, 10% 100%)",
-              mixBlendMode: "multiply", // ✅ 노란 빔 색을 더 죽였다가 살림
-            }}
-            initial={{ opacity: 0, filter: "brightness(0.6) blur(0px)" }}
-            animate={{
-              // ✅ 짧게 꺼짐 → 강하게 켜짐 → 다시 꺼짐 → 잔광
-              opacity: [0, 0.95, 0.15, 1, 0.25, 0],
-              filter: [
-                "brightness(0.6) blur(0px)",
-                "brightness(0.9) blur(0px)",
-                "brightness(0.6) blur(0px)",
-                "brightness(1.2) blur(1px)",
-                "brightness(0.8) blur(0px)",
-                "brightness(0.6) blur(0px)",
-              ],
-            }}
-            transition={{
-              duration: 0.55,
-              times: [0, 0.12, 0.2, 0.32, 0.45, 1],
-              ease: "linear",
-            }}
-            key={currentProject}
-          />
+          <React.Fragment key={`projfx-${currentProject}`}>
+            {/* 1) 전체 화면 디밍 (암전 느낌) */}
+            <motion.div
+              className="absolute inset-0 pointer-events-none"
+              style={{ zIndex: 86, background: "rgba(0,0,0,0.65)" }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 0.85, 0.35, 0] }}
+              transition={{
+                duration: 0.7,
+                times: [0, 0.18, 0.45, 1],
+                ease: "linear",
+              }}
+            />
+
+            {/* 2) 빔 영역만 “팍 죽었다 켜지는” 느낌 */}
+            <motion.div
+              className="absolute pointer-events-none"
+              style={{
+                zIndex: 87,
+                top: 0,
+                left: 0,
+                width: "100vw",
+                height: "100vh",
+                clipPath: "polygon(78% 0%, 100% 100%, 10% 100%)", // ✅ 빔과 동일
+                background:
+                  "linear-gradient(to bottom left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.25) 45%, transparent 70%)",
+                mixBlendMode: "multiply",
+              }}
+              initial={{ opacity: 0 }}
+              animate={{
+                // ✅ '꺼짐→켜짐' 체감이 나게 중간에 확 죽였다가 확 켜기
+                opacity: [0, 1, 0.2, 1, 0],
+                filter: [
+                  "brightness(0.6)",
+                  "brightness(0.9)",
+                  "brightness(0.55)",
+                  "brightness(1.15)",
+                  "brightness(0.6)",
+                ],
+              }}
+              transition={{
+                duration: 0.55,
+                times: [0, 0.12, 0.25, 0.38, 1],
+                ease: "linear",
+              }}
+            />
+          </React.Fragment>
         )}
       </AnimatePresence>
+
 
 
       <AnimatePresence>
@@ -1877,7 +1921,7 @@ const IntroSection: React.FC = () => {
             animate={{
               top: phase >= 23 ? "0px" : phase >= 21 ? "30px" : "-420px",
               opacity: 1,
-              scale: phase >= 21 ? 2.5 : 2.5,
+              scale: phase >= 21 ? 2.3 : 2.5,
               y: phase >= 21 ? 20 : -10,
               x: phase >= 21 ? -100 : -60,
               scaleX: phase >= 23 ? -1 : 1,  // 👈 반전!

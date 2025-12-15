@@ -129,7 +129,7 @@ const FONT_FAMILY = 'Kanit, sans-serif';
 const ProjectKitBox = ({
   isVisible,
   project,
-  onOpen
+  onOpen,
 }: {
   isVisible: boolean;
   project: typeof PROJECT_DATA[0];
@@ -139,45 +139,24 @@ const ProjectKitBox = ({
     className="absolute z-[90] cursor-pointer"
     onClick={onOpen}
     style={{
-      left: "40%",
-      top: "60%",
-      transform: "translate(-50%, -50%) rotate(-5deg)",
+      left: "50%",
+      top: "50%",
+      transform: "translate(-50%, -50%)",
     }}
     whileHover={{ scale: 1.02 }}
     whileTap={{ scale: 0.98 }}
-    initial={{ opacity: 0, scale: 0.8, y: 100 }}
-    animate={isVisible ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.8, y: 100 }}
-    transition={{ duration: 0.8, delay: 0.2, ease: "backOut" }}
+    initial={{ opacity: 0, scale: 0.92, y: 40 }}
+    animate={isVisible ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.92, y: 40 }}
+    transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
   >
-    <div className="w-[60vw] max-w-[500px] aspect-[16/10] bg-[#e5e5e5] shadow-2xl relative overflow-hidden rounded-sm border border-white/20">
-      <div className="absolute inset-0 bg-[#d4d4d4] flex items-center justify-center overflow-hidden">
-        <div className="absolute w-full h-full bg-[#d6d3cd]"></div>
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-[#b0a89e] blur-3xl opacity-50 rounded-full"></div>
-      </div>
-
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
-
-      <div className="absolute top-6 left-6">
-        <div className="bg-[#8F1E20] text-white text-xs font-black italic px-2 py-0.5 inline-block" style={{ fontFamily: FONT_FAMILY }}>PLAYOUT</div>
-      </div>
-      <div className="absolute top-6 right-6 text-white font-serif tracking-widest text-sm opacity-90 font-bold">
-        {project.title}
-      </div>
-
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="text-white/20 text-6xl font-black">KIT</div>
-      </div>
-
-      <div className="absolute bottom-6 left-6 text-white" style={{ fontFamily: FONT_FAMILY }}>
-        <div className="text-4xl font-black mb-0 leading-none">10+</div>
-        <div className="text-[10px] opacity-70 mb-3 tracking-wider">2509191024</div>
-        <div className="h-0.5 w-8 bg-white/70 mb-2"></div>
-        <div className="flex items-baseline gap-1">
-          <span className="text-lg font-bold">840</span>
-          <span className="text-[10px] opacity-70">hours/pcs</span>
-        </div>
-      </div>
-    </div>
+    {/* ✅ 키트 이미지(통째로) */}
+    <img
+      src={`${import.meta.env.BASE_URL}${project.image}`} // PROJECT_DATA의 image 경로 사용
+      alt={`${project.title} kit`}
+      draggable={false}
+      className="w-[80vw] max-w-[1407px] aspect-[16/10] object-contain select-none shadow-2xl"
+      style={{ display: "block" }}
+    />
   </motion.div>
 );
 

@@ -1688,7 +1688,7 @@ const IntroSection: React.FC = () => {
                 top: "50%",
                 x: "calc(-50% - 32vw)",
                 y: `calc(-50% + 12vh + ${scrollOffset}px)`,
-                scale: 0.2,      // 🔥 700px * 0.17 ≈ 120px
+                scale: 0.5,      // 🔥 700px * 0.17 ≈ 120px
                 rotateZ: 0,
                 rotateY: 25,      // 🔥 오른쪽 바라봄
               }

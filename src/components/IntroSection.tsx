@@ -126,14 +126,25 @@ const FONT_FAMILY = 'Kanit, sans-serif';
 
 
 // --- PROJECT KIT BOX ---
-const ProjectKitBox = ({ isVisible }: { isVisible: boolean }) => (
+const ProjectKitBox = ({
+  isVisible,
+  project,
+  onOpen
+}: {
+  isVisible: boolean;
+  project: typeof PROJECT_DATA[0];
+  onOpen: () => void;
+}) => (
   <motion.div
-    className="absolute z-[90]"
+    className="absolute z-[90] cursor-pointer"
+    onClick={onOpen}
     style={{
       left: "40%",
       top: "60%",
       transform: "translate(-50%, -50%) rotate(-5deg)",
     }}
+    whileHover={{ scale: 1.02 }}
+    whileTap={{ scale: 0.98 }}
     initial={{ opacity: 0, scale: 0.8, y: 100 }}
     animate={isVisible ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.8, y: 100 }}
     transition={{ duration: 0.8, delay: 0.2, ease: "backOut" }}
@@ -150,7 +161,7 @@ const ProjectKitBox = ({ isVisible }: { isVisible: boolean }) => (
         <div className="bg-[#8F1E20] text-white text-xs font-black italic px-2 py-0.5 inline-block" style={{ fontFamily: FONT_FAMILY }}>PLAYOUT</div>
       </div>
       <div className="absolute top-6 right-6 text-white font-serif tracking-widest text-sm opacity-90 font-bold">
-        BEAUTY OF JOSEON
+        {project.title}
       </div>
 
       <div className="absolute inset-0 flex items-center justify-center">
@@ -169,6 +180,30 @@ const ProjectKitBox = ({ isVisible }: { isVisible: boolean }) => (
     </div>
   </motion.div>
 );
+
+const PROJECT_DATA = [
+  {
+    id: 1,
+    title: "BEAUTY OF JOSEON",
+    subtitle: "브랜드 리뉴얼",
+    image: "images/project1.png",
+    color: "#8E00BD",
+  },
+  {
+    id: 2,
+    title: "PROJECT TWO",
+    subtitle: "두번째 프로젝트",
+    image: "images/project2.png",
+    color: "#2B7000",
+  },
+  {
+    id: 3,
+    title: "PROJECT THREE",
+    subtitle: "세번째 프로젝트",
+    image: "images/project3.png",
+    color: "#F25F09",
+  },
+];
 
 // --- TOOLTIP COMPONENT ---
 
@@ -258,7 +293,7 @@ const PartTooltip = ({
                 className="overflow-hidden"
               >
                 <div className="pt-4 mt-4 border-t-2 border-[#2b2b2b]/30">
-                  <p className="text-[#555] text-[13px] leading-[1.6]">{PART_DESCRIPTIONS[0].details}</p>
+                  <p className="text-[#555] text-[13px] leading-[1.6]">{details}</p>
                 </div>
               </motion.div>
             )}
@@ -588,6 +623,8 @@ const IntroSection: React.FC = () => {
 
   const [phase, setPhase] = useState(0);
   const [expandedTooltip, setExpandedTooltip] = useState<number | null>(null);
+  const [currentProject, setCurrentProject] = useState(0);
+  const [isProjectOpen, setIsProjectOpen] = useState(false);
 
   const faceScale =
     phase >= 23 ? 0.5 :
@@ -596,7 +633,7 @@ const IntroSection: React.FC = () => {
           0.8;
 
 
-  const showHat = phase >= 15 && phase < 23;
+  const showHat = phase >= 15;
   const followParts = phase >= 2 && phase <= 12;
   const fixedPartsY = phase >= 14 && phase < 23 ? 25 : 0;
   const partsRotateY = followParts ? 0 : fixedPartsY;
@@ -772,6 +809,17 @@ const IntroSection: React.FC = () => {
         isAnimatingRef.current = true;
         setPhase(25);
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
+      } else if (currentPhase === 25) {
+        if (currentProject < 2) {
+          isAnimatingRef.current = true;
+          setCurrentProject(prev => prev + 1);
+          setTimeout(() => { isAnimatingRef.current = false; }, 1000);
+        } else {
+          // 다음 섹션으로
+          isAnimatingRef.current = true;
+          setPhase(26);
+          setTimeout(() => { isAnimatingRef.current = false; }, 800);
+        }
       }
 
     } else {
@@ -1196,7 +1244,11 @@ const IntroSection: React.FC = () => {
       </motion.div>
 
       {/* PROJECT KIT BOX */}
-      <ProjectKitBox isVisible={phase >= 25} />
+      <ProjectKitBox
+        isVisible={phase >= 25}
+        project={PROJECT_DATA[currentProject]}
+        onOpen={() => setIsProjectOpen(true)}
+      />
 
       {/* Purple Background Section */}
       <motion.div
@@ -1223,6 +1275,50 @@ const IntroSection: React.FC = () => {
           }}
         />
       </motion.div>
+
+      {/* 프로젝트 전환 오버레이 */}
+      <AnimatePresence>
+        {phase >= 25 && (
+          <motion.div
+            className="absolute inset-0 bg-black pointer-events-none"
+            style={{ zIndex: 84 }}
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: [0, 0.7, 0],
+            }}
+            transition={{
+              duration: 0.8,
+              times: [0, 0.5, 1],
+            }}
+            key={currentProject}  // 프로젝트 바뀔 때마다 애니메이션
+          />
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {isProjectOpen && (
+          <motion.div
+            className="fixed inset-0 z-[200] bg-white"
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "100%" }}
+            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <button
+              onClick={() => setIsProjectOpen(false)}
+              className="absolute top-8 right-8 w-12 h-12 flex items-center justify-center"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24">
+                <path d="M18 6L6 18M6 6l12 12" stroke="#333" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
+
+            <div className="w-full h-full flex items-center justify-center">
+              <h1 className="text-4xl font-bold">{PROJECT_DATA[currentProject].title}</h1>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* 조립 가이드 섹션 (Parts Wrapper) */}
       {phase >= 15 && (
@@ -1680,13 +1776,14 @@ const IntroSection: React.FC = () => {
 
           phase >= 23
             ? {
-              left: "90%",
-              top: "10%",
+              left: "95%",
+              top: "85%",
               x: "-50%",
               y: "-50%",
-              scale: 0.5,
-              rotateZ: -15,
-              rotateY: 0,
+              scale: 0.35,
+              rotateZ: 15,      // 반대 방향
+              rotateY: -25,     // 반전
+              rotateX: 15,      // 아래를 봄
             }
             : phase >= 14
               ? {
@@ -1724,9 +1821,10 @@ const IntroSection: React.FC = () => {
             }}
             initial={{ opacity: 0, y: -10 }}
             animate={{
-              top: phase >= 21 ? "40px" : "-420px",
-              opacity: phase >= 23 ? 0 : 1,
+              top: phase >= 23 ? "40px" : phase >= 21 ? "40px" : "-420px",
+              opacity: 1,
               y: phase >= 21 ? 0 : -10,
+              scaleX: phase >= 23 ? -1 : 1,  // 👈 반전!
             }}
             transition={{ duration: 0.6, ease: "backOut" }}
           >

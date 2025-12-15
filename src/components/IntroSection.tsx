@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, useAnimate, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
 import { LegoFace3D } from './LegoFace3D';
-import { LegoPart3D } from "./LegoPart3D";
+// import { LegoPart3D } from "./LegoPart3D";
 
 const COLORS = [
   '#8F1E20', '#F25F09', '#FCBB09', '#8E00BD', '#2B7000', '#B7156C', '#8F1E20'
@@ -1158,62 +1158,28 @@ const IntroSection: React.FC = () => {
           <motion.div
             className="relative"
             initial={{ x: "-32vw", y: "12vh" }}
-            animate={
-              phase >= 23
-                ? { x: 0, y: 0 }
-                : { x: "-32vw", y: `calc(12vh + ${scrollOffset}px)` }
-            }
+            animate={phase >= 23 ? { x: 0, y: 0 } : { x: "-32vw", y: `calc(12vh + ${scrollOffset}px)` }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
+            style={{ zIndex: 120 }} // 전체 래퍼 기준
           >
+            {/* =========================
+      1) HAT (zIndex: 40)
+     ========================= */}
             <motion.div
               className="absolute"
               style={{
                 left: "52%",
                 transform: "translateX(-50%)",
+                zIndex: 40,
               }}
               animate={{
-                top: phase >= 21 ? "0px" : "-200px",
+                top: phase >= 21 ? "0px" : "-160px",
                 opacity: phase >= 21 ? 0 : 1,
               }}
               transition={{ duration: 0.6, ease: "backOut" }}
             >
-              <div className="flex flex-col items-center relative w-[240px] overflow-visible">
-                <AnimatePresence>
-                  {phase < 21 && (
-                    <motion.span
-                      className="absolute -left-[60px] top-[200px] text-[28px] font-normal text-[#2b2b2b]"
-                      exit={{ opacity: 0 }}
-                    >
-                      1
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-
-                <PartPNG src="images/hat.png" className="w-[240px] h-[230px] object-contain" alt="hat" />
-
-                {/* 모자 아래 화살표 */}
-                <AnimatePresence>
-                  {phase < 21 && (
-                    <motion.svg
-                      width="24"
-                      height="40"
-                      viewBox="0 0 24 40"
-                      className="mt-[-43px] ml-[-22px]"
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.3 }}
-                    >
-                      <path
-                        d="M12,0 L12,32 M6,26 L12,34 L18,26"
-                        stroke="#2b2b2b"
-                        strokeWidth="3"
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </motion.svg>
-                  )}
-                </AnimatePresence>
-
+              <div className="relative w-[240px] overflow-visible flex flex-col items-center">
+                <PartPNG src="images/hat.png" className="w-[240px] h-[240px] object-cover" alt="hat" />
                 <PartTooltip
                   title={PART_DESCRIPTIONS[0].title}
                   description={PART_DESCRIPTIONS[0].description}
@@ -1222,32 +1188,23 @@ const IntroSection: React.FC = () => {
               </div>
             </motion.div>
 
-            {/* 2. 얼굴 자리 */}
-            <div
-              className="relative flex flex-col items-center"
-              style={{ width: "240px", height: "240px" }}
-            >
-              <AnimatePresence>
-                {phase < 21 && (
-                  <motion.span
-                    className="absolute -left-12 top-[100%] -translate-y-1/2 text-[28px] font-normal text-[#2b2b2b]"
-                    exit={{ opacity: 0 }}
-                  >
-                    2
-                  </motion.span>
-                )}
-              </AnimatePresence>
-
-              {/* 얼굴 아래 화살표 */}
-              <AnimatePresence>
-                {phase < 21 && (
-                  <motion.svg
-                    width="24"
-                    height="40"
-                    viewBox="0 0 24 40"
-                    className="absolute -bottom-5 left-1/2 -translate-x-1/2"
-                    exit={{ opacity: 0 }}
-                  >
+            {/* ✅ (1) LABEL BETWEEN HAT ↔ FACE */}
+            <AnimatePresence>
+              {phase < 21 && (
+                <motion.div
+                  className="absolute pointer-events-none flex items-center gap-[140px]"
+                  style={{
+                    left: "20%",
+                    transform: "translateX(-50%)",
+                    zIndex: 50, // 라벨은 항상 위
+                  }}
+                  initial={{ opacity: 1 }}
+                  animate={{ top: "10px", opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <span className="text-[28px] font-normal text-[#2b2b2b]">1</span>
+                  <svg width="24" height="40" viewBox="0 0 24 40">
                     <path
                       d="M12,0 L12,32 M6,26 L12,34 L18,26"
                       stroke="#2b2b2b"
@@ -1256,10 +1213,18 @@ const IntroSection: React.FC = () => {
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     />
-                  </motion.svg>
-                )}
-              </AnimatePresence>
+                  </svg>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
+            {/* =========================
+      2) FACE SLOT (zIndex: 30)
+     ========================= */}
+            <div
+              className="relative flex flex-col items-center"
+              style={{ width: "240px", height: "240px", zIndex: 30 }}
+            >
               <PartTooltip
                 title={PART_DESCRIPTIONS[1].title}
                 description={PART_DESCRIPTIONS[1].description}
@@ -1267,12 +1232,45 @@ const IntroSection: React.FC = () => {
               />
             </div>
 
-            {/* 3. 상체 */}
+            {/* ✅ (2) LABEL BETWEEN FACE ↔ BODY */}
+            <AnimatePresence>
+              {phase < 21 && (
+                <motion.div
+                  className="absolute pointer-events-none flex items-center gap-[140px]"
+                  style={{
+                    left: "20%",
+                    transform: "translateX(-50%)",
+                    zIndex: 50,
+                  }}
+                  initial={{ opacity: 1 }}
+                  animate={{ top: "250px", opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <span className="text-[28px] font-normal text-[#2b2b2b]">2</span>
+                  <svg width="24" height="40" viewBox="0 0 24 40">
+                    <path
+                      d="M12,0 L12,32 M6,26 L12,34 L18,26"
+                      stroke="#2b2b2b"
+                      strokeWidth="3"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* =========================
+      3) BODY (zIndex: 20)
+     ========================= */}
             <motion.div
               className="absolute"
               style={{
                 left: "50%",
                 transform: "translateX(-50%)",
+                zIndex: 20,
               }}
               animate={{
                 top: phase >= 21 ? "160px" : "210px",
@@ -1281,67 +1279,61 @@ const IntroSection: React.FC = () => {
               transition={{ duration: 0.6, ease: "backOut" }}
             >
               <div className="relative flex flex-col items-center">
-                <AnimatePresence>
-                  {phase < 21 && (
-                    <motion.span
-                      className="absolute -left-12 top-[50%] -translate-y-1/2 text-[28px] font-normal text-[#2b2b2b]"
-                      exit={{ opacity: 0 }}
-                    >
-                      3
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-
-                {/* 3D 상체 */}
                 <div className="relative" style={{ width: "300px", height: "300px" }}>
-                  <LegoPart3D
-                    className="absolute inset-0"
-                    modelPath="models/lego_body.glb"
-                    modelScale={1.3}
-                    rotateY={fixedPartsY}
+                  <PartPNG
+                    src="images/lego_body.png"
+                    alt="lego body"
+                    className="absolute inset-0 w-full h-full object-contain"
                   />
                 </div>
 
-                {/* 상체 아래 화살표 2개 */}
-                <AnimatePresence>
-                  {phase < 21 && (
-                    <motion.div
-                      className="flex flex-col items-center mt-2"
-                      exit={{ opacity: 0 }}
-                    >
-                      <svg width="24" height="40" viewBox="0 0 24 40">
-                        <path
-                          d="M12,0 L12,32 M6,26 L12,34 L18,26"
-                          stroke="#2b2b2b"
-                          strokeWidth="3"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                      <svg width="24" height="40" viewBox="0 0 24 40">
-                        <path
-                          d="M12,0 L12,32 M6,26 L12,34 L18,26"
-                          stroke="#2b2b2b"
-                          strokeWidth="3"
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
+                <PartTooltip
+                  title={PART_DESCRIPTIONS[2].title}
+                  description={PART_DESCRIPTIONS[2].description}
+                  isVisible={phase === 18}
+                />
               </div>
             </motion.div>
 
-            {/* 5. 하체 */}
+            {/* ✅ (3) LABEL BETWEEN BODY ↔ LEGS */}
+            <AnimatePresence>
+              {phase < 21 && (
+                <motion.div
+                  className="absolute pointer-events-none flex items-center gap-[140px]"
+                  style={{
+                    left: "20%",
+                    transform: "translateX(-50%)",
+                    zIndex: 50,
+                  }}
+                  initial={{ opacity: 1 }}
+                  animate={{ top: "470px", opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <span className="text-[28px] font-normal text-[#2b2b2b]">3</span>
+                  <svg width="24" height="40" viewBox="0 0 24 40">
+                    <path
+                      d="M12,0 L12,32 M6,26 L12,34 L18,26"
+                      stroke="#2b2b2b"
+                      strokeWidth="3"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* =========================
+      5) LEGS (zIndex: 10)
+     ========================= */}
             <motion.div
               className="absolute"
               style={{
                 left: "50%",
                 transform: "translateX(-50%)",
+                zIndex: 10,
               }}
               animate={{
                 top: phase >= 21 ? "270px" : "440px",
@@ -1350,24 +1342,11 @@ const IntroSection: React.FC = () => {
               transition={{ duration: 0.6, ease: "backOut" }}
             >
               <div className="relative flex flex-col items-center">
-                <AnimatePresence>
-                  {phase < 21 && (
-                    <motion.span
-                      className="absolute -left-12 top-[50px] text-[28px] font-bold text-[#2b2b2b]"
-                      exit={{ opacity: 0 }}
-                    >
-                      5
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-
-                {/* 3D 하체 */}
                 <div className="relative" style={{ width: "300px", height: "300px" }}>
-                  <LegoPart3D
-                    className="absolute inset-0"
-                    modelPath="models/lego_legs.glb"
-                    modelScale={0.2}
-                    rotateY={fixedPartsY}
+                  <PartPNG
+                    src="images/lego_legs.png"
+                    alt="lego legs"
+                    className="absolute inset-0 w-full h-full object-contain"
                   />
                 </div>
 
@@ -1380,12 +1359,13 @@ const IntroSection: React.FC = () => {
             </motion.div>
           </motion.div>
 
+
           {/* 오른쪽 플레이스홀더 */}
           <motion.div
             className="absolute"
             style={{
               left: "220px",
-              top: "-5vh",
+              top: "-14vh",
             }}
             initial={{ opacity: 0 }}
             animate={{ opacity: (phase >= 16 && phase < 22) ? 1 : 0 }}
@@ -1393,28 +1373,28 @@ const IntroSection: React.FC = () => {
           >
             <div className="relative w-[540px] flex flex-col items-center justify-center p-8">
               <motion.div
-                className="absolute bg-gray-800"
+                className="absolute bg-[#2b2b2b]"
                 style={{ top: 0, left: 0, height: 2 }}
                 initial={{ width: 48 }}
                 animate={{ width: phase >= 21 ? "100%" : 48 }}
                 transition={{ duration: 0.8, ease: "easeInOut" }}
               />
               <motion.div
-                className="absolute bg-gray-800"
+                className="absolute bg-[#2b2b2b]"
                 style={{ top: 0, left: 0, width: 2 }}
                 initial={{ height: 48 }}
                 animate={{ height: phase >= 21 ? "100%" : 48 }}
                 transition={{ duration: 0.8, ease: "easeInOut" }}
               />
               <motion.div
-                className="absolute bg-gray-800"
+                className="absolute bg-[#2b2b2b]"
                 style={{ bottom: 0, right: 0, height: 2 }}
                 initial={{ width: 48 }}
                 animate={{ width: phase >= 21 ? "100%" : 48 }}
                 transition={{ duration: 0.8, ease: "easeInOut" }}
               />
               <motion.div
-                className="absolute bg-gray-800"
+                className="absolute bg-[#2b2b2b]"
                 style={{ bottom: 0, right: 0, width: 2 }}
                 initial={{ height: 48 }}
                 animate={{ height: phase >= 21 ? "100%" : 48 }}
@@ -1428,8 +1408,8 @@ const IntroSection: React.FC = () => {
                     exit={{ opacity: 0, scale: 0.9 }}
                     className="flex flex-col items-center py-32"
                   >
-                    <div className="text-8xl font-black font-kanit text-gray-800">?</div>
-                    <div className="mt-6 text-xl font-bold tracking-wider text-gray-800 font-kanit text-center">
+                    <div className="text-[128px] font-normal font-kanit text-[#333333]">?</div>
+                    <div className="mt-6 text-[24px] font-normal tracking-wider text-[#333333] font-kanit text-center">
                       ASSEMBLED CHARACTER
                     </div>
                   </motion.div>

@@ -824,9 +824,17 @@ const IntroSection: React.FC = () => {
 
     } else {
       if (currentPhase === 25) {
-        isAnimatingRef.current = true;
-        setPhase(24);
-        setTimeout(() => { isAnimatingRef.current = false; }, 800);
+        // ✅ 1) 먼저 이전 프로젝트로 이동
+        if (currentProject > 0) {
+          isAnimatingRef.current = true;
+          setCurrentProject((prev) => prev - 1);
+          setTimeout(() => { isAnimatingRef.current = false; }, 900);
+        } else {
+          // ✅ 2) 첫 프로젝트면 그때만 이전 섹션으로
+          isAnimatingRef.current = true;
+          setPhase(24);
+          setTimeout(() => { isAnimatingRef.current = false; }, 800);
+        }
       } else if (currentPhase === 24) {
         isAnimatingRef.current = true;
         setPhase(23);
@@ -1287,21 +1295,34 @@ const IntroSection: React.FC = () => {
               left: 0,
               width: "100vw",
               height: "100vh",
-              background: "linear-gradient(to bottom left, rgba(0,0,0,0.6) 0%, transparent 60%)",
-              clipPath: "polygon(75% 0%, 95% 100%, 10% 100%)",  // 👈 노란색과 같은 클립패스
+              background:
+                "linear-gradient(to bottom left, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.15) 35%, transparent 65%)",
+              clipPath: "polygon(75% 0%, 95% 100%, 10% 100%)",
+              mixBlendMode: "multiply", // ✅ 노란 빔 색을 더 죽였다가 살림
             }}
-            initial={{ opacity: 0 }}
+            initial={{ opacity: 0, filter: "brightness(0.6) blur(0px)" }}
             animate={{
-              opacity: [0, 1, 0],
+              // ✅ 짧게 꺼짐 → 강하게 켜짐 → 다시 꺼짐 → 잔광
+              opacity: [0, 0.95, 0.15, 1, 0.25, 0],
+              filter: [
+                "brightness(0.6) blur(0px)",
+                "brightness(0.9) blur(0px)",
+                "brightness(0.6) blur(0px)",
+                "brightness(1.2) blur(1px)",
+                "brightness(0.8) blur(0px)",
+                "brightness(0.6) blur(0px)",
+              ],
             }}
             transition={{
-              duration: 0.8,
-              times: [0, 0.5, 1],
+              duration: 0.55,
+              times: [0, 0.12, 0.2, 0.32, 0.45, 1],
+              ease: "linear",
             }}
             key={currentProject}
           />
         )}
       </AnimatePresence>
+
 
       <AnimatePresence>
         {isProjectOpen && (
@@ -1812,13 +1833,11 @@ const IntroSection: React.FC = () => {
           phase >= 23
             ? {
               left: "92%",
-              top: "15%",        // 👈 상단으로
+              top: "20%",        // 👈 상단으로
               x: "-50%",
               y: "-50%",
-              scale: 0.4,
-              rotateZ: 20,
-              rotateY: -30,
-              rotateX: 25,       // 👈 아래를 내려다봄
+              scale: 1.3,
+              // 👈 아래를 내려다봄
             }
             : phase >= 14
               ? {
@@ -1858,34 +1877,35 @@ const IntroSection: React.FC = () => {
             animate={{
               top: phase >= 23 ? "40px" : phase >= 21 ? "40px" : "-420px",
               opacity: 1,
-              y: phase >= 21 ? 0 : -10,
+              scale: phase >= 21 ? 2 : 0.5,
+              y: phase >= 21 ? 20 : -10,
+              x: phase >= 21 ? -100 : 0,
               scaleX: phase >= 23 ? -1 : 1,  // 👈 반전!
             }}
             transition={{ duration: 0.6, ease: "backOut" }}
           >
             <div className="relative">
               <PartPNG
-                src="images/hat.png"
+                src="images/hat.svg"
                 className="w-[280px] h-[280px] object-contain"
                 alt="hat"
               />
             </div>
-
-
           </motion.div>
-
         )}
-
-
-
-
-
         <motion.div className="w-full h-full pointer-events-auto" style={{ transformStyle: "preserve-3d" }}>
           <LegoFace3D
             className="w-full h-full drop-shadow-2xl"
+            // 1. 마우스 따라가기: 2~12단계만 켜짐 (23단계는 자동으로 꺼짐 -> OK)
             followMouse={phase >= 2 && phase <= 12}
-            fixedRotationY={phase >= 14 && phase < 23 ? 15 : 0}   // 좌우
-            fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}   // 위아래 (음수=위를 봄, 양수=아래를 봄)
+
+            // 2. 좌우 회전 (여기를 수정!)
+            // "23 이상이면 -90도, 그게 아니면 (14~23 사이일 때 15도, 아니면 0도)"
+            fixedRotationY={phase >= 23 ? -40 : (phase >= 14 && phase < 23 ? 15 : 0)}
+
+            // 3. 위아래 회전
+            // 14~23 사이일 때만 살짝 숙이고(3), 나머지는 정면(0) -> 23단계에선 정면 봄
+            fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}
           />
         </motion.div>
       </motion.div>

@@ -10,8 +10,7 @@ const COLORS = [
 const BG_CREAM = "#FFF2D5";
 const BEAM_COLOR = "#FCBB09";
 const PROJECT_TEXT_COLOR = "#8E00BD";
-const PART_BOX = "w-[300px] h-[300px]";
-const FIXED_Y = 25;
+
 
 
 // 파츠들에 넘길 최종 rotateY
@@ -598,8 +597,8 @@ const IntroSection: React.FC = () => {
 
   const [phase, setPhase] = useState(0);
   const followParts = phase >= 2 && phase <= 12;
-  const IS_FIXED = phase >= 14 && phase < 23;
-  const PARTS_ROTATE_Y = IS_FIXED ? 25 : 0;
+  const fixedPartsY = phase >= 14 && phase < 23 ? 25 : 0;
+  const partsRotateY = followParts ? 0 : fixedPartsY;
   const [hoveredBlockIndex, setHoveredBlockIndex] = useState<number | null>(null);  // ✅ 여기에 추가!
 
   const phaseRef = useRef(phase);
@@ -626,10 +625,8 @@ const IntroSection: React.FC = () => {
     const r = element.getBoundingClientRect();
     const c = container.getBoundingClientRect();
     const style = window.getComputedStyle(element);
-    let matrix = { m41: 0, m42: 0 } as any;
-    try {
-      matrix = new DOMMatrix(style.transform);
-    } catch { }
+    let matrix;
+    try { matrix = new DOMMatrix(style.transform); } catch (e) { matrix = new DOMMatrix(); }
     const currentTx = matrix.m41;
     const currentTy = matrix.m42;
     const visualCenterX = (r.left - c.left) + r.width / 2;
@@ -988,24 +985,14 @@ const IntroSection: React.FC = () => {
     return () => container.removeEventListener('scroll', handleNaturalScroll);
   }, [isNaturalScrolling, phase]);
 
-  // 1) wheel: scope에 등록
   useEffect(() => {
-    const el = scope.current as HTMLElement | null;
-    if (!el) return;
-
     const onWheel = (e: WheelEvent) => {
       if (isNaturalScrolling) return;
-      if (Math.abs(e.deltaY) < 1) return;
-      e.preventDefault();
-      handleScrollActionRef.current(e.deltaY > 0 ? 1 : -1);
+      if (Math.abs(e.deltaY) > 10) {
+        e.preventDefault();
+        handleScrollActionRef.current(e.deltaY > 0 ? 1 : -1);
+      }
     };
-
-    el.addEventListener("wheel", onWheel, { passive: false });
-    return () => el.removeEventListener("wheel", onWheel);
-  }, [isNaturalScrolling]);
-
-  // 2) touch/keydown: window에 등록 (기존 그대로)
-  useEffect(() => {
     const onTouchStart = (e: TouchEvent) => {
       touchStartRef.current = e.touches[0].clientY;
     };
@@ -1028,11 +1015,13 @@ const IntroSection: React.FC = () => {
       }
     };
 
+    window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("touchstart", onTouchStart, { passive: false });
     window.addEventListener("touchend", onTouchEnd, { passive: false });
     window.addEventListener("keydown", onKeyDown);
 
     return () => {
+      window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("keydown", onKeyDown);
@@ -1292,7 +1281,7 @@ const IntroSection: React.FC = () => {
                   )}
                 </AnimatePresence>
 
-                <PartPNG src="images/hat.png" className="w-[100%] h-[100%] object-cover" alt="hat" />
+                <PartPNG src="images/hat.png" className="w-[100%] h-[240px] object-cover" alt="hat" />
 
                 <AnimatePresence>
                   {phase < 21 && (
@@ -1375,15 +1364,15 @@ const IntroSection: React.FC = () => {
                   )}
                 </AnimatePresence>
 
-                <div style={{ width: "240px", height: "240px" }}>
+                <div style={{ width: "180px", height: "140px" }}>
                   <LegoPart3D
-                    className="w-full h-full"
+                    className="w-[220px] h-[180px]"
                     modelPath="models/lego_body.glb"
                     modelScale={1.2}
-                    rotateY={IS_FIXED ? FIXED_Y : 0}
-                    followMouse={phase >= 2 && phase <= 12}
+                    rotateY={fixedPartsY}
                   />
                 </div>
+
 
                 <AnimatePresence>
                   {phase < 21 && (
@@ -1471,13 +1460,12 @@ const IntroSection: React.FC = () => {
                   )}
                 </AnimatePresence>
 
-                <div style={{ width: "240px", height: "240px" }}>
+                <div style={{ width: "160px", height: "120px" }}>
                   <LegoPart3D
-                    className="w-full h-full"
+                    className="w-[200px] h-[160px]"
                     modelPath="models/lego_legs.glb"
                     modelScale={1.2}
-                    rotateY={IS_FIXED ? FIXED_Y : 0}
-                    followMouse={phase >= 2 && phase <= 12}
+                    rotateY={fixedPartsY}
                   />
                 </div>
 
@@ -1715,6 +1703,18 @@ const IntroSection: React.FC = () => {
       {/* 얼굴 컨테이너 */}
       <motion.div
         id="face-container"
+        onUpdate={(latest) => {
+          // latest.scale / latest.x / latest.y 가 실제로 변하는지 확인
+          console.log("FACE", {
+            phase,
+            scale: latest.scale,
+            x: latest.x,
+            y: latest.y,
+            left: (latest as any).left,
+            top: (latest as any).top,
+            rotateY: (latest as any).rotateY,
+          });
+        }}
         className="absolute pointer-events-none"
         style={{
           width: "700px",
@@ -1723,39 +1723,42 @@ const IntroSection: React.FC = () => {
           zIndex: 100,
           overflow: "visible",
         }}
-        initial={{ left: "50%", top: "50%", x: "-50%", y: "150vh", scale: 0.8, rotateZ: -45, rotateX: 30, rotateY: 0 }}
+        initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}
         animate={
           phase >= 23
-            ? { /* 그대로 */ }
-            : phase >= 14
-              ? { /* 그대로 */ }
+            ? {
+              left: "90%",
+              top: "10%",
+              x: "-50%",
+              y: "-50%",
+              scale: 0.5,
+              rotateZ: -15,
+              rotateY: 0,
+            }
+            : phase >= 14  // 🔥 Phase 14부터 바로 작아지고 오른쪽 봄
+              ? {
+                left: "2px",
+                top: "50%",
+                x: "0",
+                y: `calc(-50% + 12vh + ${scrollOffset}px)`,
+                scale: 0.4,      // 🔥 700px * 0.17 ≈ 120px
+                rotateZ: 0,
+                rotateY: 25,      // 🔥 오른쪽 바라봄
+              }
               : phase >= 9
-                ? { /* 그대로 */ }
-                : phase === 0
-                  ? {
-                    left: "50%",
-                    top: "50%",
-                    x: "-50%",
-                    y: "150vh",        // ✅ 0에서만 대기
-                    scale: 0.8,
-                    rotateZ: -45,
-                    rotateX: 30,
-                    rotateY: 0,
-                  }
-                  : {
-                    left: "50%",
-                    top: "50%",
-                    x: "-50%",
-                    // ✅ phase 1~8에서는 y를 "아예" 넣지 않음
-                    scale: 1,
-                    rotateZ: 0,
-                    rotateX: 0,
-                    rotateY: 0,
-                  }
+                ? {
+                  x: "-50%",
+                  y: "-50%",
+                  left: "50%",
+                  top: "50%",
+                  scale: 1,
+                  rotateZ: 0,
+                  rotateY: 0,
+                }
+                : { y: "150vh" }
         }
         transition={{ duration: 1.0, ease: "easeInOut" }}
       >
-
         {/* Hat attached to Face (Visible Phase 21+) */}
         {phase >= 21 && (
           <motion.div
@@ -1773,17 +1776,13 @@ const IntroSection: React.FC = () => {
           </motion.div>
         )}
 
-        <motion.div
-          className="w-full h-full pointer-events-auto flex items-center justify-center"
-          style={{ transformStyle: "preserve-3d" }}
-        >
-          <div className={PART_BOX}>
-            <LegoFace3D
-              className="w-full h-full drop-shadow-2xl"
-              followMouse={phase >= 2 && phase <= 12}
-              fixedRotationY={IS_FIXED ? FIXED_Y : 0}
-            />
-          </div>
+        <motion.div className="w-full h-full pointer-events-auto" style={{ transformStyle: "preserve-3d" }}>
+          {/* <LegoFace className="w-full h-full drop-shadow-2xl" /> */}
+          <LegoFace3D
+            className="w-full h-full drop-shadow-2xl"
+            followMouse={phase >= 2 && phase <= 12}
+            fixedRotationY={phase >= 14 && phase < 23 ? 25 : 0}  // 🔥 Phase 14~22에서 오른쪽 봄
+          />
         </motion.div>
       </motion.div>
 

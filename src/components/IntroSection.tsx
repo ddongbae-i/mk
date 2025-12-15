@@ -1131,12 +1131,12 @@ const IntroSection: React.FC = () => {
       <motion.div
         className="absolute w-full h-full"
         style={{ zIndex: 80 }}
-        initial={{ x: "120%" }}
+        initial={{ x: "120%", y: 0 }}
         animate={
-          phase >= 23
-            ? { x: 0, y: "-130vh" }
+          phase >= 24
+            ? { x: 0, y: "-130vh" }   // ✅ 위로 올리는 건 24부터
             : phase >= 22
-              ? { x: 0, y: 0 }
+              ? { x: 0, y: 0 }        // ✅ 22~23은 진입 상태 유지
               : { x: "120%", y: 0 }
         }
         transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
@@ -1156,7 +1156,7 @@ const IntroSection: React.FC = () => {
       {/* 조립 가이드 섹션 (Parts Wrapper) */}
       {phase >= 15 && (
         <motion.div
-          className="absolute z-[110] pointer-events-none"
+          className="absolute z-[60] pointer-events-none"
           initial={{ left: "50%", top: "50%", x: "-50%", y: "-50%" }}
           animate={
             phase >= 23 ? {
@@ -1179,7 +1179,7 @@ const IntroSection: React.FC = () => {
           <motion.div
             className="relative"
             initial={{ x: "-32vw", y: "12vh" }}
-            animate={phase >= 23 ? { x: 0, y: 0 } : { x: "-32vw", y: `calc(12vh + ${scrollOffset}px)` }}
+            animate={phase >= 23 ? { x: 0, y: 0 } : { x: "-25vw", y: `calc(12vh + ${scrollOffset}px)` }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
             style={{ zIndex: 120 }} // 전체 래퍼 기준
           >
@@ -1195,7 +1195,7 @@ const IntroSection: React.FC = () => {
                     zIndex: 50, // 라벨은 항상 위
                   }}
                   initial={{ opacity: 1 }}
-                  animate={{ top: "5px", opacity: 1 }}
+                  animate={{ top: "12px", opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
@@ -1239,7 +1239,7 @@ const IntroSection: React.FC = () => {
                     zIndex: 50,
                   }}
                   initial={{ opacity: 1 }}
-                  animate={{ top: "200px", opacity: 1 }}
+                  animate={{ top: "208px", opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
@@ -1264,18 +1264,18 @@ const IntroSection: React.FC = () => {
             <motion.div
               className="absolute"
               style={{
-                left: "58%",
+                left: "59%",
                 transform: "translateX(-50%)",
                 zIndex: 20,
               }}
               animate={{
-                top: phase >= 21 ? "160px" : "210px",
+                top: phase >= 21 ? "110px" : "210px",
                 opacity: phase >= 23 ? 0 : 1,
               }}
               transition={{ duration: 0.6, ease: "backOut" }}
             >
               <div className="relative flex flex-col items-center">
-                <div className="relative" style={{ width: "240px", height: "240px" }}>
+                <div className="relative" style={{ width: "280px", height: "280px" }}>
                   <PartPNG
                     src="images/lego_body.png"
                     alt="lego body"
@@ -1302,7 +1302,7 @@ const IntroSection: React.FC = () => {
                     zIndex: 50,
                   }}
                   initial={{ opacity: 1 }}
-                  animate={{ top: "415px", opacity: 1 }}
+                  animate={{ top: "440px", opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
@@ -1340,18 +1340,18 @@ const IntroSection: React.FC = () => {
             <motion.div
               className="absolute"
               style={{
-                left: "50%",
+                left: "51%",
                 transform: "translateX(-50%)",
                 zIndex: 10,
               }}
               animate={{
-                top: phase >= 21 ? "270px" : "440px",
+                top: phase >= 21 ? "240px" : "460px",
                 opacity: phase >= 23 ? 0 : 1,
               }}
               transition={{ duration: 0.6, ease: "backOut" }}
             >
               <div className="relative flex flex-col items-center">
-                <div className="relative" style={{ width: "240px", height: "240px" }}>
+                <div className="relative" style={{ width: "280px", height: "280px" }}>
                   <PartPNG
                     src="images/lego_legs.png"
                     alt="lego legs"
@@ -1373,8 +1373,8 @@ const IntroSection: React.FC = () => {
           <motion.div
             className="absolute"
             style={{
-              left: "220px",
-              top: "-14vh",
+              left: "140px",
+              top: "-23vh",
             }}
             initial={{ opacity: 0 }}
             animate={{ opacity: (phase >= 16 && phase < 22) ? 1 : 0 }}
@@ -1415,7 +1415,7 @@ const IntroSection: React.FC = () => {
                   <motion.div
                     key="placeholder"
                     exit={{ opacity: 0, scale: 0.9 }}
-                    className="flex flex-col items-center py-32"
+                    className="flex flex-col items-center py-20"
                   >
                     <div className="text-[128px] font-normal font-kanit text-[#333333]">?</div>
                     <div className="mt-6 text-[24px] font-normal tracking-wider text-[#333333] font-kanit text-center">
@@ -1425,48 +1425,143 @@ const IntroSection: React.FC = () => {
                 ) : (
                   <motion.div
                     key="assembled"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, ease: "easeOut", delay: 1.2 }}
-                    className="w-full text-left"
+                    // 1. 부모 컨테이너 등장 (전체 프레임)
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.5, ease: "backOut" }}
+                    className="w-full text-left flex justify-center items-center"
+                  // flex, items-center를 추가해 박스를 중앙 정렬
                   >
-                    <div className="text-center mb-8">
-                      <h2 className="text-[32px] font-bold text-[#131416] font-kanit mb-1">ASSEMBLED CHARACTER</h2>
-                      <p className="text-[14px] text-[#383D47] font-normal">이 캐릭터는 다음 요소로 구성되어 있습니다.</p>
-                    </div>
+                    {/* 높이 제한(max-h-[600px])을 걸고, 
+      내용이 넘치면 스크롤되게 하거나(overflow-y-auto), 
+      딱 맞춰 디자인했습니다.
+  */}
+                    <div className="w-full max-w-[500px] h-auto max-h-[600px] bg-[#FDF6E3]/95 backdrop-blur-md rounded-xl border-2 border-[#E6DCC3] p-5 shadow-2xl flex flex-col">
 
-                    <div className="space-y-6">
-                      {RESUME_DATA.map((section) => (
-                        <div key={section.id} className="border-t border-gray-300 pt-4 first:border-none first:pt-0">
-                          <h3 className="text-[16px] font-normal text-[#5F677C] font-kanit mb-1">BUILD {section.id} · {section.title}</h3>
-                          <div className="pl-0">
-                            {section.content.map((item: any, idx) => (
-                              <div key={idx} className="mb-3 last:mb-0">
-                                {item.type === 'text' && (
-                                  <div className="text-lg font-bold text-gray-800">{item.text}</div>
-                                )}
-                                {item.type === 'job' && (
-                                  <div className="mb-4 last:mb-0">
-                                    <div className="text-lg font-bold text-gray-800 mb-1">{item.role}</div>
-                                    <ul className="list-none space-y-1 text-sm text-gray-600 pl-0">
-                                      {item.tasks.map((task: string, tIdx: number) => (
-                                        <li key={tIdx} className="before:content-['–'] before:mr-2 before:text-gray-400">
-                                          {task}
-                                        </li>
-                                      ))}
-                                      {item.achievement && (
-                                        <li className="text-gray-800 font-semibold mt-1">
-                                          * {item.achievement.replace('Achievement: ', '')}
-                                        </li>
-                                      )}
-                                    </ul>
-                                  </div>
-                                )}
+                      {/* 헤더: 높이를 줄이기 위해 마진 축소 */}
+                      <motion.div
+                        initial={{ opacity: 0, y: -10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 0.2 }}
+                        className="text-center mb-4 border-b-2 border-[#E6DCC3] pb-2 border-dashed shrink-0"
+                      >
+                        <h2
+                          className="text-2xl font-black uppercase tracking-tight text-[#2b2b2b] mb-0 leading-none"
+                          style={{ fontFamily: FONT_FAMILY }}
+                        >
+                          Assembled <span className="text-[#8F1E20]">Character</span>
+                        </h2>
+                        <p className="text-[10px] text-gray-500 font-mono tracking-[0.2em] uppercase mt-1">
+                          System Status: 100% Ready
+                        </p>
+                      </motion.div>
+
+                      {/* 🟢 본문 그리드 레이아웃 (2열 배치로 높이 절약) */}
+                      <div className="grid grid-cols-2 gap-3 overflow-y-auto pr-1 custom-scrollbar">
+
+                        {RESUME_DATA.map((section, index) => {
+                          // 마지막 항목(Field/경력)만 가로를 꽉 채우고(col-span-2), 나머지는 반반(col-span-1)
+                          const isFullWidth = index === RESUME_DATA.length - 1;
+
+                          return (
+                            <motion.div
+                              key={section.id}
+                              // 2. 자식 요소들이 순차적으로 '탁! 탁!' 붙는 애니메이션
+                              initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                              animate={{ opacity: 1, y: 0, scale: 1 }}
+                              transition={{
+                                duration: 0.4,
+                                delay: 0.3 + (index * 0.15), // 순차적 딜레이
+                                ease: "backOut" // 튕기는 느낌
+                              }}
+                              className={`
+              bg-white p-3 rounded-lg border border-gray-200 shadow-sm 
+              hover:border-orange-300 transition-colors duration-300
+              ${isFullWidth ? 'col-span-2' : 'col-span-1'}
+            `}
+                            >
+                              {/* 섹션 라벨 */}
+                              <div
+                                className="text-[9px] font-bold text-gray-400 tracking-widest mb-2 uppercase flex items-center gap-1.5"
+                                style={{ fontFamily: FONT_FAMILY }}
+                              >
+                                <motion.span
+                                  initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.5 + (index * 0.1) }}
+                                  className="w-1.5 h-1.5 rounded-full bg-[#FCBB09]"
+                                />
+                                Build {section.id}
                               </div>
-                            ))}
-                          </div>
+
+                              {/* 콘텐츠 영역 */}
+                              <div className="flex flex-wrap gap-1.5">
+                                {section.content.map((item: any, idx: number) => {
+
+                                  // (A) 태그 형태 (Media, Web Design 등)
+                                  if (item.type === 'text') {
+                                    return (
+                                      <span
+                                        key={idx}
+                                        className="px-2 py-1 bg-gray-50 text-gray-700 text-xs font-bold rounded border border-gray-100"
+                                      >
+                                        {item.text}
+                                      </span>
+                                    );
+                                  }
+
+                                  // (B) 경력 형태 (Field)
+                                  if (item.type === 'job') {
+                                    return (
+                                      <div key={idx} className="w-full mt-1 first:mt-0 p-2.5 bg-gray-50 rounded border border-gray-100">
+                                        <div className="flex justify-between items-center mb-1">
+                                          <div className="text-sm font-bold text-[#2b2b2b]">{item.role}</div>
+                                        </div>
+                                        <ul className="text-[11px] text-gray-600 space-y-1 list-none pl-1 leading-snug">
+                                          {item.tasks.map((task: string, tIdx: number) => (
+                                            <li key={tIdx} className="flex items-start gap-1.5">
+                                              <span className="text-gray-300 text-[10px] leading-[1.4]">-</span>
+                                              <span>{task}</span>
+                                            </li>
+                                          ))}
+                                          {item.achievement && (
+                                            <li className="mt-1.5 text-[#8F1E20] font-bold flex items-start gap-1 bg-[#8F1E20]/5 p-1 rounded-sm">
+                                              <span className="text-[10px] mt-[1px]">✨</span>
+                                              {item.achievement.replace('Achievement: ', '')}
+                                            </li>
+                                          )}
+                                        </ul>
+                                      </div>
+                                    );
+                                  }
+                                  return null;
+                                })}
+                              </div>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+
+                      {/* 하단 바코드 데코레이션 (공간 남으면 표시, 아니면 숨김 처리 가능) */}
+                      <motion.div
+                        initial={{ opacity: 0 }} animate={{ opacity: 0.5 }} transition={{ delay: 0.8 }}
+                        className="mt-auto pt-3 flex justify-between items-end shrink-0"
+                      >
+                        <div className="flex items-end gap-[1px] h-4">
+                          {[...Array(15)].map((_, i) => (
+                            <motion.div
+                              key={i}
+                              className="bg-[#2b2b2b]"
+                              initial={{ height: 0 }}
+                              animate={{ height: `${Math.random() * 80 + 20}%` }}
+                              transition={{ duration: 0.5, delay: 0.8 + (i * 0.02) }}
+                              style={{
+                                width: i % 3 === 0 ? '2px' : '1px',
+                              }}
+                            />
+                          ))}
                         </div>
-                      ))}
+                        <span className="text-[9px] font-mono tracking-widest text-gray-400">MK-PF-2024-V1</span>
+                      </motion.div>
+
                     </div>
                   </motion.div>
                 )}
@@ -1605,10 +1700,10 @@ const IntroSection: React.FC = () => {
             }
             : phase >= 14
               ? {
-                left: "-20px",
+                left: "6vw",
                 top: "50%",
                 x: "0",
-                y: `calc(-50% + 12vh + ${scrollOffset}px)`,
+                y: `calc(-50% + 13vh + ${scrollOffset}px)`,
                 scale: 0.28,
                 rotateX: 2,
                 rotateZ: 0,
@@ -1640,7 +1735,7 @@ const IntroSection: React.FC = () => {
             initial={{ opacity: 0, y: -10 }}
             animate={{
               // ✅ 조립 전(모자 떠있음)  vs  조립 후(머리에 붙음)
-              top: phase >= 21 ? "50px" : "-360px",
+              top: phase >= 21 ? "40px" : "-420px",
               opacity: phase >= 23 ? 0 : 1,
               // 조립될 때 살짝 튕기듯 들어가게
               y: phase >= 21 ? 0 : -10,
@@ -1652,7 +1747,7 @@ const IntroSection: React.FC = () => {
           >
             <PartPNG
               src="images/hat.png"
-              className="w-[260px] h-[260px] object-contain"
+              className="w-[280px] h-[280px] object-contain"
               alt="hat"
             />
           </motion.div>

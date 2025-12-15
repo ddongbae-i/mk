@@ -1168,20 +1168,20 @@ const IntroSection: React.FC = () => {
             <motion.div
               className="absolute"
               style={{
-                left: "50%",
+                left: "52%",
                 transform: "translateX(-50%)",
               }}
               animate={{
-                top: phase >= 21 ? "0px" : "-200px",  // -250px → -200px로 조정
+                top: phase >= 21 ? "0px" : "-200px",
                 opacity: phase >= 21 ? 0 : 1,
               }}
               transition={{ duration: 0.6, ease: "backOut" }}
             >
-              <div className="flex flex-col items-center relative w-[240px] overflow-visible">  {/* h-[240px] 제거, overflow-visible 추가 */}
+              <div className="flex flex-col items-center relative w-[240px] overflow-visible">
                 <AnimatePresence>
                   {phase < 21 && (
                     <motion.span
-                      className="absolute -left-[60px] top-[80px] text-[28px] font-bold text-[#2b2b2b]"
+                      className="absolute -left-[60px] top-[200px] text-[28px] font-normal text-[#2b2b2b]"
                       exit={{ opacity: 0 }}
                     >
                       1
@@ -1189,7 +1189,7 @@ const IntroSection: React.FC = () => {
                   )}
                 </AnimatePresence>
 
-                <PartPNG src="images/hat.png" className="w-[200px] h-[160px] object-contain" alt="hat" />
+                <PartPNG src="images/hat.png" className="w-[240px] h-[230px] object-contain" alt="hat" />
 
                 {/* 모자 아래 화살표 */}
                 <AnimatePresence>
@@ -1198,7 +1198,7 @@ const IntroSection: React.FC = () => {
                       width="24"
                       height="40"
                       viewBox="0 0 24 40"
-                      className="mt-2"
+                      className="mt-[-43px] ml-[-22px]"
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
                     >
@@ -1230,7 +1230,7 @@ const IntroSection: React.FC = () => {
               <AnimatePresence>
                 {phase < 21 && (
                   <motion.span
-                    className="absolute -left-12 top-1/2 -translate-y-1/2 text-[28px] font-bold text-[#2b2b2b]"
+                    className="absolute -left-12 top-[100%] -translate-y-1/2 text-[28px] font-normal text-[#2b2b2b]"
                     exit={{ opacity: 0 }}
                   >
                     2
@@ -1245,7 +1245,7 @@ const IntroSection: React.FC = () => {
                     width="24"
                     height="40"
                     viewBox="0 0 24 40"
-                    className="absolute -bottom-12 left-1/2 -translate-x-1/2"
+                    className="absolute -bottom-5 left-1/2 -translate-x-1/2"
                     exit={{ opacity: 0 }}
                   >
                     <path
@@ -1275,7 +1275,7 @@ const IntroSection: React.FC = () => {
                 transform: "translateX(-50%)",
               }}
               animate={{
-                top: phase >= 21 ? "160px" : "240px",
+                top: phase >= 21 ? "160px" : "280px",
                 opacity: phase >= 23 ? 0 : 1,
               }}
               transition={{ duration: 0.6, ease: "backOut" }}
@@ -1284,7 +1284,7 @@ const IntroSection: React.FC = () => {
                 <AnimatePresence>
                   {phase < 21 && (
                     <motion.span
-                      className="absolute -left-12 top-[60px] text-[28px] font-bold text-[#2b2b2b]"
+                      className="absolute -left-12 top-[50%] -translate-y-1/2 text-[28px] font-normal text-[#2b2b2b]"
                       exit={{ opacity: 0 }}
                     >
                       3
@@ -1293,11 +1293,11 @@ const IntroSection: React.FC = () => {
                 </AnimatePresence>
 
                 {/* 3D 상체 */}
-                <div className="relative" style={{ width: "160px", height: "120px" }}>
+                <div className="relative" style={{ width: "180px", height: "140px" }}>  {/* 300x300 → 180x140 */}
                   <LegoPart3D
                     className="absolute inset-0"
                     modelPath="models/lego_body.glb"
-                    modelScale={1.4}
+                    modelScale={2.0}
                     rotateY={fixedPartsY}
                   />
                 </div>
@@ -1333,65 +1333,6 @@ const IntroSection: React.FC = () => {
                   )}
                 </AnimatePresence>
 
-                {/* 돋보기 (4번) */}
-                <motion.div
-                  className="absolute flex items-center"
-                  animate={{
-                    right: phase >= 21 ? "-50px" : "-120px",
-                    top: "50%",
-                  }}
-                  transition={{ duration: 0.6, ease: "backOut" }}
-                  style={{ transform: "translateY(-50%)" }}
-                >
-                  <AnimatePresence>
-                    {phase < 21 && (
-                      <>
-                        <motion.svg
-                          width="50"
-                          height="24"
-                          viewBox="0 0 50 24"
-                          className="mr-2"
-                          exit={{ opacity: 0 }}
-                        >
-                          <path
-                            d="M48,12 L8,12 M14,6 L6,12 L14,18"
-                            stroke="#2b2b2b"
-                            strokeWidth="3"
-                            fill="none"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </motion.svg>
-                        <motion.span
-                          className="absolute -top-8 left-14 text-[28px] font-bold text-[#2b2b2b]"
-                          exit={{ opacity: 0 }}
-                        >
-                          4
-                        </motion.span>
-                      </>
-                    )}
-                  </AnimatePresence>
-
-                  <div className="relative">
-                    <PartPNG
-                      src="images/magnifier.png"
-                      className="w-[70px] h-[70px] object-contain"
-                      alt="magnifier"
-                    />
-
-                    <PartTooltip
-                      title={PART_DESCRIPTIONS[4].title}
-                      description={PART_DESCRIPTIONS[4].description}
-                      isVisible={phase === 20}
-                    />
-                  </div>
-                </motion.div>
-
-                <PartTooltip
-                  title={PART_DESCRIPTIONS[2].title}
-                  description={PART_DESCRIPTIONS[2].description}
-                  isVisible={phase === 18}
-                />
               </div>
             </motion.div>
 
@@ -1677,7 +1618,7 @@ const IntroSection: React.FC = () => {
                 top: "50%",
                 x: "0",
                 y: `calc(-50% + 12vh + ${scrollOffset}px)`,
-                scale: 0.4,
+                scale: 0.3,
                 rotateX: 2,
                 rotateZ: 0,
                 rotateY: 25,
@@ -1716,7 +1657,7 @@ const IntroSection: React.FC = () => {
             className="w-full h-full drop-shadow-2xl"
             followMouse={phase >= 2 && phase <= 12}
             fixedRotationY={phase >= 14 && phase < 23 ? 15 : 0}   // 좌우
-            fixedRotationX={phase >= 14 && phase < 23 ? 6 : 0}   // 위아래 (음수=위를 봄, 양수=아래를 봄)
+            fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}   // 위아래 (음수=위를 봄, 양수=아래를 봄)
           />
         </motion.div>
       </motion.div>

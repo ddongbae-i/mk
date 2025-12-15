@@ -21,7 +21,6 @@ function FitAndRender({
         const center = box.getCenter(new THREE.Vector3());
         scene.position.sub(center);
 
-        // ✅ center 이동 반영해서 다시 측정
         box.setFromObject(scene);
 
         const size = box.getSize(new THREE.Vector3());
@@ -30,7 +29,10 @@ function FitAndRender({
         const cam = camera as THREE.PerspectiveCamera;
         const fov = cam.fov;
         const fitHeightDistance = maxDim / (2 * Math.tan(THREE.MathUtils.degToRad(fov / 2)));
-        const distance = 1.25 * fitHeightDistance;
+        const distance = fitHeightDistance * 1.1;  // 1.25 → 1.1 (더 가깝게)
+
+        cam.position.z = distance;
+        cam.updateProjectionMatrix();
 
     }, [scene, camera, scale]);
 
@@ -53,24 +55,19 @@ export function LegoPart3D({
     modelPath,
     modelScale = 1.2,
     rotateY = 0,
-    fitName,
-    followMouse = false,
-
 }: {
     className?: string;
     modelPath: string;
     modelScale?: number;
     rotateY?: number;
-    fitName?: string;
-    followMouse?: boolean;
 }) {
     const url = `${import.meta.env.BASE_URL}${modelPath}`;
 
     return (
         <div className={className} style={{ width: "100%", height: "100%" }}>
             <Canvas
-                dpr={[1, 2]}                 // ✅ 선명도
-                camera={{ position: [0, 0, 8], fov: 45 }}
+                dpr={[1, 2]}
+                camera={{ position: [0, 0, 5], fov: 45 }}  // 10 → 5 (더 가깝게)
                 style={{ width: "100%", height: "100%", background: "transparent" }}
                 gl={{ alpha: true, antialias: true, toneMapping: THREE.NoToneMapping }}
             >
@@ -84,7 +81,6 @@ export function LegoPart3D({
         </div>
     );
 }
-
 
 useGLTF.preload(`${import.meta.env.BASE_URL}models/lego_body.glb`);
 useGLTF.preload(`${import.meta.env.BASE_URL}models/lego_legs.glb`);

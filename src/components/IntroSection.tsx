@@ -234,59 +234,54 @@ const PartTooltip = ({
 
 // --- COMPONENTS ---
 
-const StrokedWordmark = ({ className, style }: { className?: string, style?: any }) => {
+const StrokedWordmark = ({
+  className,
+  style,
+  align = "center",
+  widthClass = "w-[80vw] max-w-[600px]",
+}: {
+  className?: string;
+  style?: any;
+  align?: "center" | "left";
+  widthClass?: string;
+}) => {
+  const isLeft = align === "left";
+
   const textProps = {
-    x: "50%",
+    x: isLeft ? "0" : "50%",
     y: "55%",
     dominantBaseline: "central" as const,
-    textAnchor: "middle" as const,
+    textAnchor: (isLeft ? "start" : "middle") as const,
     style: {
       fontFamily: FONT_FAMILY,
       fontWeight: 900,
-      fontStyle: 'italic',
+      fontStyle: "italic",
       fontSize: "200px",
-    }
+    },
   };
 
   return (
-    <motion.div className={`relative inline-block ${className || ''}`} style={style}>
-      <svg viewBox="0 0 600 180" className="w-[80vw] max-w-[600px] h-auto overflow-visible">
-        {/* 흰색 외곽선 (가장 바깥) */}
-        <text
-          {...textProps}
-          fill="none"
-          stroke="#F0F0F0"
-          strokeWidth="28"
-          strokeLinejoin="round"
-          strokeLinecap="round"
-        >
+    <motion.div className={`relative inline-block ${className || ""}`} style={style}>
+      <svg
+        viewBox="0 0 600 180"
+        className={`${widthClass} h-auto overflow-visible block`}
+      >
+        <text {...textProps} dx={isLeft ? "10" : undefined} fill="none" stroke="#F0F0F0" strokeWidth="28"
+          strokeLinejoin="round" strokeLinecap="round">
           PLAYOUT
         </text>
-
-        {/* 빨간색 외곽선 (중간) */}
-        <text
-          {...textProps}
-          fill="none"
-          stroke="#8F1E20"
-          strokeWidth="14"
-          strokeLinejoin="round"
-          strokeLinecap="round"
-        >
+        <text {...textProps} dx={isLeft ? "10" : undefined} fill="none" stroke="#8F1E20" strokeWidth="14"
+          strokeLinejoin="round" strokeLinecap="round">
           PLAYOUT
         </text>
-
-        {/* 흰색 채우기 (가장 안쪽) */}
-        <text
-          {...textProps}
-          fill="#F0F0F0"
-          stroke="none"
-        >
+        <text {...textProps} dx={isLeft ? "10" : undefined} fill="#F0F0F0" stroke="none">
           PLAYOUT
         </text>
       </svg>
     </motion.div>
   );
 };
+
 // --- LEGO BRICK COMPONENT ---
 
 const LegoBrick = ({ label, index, className }: { label: string, index: number, className?: string }) => {
@@ -295,7 +290,7 @@ const LegoBrick = ({ label, index, className }: { label: string, index: number, 
       <img
         src={`${import.meta.env.BASE_URL}images/brick_${index}.svg`}
         alt={label}
-        className="w-full h-full object-contain drop-shadow-xl"
+        className="w-full h-full object-contain"
       />
     </div>
   );
@@ -446,7 +441,7 @@ const FloatingMenuBlock: React.FC<{
   return (
     <motion.div
       id={id}
-      style={style}
+      style={{ ...style, zIndex: 50 - index } as React.CSSProperties}
       initial={{ opacity: 0, scale: 0.8 }}
       animate={shouldFloat ? floatAnim : { opacity: 1, scale: 1 }}
       transition={{
@@ -471,7 +466,7 @@ const FloatingMenuBlock: React.FC<{
         }
       }}
       whileTap={{ scale: 0.95 }}
-      className="absolute w-40 h-24 md:w-52 md:h-32 z-10 cursor-pointer pointer-events-auto"
+      className="absolute w-40 h-24 md:w-52 md:h-32 cursor-pointer pointer-events-auto"
     >
       <LegoBrick label={label} index={index} />
     </motion.div>
@@ -489,7 +484,7 @@ const HamburgerIcon = ({
 }) => (
   <div
     onClick={onClick}
-    className={`fixed top-[40px] right-[18vw] z-50 flex flex-col justify-center items-end gap-1 cursor-pointer pointer-events-auto ${className}`}
+    className={`fixed top-[40px] right-[180px] z-50 flex flex-col justify-center items-end gap-1 cursor-pointer pointer-events-auto ${className}`}
   >
     <img
       src={`${import.meta.env.BASE_URL}images/hamburger_line1.svg`}
@@ -1530,38 +1525,52 @@ const IntroSection: React.FC = () => {
           )}
 
 
-          <AnimatePresence>
-            {phase >= 8 && phase < 13 && (
-              <motion.div
-                className="absolute z-50"
-                initial={{
-                  x: TEXT_ANCHOR_X,
-                  top: "50%",
-                  y: "-50%",
-                  scale: 2.5,      // 크게 시작
-                  opacity: 0,
-                }}
-                animate={phase >= 9
-                  ? { left: "18vw", top: "40px", x: "0%", y: "0%", scale: 0.25, opacity: 1 }
-                  : {
-                    left: "50%",        // 중앙 정렬 유지
+          {/* LOGO LAYER – header 기준 */}
+          <div className="absolute inset-0 z-50 pointer-events-none
+                px-6 md:px-16 xl:px-[180px]">
+            <AnimatePresence>
+              {phase >= 8 && phase < 13 && (
+                <motion.div
+                  className="absolute"
+                  initial={{
+                    left: TEXT_ANCHOR_X,   // S2 텍스트랑 같은 기준
                     top: "50%",
-                    x: "-50%",          // TEXT_ANCHOR_X 대신 중앙 정렬
                     y: "-50%",
                     scale: 1,
-                    opacity: 1,
+                    opacity: 0,
+                  }}
+                  animate={
+                    phase >= 9
+                      ? {
+                        left: 0,        // 🔥 핵심
+                        top: "40px",
+                        y: 0,
+                        scale: 0.4,
+                        opacity: 1,
+                      }
+                      : {
+                        left: "50%",
+                        top: "50%",
+                        y: "-50%",
+                        scale: 1,
+                        opacity: 1,
+                      }
                   }
-                }
-                exit={{ opacity: 0, x: -100 }}
-                transition={{
-                  duration: 0.6,
-                  ease: [0.34, 1.56, 0.64, 1],  // 바운스 이징
-                }}
-              >
-                <StrokedWordmark animateStroke={phase === 8} />
-              </motion.div>
-            )}
-          </AnimatePresence>
+                  transition={{
+                    duration: 0.6,
+                    ease: [0.34, 1.56, 0.64, 1],
+                  }}
+                >
+                  <StrokedWordmark
+                    align={phase >= 9 ? "left" : "center"}
+                    widthClass={phase >= 9 ? "w-[260px]" : "w-[80vw] max-w-[600px]"}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+
 
           <AnimatePresence>
             {(phase >= 5 && phase <= 7) && (
@@ -1572,7 +1581,7 @@ const IntroSection: React.FC = () => {
           </AnimatePresence>
 
           {(phase >= 9 && phase <= 12) && (
-            <div className="absolute inset-0 pointer-events-none z-50">
+            <div className="absolute inset-0 pointer-events-none z-[110]">
               {BLOCK_POSITIONS.map((pos, i) => (
                 <FloatingMenuBlock
                   key={i}

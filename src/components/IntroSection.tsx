@@ -289,56 +289,17 @@ const StrokedWordmark = ({ className, style }: { className?: string, style?: any
 };
 // --- LEGO BRICK COMPONENT ---
 
-const LegoBrick = ({ label, color, className }: { label: string, color: { top: string, side: string, main: string }, className?: string }) => {
+const LegoBrick = ({ label, index, className }: { label: string, index: number, className?: string }) => {
   return (
     <div className={`${className} relative w-full h-full`}>
-      <svg viewBox="0 0 200 120" className="w-full h-full drop-shadow-xl" style={{ overflow: 'visible' }}>
-        <g transform="translate(0, -10)">
-          <path d="M40,20 L40,10 A15,6 0 0 1 70,10 L70,20" fill={color.side} />
-          <ellipse cx="55" cy="10" rx="15" ry="6" fill={color.top} />
-          <path d="M90,20 L90,10 A15,6 0 0 1 120,10 L120,20" fill={color.side} />
-          <ellipse cx="105" cy="10" rx="15" ry="6" fill={color.top} />
-          <path d="M140,20 L140,10 A15,6 0 0 1 170,10 L170,20" fill={color.side} />
-          <ellipse cx="155" cy="10" rx="15" ry="6" fill={color.top} />
-        </g>
-        <path d="M25,20 L175,20 L195,40 L45,40 Z" fill={color.top} />
-        <path d="M195,40 L195,90 L175,70 L175,20 Z" fill={color.side} />
-        <path d="M45,40 L195,40 L195,90 L45,90 Z" fill={color.main} />
-        <path d="M25,20 L45,40 L45,90 L25,70 Z" fill={color.side} />
-        <text
-          x="120"
-          y="72"
-          fontFamily={FONT_FAMILY}
-          fontWeight="900"
-          fontStyle="italic"
-          fontSize="24"
-          fill="white"
-          textAnchor="middle"
-          filter="drop-shadow(1px 1px 0px rgba(0,0,0,0.3))"
-          style={{ letterSpacing: '1px' }}
-        >
-          {label}
-        </text>
-        <text
-          x="120"
-          y="72"
-          fontFamily={FONT_FAMILY}
-          fontWeight="900"
-          fontStyle="italic"
-          fontSize="24"
-          fill="none"
-          stroke={color.side}
-          strokeWidth="1.5"
-          textAnchor="middle"
-          style={{ letterSpacing: '1px' }}
-        >
-          {label}
-        </text>
-      </svg>
+      <img
+        src={`${import.meta.env.BASE_URL}images/brick_${index}.svg`}
+        alt={label}
+        className="w-full h-full object-contain drop-shadow-xl"
+      />
     </div>
   );
 };
-
 // --- S2 SLOT MACHINE COMPONENTS ---
 const SplitWordLayer = ({ parts, visibleIndex }: { parts: string[], visibleIndex: number }) => {
   return (
@@ -459,6 +420,7 @@ const S2SlotMachine = ({ activeIndex }: { activeIndex: number }) => {
   );
 };
 
+
 const FloatingMenuBlock: React.FC<{
   index: number;
   style?: React.CSSProperties;
@@ -498,24 +460,52 @@ const FloatingMenuBlock: React.FC<{
           }
           : {}),
       }}
-      whileHover={shouldFloat ? { scale: 1.1, rotate: 0 } : {}}
-      className="absolute w-40 h-24 md:w-52 md:h-32 z-10"
+      whileHover={{
+        scale: 1.15,
+        rotate: 0,
+        y: -30,  // 펄쩍 뛰기
+        transition: {
+          type: "spring",
+          stiffness: 400,
+          damping: 10
+        }
+      }}
+      whileTap={{ scale: 0.95 }}
+      className="absolute w-40 h-24 md:w-52 md:h-32 z-10 cursor-pointer pointer-events-auto"
     >
-      <LegoBrick label={label} color={color} />
+      <LegoBrick label={label} index={index} />
     </motion.div>
   );
 };
 
-const HamburgerIcon = ({ className, isOpen, onClick }: { className?: string, isOpen: boolean, onClick: () => void }) => (
+const HamburgerIcon = ({
+  className,
+  isOpen,
+  onClick
+}: {
+  className?: string,
+  isOpen: boolean,
+  onClick: () => void
+}) => (
   <div
     onClick={onClick}
-    className={`w-12 h-12 flex flex-col justify-center items-end gap-1.5 cursor-pointer pointer-events-auto ${className}`}
+    className={`fixed top-[40px] right-[18vw] z-50 flex flex-col justify-center items-end gap-1.5 cursor-pointer pointer-events-auto ${className}`}
   >
-    <div className="w-8 h-1 bg-white rounded-full" />
-    <div className="w-12 h-1 bg-white rounded-full" />
-    <motion.div
-      className="w-8 h-1 bg-white rounded-full origin-right"
-      animate={isOpen ? { rotate: 45, y: 5 } : { rotate: 0, y: 0 }}
+    <img
+      src={`${import.meta.env.BASE_URL}images/hamburger_line1.svg`}
+      alt=""
+      className="h-1"
+    />
+    <img
+      src={`${import.meta.env.BASE_URL}images/hamburger_line2.svg`}
+      alt=""
+      className="h-1"
+    />
+    <motion.img
+      src={`${import.meta.env.BASE_URL}images/hamburger_line3.svg`}
+      alt=""
+      className="h-1 origin-right"
+      animate={isOpen ? { rotate: 45, y: -6 } : { rotate: 0, y: 0 }}
       transition={{ duration: 0.3 }}
     />
   </div>
@@ -806,27 +796,37 @@ const IntroSection: React.FC = () => {
 
   const runStepA_StackAndEnter = async () => {
     const stackAnims: Promise<any>[] = [];
-    const order = [4, 3, 2, 1, 0];
+    const order = [4, 3, 2, 1, 0];  // 아래부터 위로 쌓이도록
+
     for (let i = 0; i < order.length; i++) {
       const idx = order[i];
       const coords = getStackPosition(idx);
+
       stackAnims.push(
         (async () => {
+          // 위에서 떨어지듯이 내려오고, 착지할 때 살짝만 눌림
           await safeAnimate(
             `#block-${idx}`,
-            { x: coords.x, y: coords.y, rotate: 0, scale: 1 },
-            { delay: i * 0.1, duration: 0.6, ease: "backOut" }
-          );
-          await safeAnimate(
-            `#block-${idx}`,
-            { y: [coords.y, coords.y - 5, coords.y] },
-            { duration: 0.15 }
+            {
+              x: coords.x,
+              y: [coords.y - 100, coords.y + 3, coords.y],  // 위에서 내려와서 살짝 눌렸다가 제자리
+              rotate: 0,
+              scale: [1, 1.02, 1]  // 착지 시 살짝 눌리는 느낌
+            },
+            {
+              delay: i * 0.12,  // 순차적으로 착착착
+              duration: 0.3,
+              ease: [0.25, 0.1, 0.25, 1],  // 자연스러운 착지
+              times: [0, 0.7, 1]
+            }
           );
         })()
       );
     }
+
     await Promise.all(stackAnims);
-    await new Promise((r) => setTimeout(r, 400));
+    await new Promise((r) => setTimeout(r, 300));
+
     const enterAnims: Promise<any>[] = [];
     for (let i = 0; i < 5; i++) {
       const coords = getHamburgerAbsorbPosition(i);
@@ -1542,7 +1542,7 @@ const IntroSection: React.FC = () => {
                   opacity: 0,
                 }}
                 animate={phase >= 9
-                  ? { left: "0px", top: "40px", x: "0%", y: "0%", scale: 0.25, opacity: 1 }
+                  ? { left: "18vw", top: "40px", x: "0%", y: "0%", scale: 0.25, opacity: 1 }
                   : {
                     x: TEXT_ANCHOR_X,
                     top: "50%",
@@ -1644,7 +1644,7 @@ const IntroSection: React.FC = () => {
           {/* <LegoFace className="w-full h-full drop-shadow-2xl" /> */}
           <LegoFace3D
             className="w-full h-full drop-shadow-2xl"
-            followMouse={phase >= 2 && phase <= 8}
+            followMouse={phase >= 2 && phase <= 12}
           />
         </motion.div>
       </motion.div>

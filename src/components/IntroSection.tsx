@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, useAnimate, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
-import { LegoFace } from './LegoFace';
 import { LegoFace3D } from './LegoFace3D';
+import { LegoPart3D } from "./LegoPart3D";
 
 const COLORS = [
   '#8F1E20', '#F25F09', '#FCBB09', '#8E00BD', '#2B7000', '#B7156C', '#8F1E20'
@@ -10,6 +10,27 @@ const COLORS = [
 const BG_CREAM = "#FFF2D5";
 const BEAM_COLOR = "#FCBB09";
 const PROJECT_TEXT_COLOR = "#8E00BD";
+
+const followParts = phase >= 2 && phase <= 12;
+const fixedPartsY = phase >= 14 && phase < 23 ? 25 : 0;
+
+// 파츠들에 넘길 최종 rotateY
+const partsRotateY = followParts ? 0 : fixedPartsY;
+
+const PartPNG = ({
+  src,
+  className,
+  alt = "",
+}: { src: string; className?: string; alt?: string }) => (
+  <img
+    src={`${import.meta.env.BASE_URL}${src}`}
+    alt={alt}
+    className={className}
+    draggable={false}
+    style={{ display: "block" }}
+  />
+);
+
 
 // S2 DATA
 const S2_CONTENT = [
@@ -1008,12 +1029,12 @@ const IntroSection: React.FC = () => {
   const runS1Animation = async () => {
     const viewportHeight = window.innerHeight;
     const startY = viewportHeight * 1.3;
-    await animate("#face-container", { y: [startY, -150], rotateZ: [-45, 10], rotateX: [30, 0], scale: [0.8, 1.1] }, { duration: 0.8, ease: "circOut", times: [0, 1] });
-    await animate("#face-container", { y: 0, rotateZ: 0, scale: 1 }, { duration: 0.2, ease: "easeIn" });
+    await animate("#face-container", { y: [startY, -150], rotateZ: [-45, 10], rotateX: [30, 0] }, { duration: 0.8, ease: "circOut", times: [0, 1] });
+    await animate("#face-container", { y: 0, rotateZ: 0 }, { duration: 0.2, ease: "easeIn" });
     setPhase(2);
     await new Promise(resolve => setTimeout(resolve, 20));
     const splitAnimations: any[] = [];
-    splitAnimations.push(animate("#face-container", { y: [0, -20, 0], scale: [1, 0.95, 1] }, { duration: 0.4, ease: "easeOut" }));
+    splitAnimations.push(animate("#face-container", { y: [0, -20, 0] }, { duration: 0.4, ease: "easeOut" }));
     splitAnimations.push(animate(".split-part", { color: "#F0F0F0", fontWeight: 900, fontStyle: "italic" }, { duration: 0.2, ease: "easeOut" }));
     splitAnimations.push(animate(".hidden-char", { opacity: 1, width: "auto", scale: 1 }, { duration: 0.2, delay: 0.05 }));
     splitAnimations.push(animate("#split-play", { x: "-18vw" }, { duration: 0.5, ease: "backOut" }));
@@ -1025,7 +1046,7 @@ const IntroSection: React.FC = () => {
   const runReverseS1Animation = async () => {
     const viewportHeight = window.innerHeight;
     const startY = viewportHeight * 1.3;
-    const faceAnim = animate("#face-container", { y: [0, -150, startY], rotateZ: [0, 10, -45], rotateX: [0, 0, 30], scale: [1, 1.1, 0.8] }, { duration: 0.8, ease: "easeInOut", times: [0, 0.3, 1] });
+    const faceAnim = animate("#face-container", { y: [0, -150, startY], rotateZ: [0, 10, -45], rotateX: [0, 0, 30] }, { duration: 0.8, ease: "easeInOut", times: [0, 0.3, 1] });
     const bgAnim = animate(scope.current, { backgroundColor: "#E5E5E5" }, { duration: 0.8, ease: "easeInOut" });
     animate(".hidden-char", { opacity: 0, width: 0, scale: 0 }, { duration: 0.2 });
     animate("#split-play", { x: 0 }, { duration: 0.6, ease: "backInOut" });
@@ -1073,14 +1094,16 @@ const IntroSection: React.FC = () => {
         ref={scrollContainerRef}
         className="absolute inset-0"
         style={{
-          overflowY: isNaturalScrolling ? 'auto' : 'hidden',
-          overflowX: 'hidden',
+          overflowY: "scroll",                 // ✅ 항상 scroll (폭 고정)
+          overflowX: "hidden",
+          scrollbarGutter: "stable",           // ✅ 스크롤바 공간 고정
+          pointerEvents: isNaturalScrolling ? "auto" : "none",
+          opacity: isNaturalScrolling ? 1 : 0, // 안 쓸 땐 보이지 않게
           zIndex: isNaturalScrolling ? 100 : -1,
         }}
       >
-        {isNaturalScrolling && (
-          <div style={{ height: 'calc(100% + 400px)', pointerEvents: 'none' }} />
-        )}
+        {/* 스크롤 길이만 제공 */}
+        <div style={{ height: 'calc(100% + 400px)', pointerEvents: 'none' }} />
       </div>
 
       {/* 크림 배경 + 타이틀 */}
@@ -1256,7 +1279,7 @@ const IntroSection: React.FC = () => {
                   )}
                 </AnimatePresence>
 
-                <HardHat className="w-[140px] h-[100px]" />
+                <PartPNG src="images/hat.png" className="w-[140px] h-[100px] object-contain" alt="hat" />
 
                 <AnimatePresence>
                   {phase < 21 && (
@@ -1339,7 +1362,15 @@ const IntroSection: React.FC = () => {
                   )}
                 </AnimatePresence>
 
-                <Torso className="w-[180px] h-[140px]" />
+                <div style={{ width: "180px", height: "140px" }}>
+                  <LegoPart3D
+                    className="w-[220px] h-[180px]"
+                    modelPath="models/lego_body.glb"
+                    modelScale={1.2}
+                    rotateY={fixedPartsY}
+                  />
+                </div>
+
 
                 <AnimatePresence>
                   {phase < 21 && (
@@ -1384,7 +1415,8 @@ const IntroSection: React.FC = () => {
                   </AnimatePresence>
 
                   <div className="relative">
-                    <MagnifyingGlass className="w-[80px] h-[80px]" />
+                    <PartPNG src="images/magnifier.png" className="w-[80px] h-[80px] object-contain" alt="magnifier" />
+
                     <PartTooltip
                       title={PART_DESCRIPTIONS[4].title}
                       description={PART_DESCRIPTIONS[4].description}
@@ -1426,7 +1458,14 @@ const IntroSection: React.FC = () => {
                   )}
                 </AnimatePresence>
 
-                <Legs className="w-[160px] h-[120px]" />
+                <div style={{ width: "160px", height: "120px" }}>
+                  <LegoPart3D
+                    className="w-[200px] h-[160px]"
+                    modelPath="models/lego_legs.glb"
+                    modelScale={1.2}
+                    rotateY={fixedPartsY}
+                  />
+                </div>
 
                 <PartTooltip
                   title={PART_DESCRIPTIONS[3].title}
@@ -1662,6 +1701,18 @@ const IntroSection: React.FC = () => {
       {/* 얼굴 컨테이너 */}
       <motion.div
         id="face-container"
+        onUpdate={(latest) => {
+          // latest.scale / latest.x / latest.y 가 실제로 변하는지 확인
+          console.log("FACE", {
+            phase,
+            scale: latest.scale,
+            x: latest.x,
+            y: latest.y,
+            left: (latest as any).left,
+            top: (latest as any).top,
+            rotateY: (latest as any).rotateY,
+          });
+        }}
         className="absolute pointer-events-none"
         style={{
           width: "700px",
@@ -1684,11 +1735,11 @@ const IntroSection: React.FC = () => {
             }
             : phase >= 14  // 🔥 Phase 14부터 바로 작아지고 오른쪽 봄
               ? {
-                left: "50%",
+                left: "2px",
                 top: "50%",
-                x: "calc(-50% - 32vw)",
+                x: "0",
                 y: `calc(-50% + 12vh + ${scrollOffset}px)`,
-                scale: 0.5,      // 🔥 700px * 0.17 ≈ 120px
+                scale: 0.4,      // 🔥 700px * 0.17 ≈ 120px
                 rotateZ: 0,
                 rotateY: 25,      // 🔥 오른쪽 바라봄
               }
@@ -1718,7 +1769,8 @@ const IntroSection: React.FC = () => {
             animate={{ top: "-50px", opacity: 1 }}
             transition={{ duration: 0.4, ease: "backOut" }}
           >
-            <HardHat className="w-[140px] h-[100px]" />
+            <PartPNG src="images/hat.png" className="w-[140px] h-[100px] object-contain" alt="hat" />
+
           </motion.div>
         )}
 

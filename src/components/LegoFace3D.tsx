@@ -5,9 +5,10 @@ import * as THREE from 'three';
 
 interface ModelProps {
     followMouse: boolean;
+    fixedRotationY: number;  // 🔥 추가
 }
 
-const LegoModel: React.FC<ModelProps> = ({ followMouse }) => {
+const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY }) => {
     const { scene } = useGLTF(`${import.meta.env.BASE_URL}models/lego_head.glb`);
     const modelRef = useRef<THREE.Group>(null);
     const [targetRotation, setTargetRotation] = useState({ y: 0, z: 0 });
@@ -21,8 +22,12 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse }) => {
     }, [scene]);
 
     useEffect(() => {
+        // 🔥 마우스 추적이 꺼져있으면 고정 회전값 사용
         if (!followMouse) {
-            setTargetRotation({ y: 0, z: 0 });
+            setTargetRotation({
+                y: THREE.MathUtils.degToRad(fixedRotationY),  // 🔥 degree를 radian으로 변환
+                z: 0
+            });
             return;
         }
 
@@ -37,7 +42,7 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse }) => {
 
         window.addEventListener("mousemove", handleMouseMove);
         return () => window.removeEventListener("mousemove", handleMouseMove);
-    }, [followMouse]);
+    }, [followMouse, fixedRotationY]);  // 🔥 fixedRotationY 의존성 추가
 
     useFrame(() => {
         if (modelRef.current) {
@@ -56,7 +61,8 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse }) => {
 export const LegoFace3D: React.FC<{
     className?: string;
     followMouse?: boolean;
-}> = ({ className, followMouse = true }) => {
+    fixedRotationY?: number;  // 🔥 추가
+}> = ({ className, followMouse = true, fixedRotationY = 0 }) => {
     return (
         <div
             className={className}
@@ -67,7 +73,9 @@ export const LegoFace3D: React.FC<{
             }}
         >
             <Canvas
+                dpr={1}                          // ✅ 이 줄 추가 (핵심)
                 camera={{ position: [0, 0, 8], fov: 45 }}
+                resize={{ scroll: false }}
                 style={{
                     background: 'transparent',
                     overflow: "visible",
@@ -85,7 +93,10 @@ export const LegoFace3D: React.FC<{
                 <hemisphereLight intensity={1.2} groundColor="#ffffff" />
 
                 <Center>
-                    <LegoModel followMouse={followMouse} />
+                    <LegoModel
+                        followMouse={followMouse}
+                        fixedRotationY={fixedRotationY}  // 🔥 전달
+                    />
                 </Center>
             </Canvas>
         </div>

@@ -124,44 +124,6 @@ const BRICK_COLORS = [
 const FONT_SIZE_CSS = 'min(14vw, 200px)';
 const FONT_FAMILY = 'Kanit, sans-serif';
 
-// --- SVGs FOR BUILD PARTS ---
-
-const HardHat = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 100 80" className={className}>
-    <path d="M10,50 Q10,10 50,10 Q90,10 90,50" fill="#F97316" stroke="#C2410C" strokeWidth="2" />
-    <rect x="5" y="50" width="90" height="15" rx="5" fill="#F97316" stroke="#C2410C" strokeWidth="2" />
-    <circle cx="50" cy="30" r="12" fill="#FEF08A" stroke="#C2410C" strokeWidth="2" />
-  </svg>
-);
-
-const Torso = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 120 100" className={className}>
-    <path d="M30,10 L90,10 L100,90 L20,90 Z" fill="#fff" stroke="#1E40AF" strokeWidth="2" />
-    <path d="M30,50 L90,50 L95,90 L25,90 Z" fill="#1E40AF" stroke="#1E3A8A" strokeWidth="2" />
-    <path d="M40,10 L40,50 M80,10 L80,50" stroke="#1E40AF" strokeWidth="8" />
-    <rect x="45" y="60" width="30" height="20" rx="2" fill="#3B82F6" stroke="#1E3A8A" strokeWidth="2" />
-    <path d="M25,20 Q5,40 10,70" fill="none" stroke="#FDE047" strokeWidth="12" strokeLinecap="round" />
-    <path d="M95,20 Q115,40 110,70" fill="none" stroke="#FDE047" strokeWidth="12" strokeLinecap="round" />
-    <circle cx="10" cy="75" r="8" fill="#FDE047" stroke="#EAB308" strokeWidth="2" />
-    <circle cx="110" cy="75" r="8" fill="#FDE047" stroke="#EAB308" strokeWidth="2" />
-  </svg>
-);
-
-const Legs = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 100 80" className={className}>
-    <path d="M20,0 H80 V30 H20 Z" fill="#1E3A8A" stroke="#172554" strokeWidth="2" />
-    <path d="M20,30 H48 V75 H20 Z" fill="#1E40AF" stroke="#172554" strokeWidth="2" />
-    <path d="M52,30 H80 V75 H52 Z" fill="#1E40AF" stroke="#172554" strokeWidth="2" />
-    <circle cx="70" cy="40" r="8" fill="#FDE047" stroke="#B45309" strokeWidth="1" />
-  </svg>
-);
-
-const MagnifyingGlass = ({ className }: { className?: string }) => (
-  <svg viewBox="0 0 80 80" className={className} style={{ filter: 'drop-shadow(2px 4px 6px rgba(0,0,0,0.3))' }}>
-    <circle cx="35" cy="35" r="25" fill="rgba(255,255,255,0.4)" stroke="#1F2937" strokeWidth="6" />
-    <path d="M55,55 L75,75" stroke="#1F2937" strokeWidth="8" strokeLinecap="round" />
-  </svg>
-);
 
 // --- PROJECT KIT BOX ---
 const ProjectKitBox = ({ isVisible }: { isVisible: boolean }) => (
@@ -1225,7 +1187,7 @@ const IntroSection: React.FC = () => {
       {/* 조립 가이드 섹션 (Parts Wrapper) - Z-Index 70 (Behind Purple) */}
       {phase >= 15 && (
         <motion.div
-          className="absolute z-[70] pointer-events-none"
+          className="absolute z-[110] pointer-events-none"
           initial={{ left: "50%", top: "50%", x: "-50%", y: "-50%" }}
           animate={
             phase >= 23 ? {
@@ -1268,20 +1230,19 @@ const IntroSection: React.FC = () => {
               }}
               transition={{ duration: 0.6, ease: "backOut" }}
             >
-              <div className="flex flex-col items-center relative">
+              <div className="flex flex-col items-center relative w-[240px] h-[240px]">
                 <AnimatePresence>
                   {phase < 21 && (
                     <motion.div
-                      className="flex items-center gap-2 mb-2"
+                      className="flex items-center gap-4 mb-2"
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
                     >
-                      <span className="text-sm font-bold text-gray-700">1</span>
                     </motion.div>
                   )}
                 </AnimatePresence>
 
-                <PartPNG src="images/hat.png" className="w-[100%] h-[240px] object-cover" alt="hat" />
+                <PartPNG src="images/hat.png" className="w-full h-full object-cover" alt="hat" />
 
                 <AnimatePresence>
                   {phase < 21 && (
@@ -1771,7 +1732,7 @@ const IntroSection: React.FC = () => {
             animate={{ top: "-50px", opacity: 1 }}
             transition={{ duration: 0.4, ease: "backOut" }}
           >
-            <PartPNG src="images/hat.png" className="w-[140px] h-[100px] object-contain" alt="hat" />
+            <PartPNG src="images/hat.png" className="w-[240px] h-[200px] object-contain" alt="hat" />
 
           </motion.div>
         )}

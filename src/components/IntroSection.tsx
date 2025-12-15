@@ -182,6 +182,7 @@ const PartTooltip = ({
   counterRotateY = 0,
   counterRotateX = 0,
   lineLength = 80,
+  leftOffset = -90,
 }: {
   title: string;
   description: string;
@@ -192,13 +193,14 @@ const PartTooltip = ({
   counterRotateY?: number;
   counterRotateX?: number;
   lineLength?: number;
+  leftOffset?: number;
 }) => (
   <AnimatePresence>
     {isVisible && (
       <motion.div
         className="absolute flex items-center pointer-events-auto"
         style={{
-          left: "calc(100% - 40px)",
+          left: `calc(100% + ${leftOffset}px)`,
           top: "50%",
           zIndex: 60,
           transform: `translateY(-50%) rotateY(${counterRotateY}deg) rotateX(${counterRotateX}deg)`,
@@ -212,13 +214,14 @@ const PartTooltip = ({
         {/* 동그라미 포인트 */}
         <motion.div
           className="relative flex-shrink-0"
+          style={{ zIndex: 500, position: "relative" }}
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ duration: 0.2, delay: 0.1 }}
         >
           <div
             className="w-4 h-4 rounded-full bg-[#2b2b2b]"
-            style={{ boxShadow: "0 0 0 3px #FFF2D5" }}
+            style={{ position: "relative", zIndex: 500 }}
           />
         </motion.div>
 
@@ -269,7 +272,7 @@ const PartTooltip = ({
             >
               <svg
                 width="20" height="20" viewBox="0 0 20 20" fill="none"
-                style={{ transform: expandedTooltip === 0 ? "rotate(45deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
+                style={{ transform: isExpanded ? "rotate(45deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
               >
                 <path d="M10 4V16M4 10H16" stroke="#2b2b2b" strokeWidth="2.5" strokeLinecap="round" />
               </svg>
@@ -1297,6 +1300,7 @@ const IntroSection: React.FC = () => {
                 isExpanded={expandedTooltip === 1}
                 onToggle={() => setExpandedTooltip(expandedTooltip === 1 ? null : 1)}
                 lineLength={80}
+                leftOffset={-100}
               />
             </div>
 
@@ -1363,6 +1367,7 @@ const IntroSection: React.FC = () => {
                   isExpanded={expandedTooltip === 2}
                   onToggle={() => setExpandedTooltip(expandedTooltip === 2 ? null : 2)}
                   lineLength={80}
+                  leftOffset={-120}
                 />
               </div>
             </motion.div>
@@ -1806,7 +1811,7 @@ const IntroSection: React.FC = () => {
                     className="overflow-hidden"
                   >
                     <div className="pt-4 mt-4 border-t-2 border-[#2b2b2b]/30">
-                      <p className="text-[#555] text-[13px] leading-[1.6]">{details}</p>
+                      <p className="text-[#555] text-[13px] leading-[1.6]">{PART_DESCRIPTIONS[0].details}</p>
                     </div>
                   </motion.div>
                 )}

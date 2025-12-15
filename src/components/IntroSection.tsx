@@ -517,6 +517,7 @@ const IntroSection: React.FC = () => {
   const [naturalScrollY, setNaturalScrollY] = useState(0);
 
   const [phase, setPhase] = useState(0);
+  const showHat = phase >= 14 && phase < 23;
   const followParts = phase >= 2 && phase <= 12;
   const fixedPartsY = phase >= 14 && phase < 23 ? 25 : 0;
   const partsRotateY = followParts ? 0 : fixedPartsY;
@@ -1306,13 +1307,13 @@ const IntroSection: React.FC = () => {
                     zIndex: 50,
                   }}
                   initial={{ opacity: 1 }}
-                  animate={{ top: "420px", opacity: 1 }}
+                  animate={{ top: "415px", opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
                   <span className="text-[28px] font-normal text-[#2b2b2b]">3</span>
                   <div className='flex gap-8'>
-                    <svg width="24" height="40" viewBox="0 0 24 40">
+                    <svg width="24" height="40" viewBox="0 0 24 40" className="translate-y-1">
                       <path
                         d="M12,0 L12,32 M6,26 L12,34 L18,26"
                         stroke="#2b2b2b"
@@ -1322,7 +1323,7 @@ const IntroSection: React.FC = () => {
                         strokeLinejoin="round"
                       />
                     </svg>
-                    <svg width="24" height="40" viewBox="0 0 24 40">
+                    <svg width="24" height="40" viewBox="0 0 24 40" className="-translate-y-2">
                       <path
                         d="M12,0 L12,32 M6,26 L12,34 L18,26"
                         stroke="#2b2b2b"
@@ -1630,18 +1631,17 @@ const IntroSection: React.FC = () => {
         }
         transition={{ duration: 1.0, ease: "easeInOut" }}
       >
-        {phase >= 21 && (
+        {showHat && (
           <motion.div
             className="absolute"
             style={{
               left: "50%",
-              transform: "translateX(-50%)",
             }}
             initial={{ top: "-100px", opacity: 0 }}
             animate={{ top: "-50px", opacity: 1 }}
             transition={{ duration: 0.4, ease: "backOut" }}
           >
-            <PartPNG src="images/hat.png" className="w-[240px] h-[200px] object-contain" alt="hat" />
+            <PartPNG src="images/hat.png" className="w-[240px] h-[240px] object-contain scale-[4] z-[200]" alt=" hat" />
           </motion.div>
         )}
 

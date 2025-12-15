@@ -1232,10 +1232,10 @@ const IntroSection: React.FC = () => {
             fontFamily: FONT_FAMILY,
             fontSize: "clamp(32px, 4vw, 60px)",
             color: PROJECT_TEXT_COLOR,
-            top: "25%",
-            left: "40%",
-            transform: "rotate(-57deg)",
-            transformOrigin: "center center",
+            top: "20%",
+            left: "50%",
+            transform: "rotate(-50deg) translateX(-50%)",  // 👈 각도 조정
+            transformOrigin: "left center",
             whiteSpace: "nowrap"
           }}
         >
@@ -1280,17 +1280,25 @@ const IntroSection: React.FC = () => {
       <AnimatePresence>
         {phase >= 25 && (
           <motion.div
-            className="absolute inset-0 bg-black pointer-events-none"
-            style={{ zIndex: 84 }}
+            className="absolute pointer-events-none"
+            style={{
+              zIndex: 86,
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              background: "linear-gradient(to bottom left, rgba(0,0,0,0.6) 0%, transparent 60%)",
+              clipPath: "polygon(75% 0%, 95% 100%, 10% 100%)",  // 👈 노란색과 같은 클립패스
+            }}
             initial={{ opacity: 0 }}
             animate={{
-              opacity: [0, 0.7, 0],
+              opacity: [0, 1, 0],
             }}
             transition={{
               duration: 0.8,
               times: [0, 0.5, 1],
             }}
-            key={currentProject}  // 프로젝트 바뀔 때마다 애니메이션
+            key={currentProject}
           />
         )}
       </AnimatePresence>
@@ -1299,14 +1307,31 @@ const IntroSection: React.FC = () => {
         {isProjectOpen && (
           <motion.div
             className="fixed inset-0 z-[200] bg-white"
-            initial={{ y: "100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "100%" }}
-            transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              transformStyle: "preserve-3d",
+              perspective: 1500,
+              transformOrigin: "center bottom",  // 👈 하단 기준
+            }}
+            initial={{
+              rotateX: -90,  // 👈 뒤집힌 상태로 시작 (바닥에 누워있음)
+              opacity: 0,
+            }}
+            animate={{
+              rotateX: 0,    // 👈 펼쳐짐
+              opacity: 1,
+            }}
+            exit={{
+              rotateX: -90,
+              opacity: 0,
+            }}
+            transition={{
+              duration: 0.6,
+              ease: [0.22, 1, 0.36, 1],
+            }}
           >
             <button
               onClick={() => setIsProjectOpen(false)}
-              className="absolute top-8 right-8 w-12 h-12 flex items-center justify-center"
+              className="absolute top-8 right-8 w-12 h-12 flex items-center justify-center z-10"
             >
               <svg width="24" height="24" viewBox="0 0 24 24">
                 <path d="M18 6L6 18M6 6l12 12" stroke="#333" strokeWidth="2" strokeLinecap="round" />
@@ -1323,7 +1348,7 @@ const IntroSection: React.FC = () => {
       {/* 조립 가이드 섹션 (Parts Wrapper) */}
       {phase >= 15 && (
         <motion.div
-          className="absolute z-[60] pointer-events-none"
+          className="absolute z-[60]"
           initial={{ left: "50%", top: "50%", x: "-50%", y: "-50%" }}
           animate={
             phase >= 23 ? {
@@ -1591,24 +1616,34 @@ const IntroSection: React.FC = () => {
                 transition={{ duration: 0.8, ease: "easeInOut" }}
               />
 
+              <motion.div
+                className="relative flex flex-col items-center justify-center p-8"
+                initial={{ width: "400px" }}  // 👈 작게 시작
+                animate={{
+                  width: phase >= 21 ? "540px" : "400px",
+                }}
+                transition={{ duration: 0.6, ease: "easeOut" }}
+              ></motion.div>
+
               <AnimatePresence mode="wait">
                 {phase < 21 ? (
                   <motion.div
                     key="placeholder"
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    className="flex flex-col items-center py-20"
+                    initial={{ scale: 1 }}
+                    exit={{ opacity: 0, scale: 1.1 }}  // 👈 나갈 때 살짝 커짐
+                    className="flex flex-col items-center py-12"  // 👈 패딩 줄임
                   >
-                    <div className="text-[128px] font-normal font-kanit text-[#333333]">?</div>
-                    <div className="mt-6 text-[24px] font-normal tracking-wider text-[#333333] font-kanit text-center">
+                    <div className="text-[100px] font-normal font-kanit text-[#333333]">?</div>
+                    <div className="mt-4 text-[20px] font-normal tracking-wider text-[#333333] font-kanit text-center">
                       ASSEMBLED CHARACTER
                     </div>
                   </motion.div>
                 ) : (
                   <motion.div
                     key="assembled"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, ease: "easeOut", delay: 1.2 }}
+                    initial={{ opacity: 0, scale: 0.85 }}  // 👈 작게 시작
+                    animate={{ opacity: 1, scale: 1 }}     // 👈 원래 크기로
+                    transition={{ duration: 0.6, ease: "easeOut", delay: 0.3 }}
                     className="w-full text-left"
                   >
                     <div className="text-center mb-8">
@@ -1776,14 +1811,14 @@ const IntroSection: React.FC = () => {
 
           phase >= 23
             ? {
-              left: "95%",
-              top: "85%",
+              left: "92%",
+              top: "15%",        // 👈 상단으로
               x: "-50%",
               y: "-50%",
-              scale: 0.35,
-              rotateZ: 15,      // 반대 방향
-              rotateY: -25,     // 반전
-              rotateX: 15,      // 아래를 봄
+              scale: 0.4,
+              rotateZ: 20,
+              rotateY: -30,
+              rotateX: 25,       // 👈 아래를 내려다봄
             }
             : phase >= 14
               ? {

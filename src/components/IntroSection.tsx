@@ -13,6 +13,31 @@ const BEAM_COLOR = "#FCBB09";
 const PROJECT_TEXT_COLOR = "#8E00BD";
 
 
+const CheeseWaveTransition = ({ color = "#FCBB09" }: { color?: string }) => (
+  <div className="absolute top-0 left-0 w-full overflow-hidden" style={{ height: "120px", transform: "translateY(-99%)" }}>
+    <svg
+      viewBox="0 0 1200 120"
+      preserveAspectRatio="none"
+      className="w-full h-full"
+      style={{ transform: "rotate(180deg)" }}
+    >
+      <path
+        d="M0,0 
+           C150,80 300,100 450,60 
+           C600,20 750,80 900,100 
+           C1050,120 1150,80 1200,40 
+           L1200,120 L0,120 Z"
+        fill={color}
+      />
+      {/* 치즈 늘어지는 방울들 */}
+      <ellipse cx="200" cy="10" rx="25" ry="35" fill={color} />
+      <ellipse cx="500" cy="20" rx="20" ry="45" fill={color} />
+      <ellipse cx="800" cy="15" rx="22" ry="40" fill={color} />
+      <ellipse cx="1000" cy="25" rx="18" ry="30" fill={color} />
+    </svg>
+  </div>
+);
+
 
 // 파츠들에 넘길 최종 rotateY
 
@@ -1152,7 +1177,7 @@ const IntroSection: React.FC = () => {
 
       {/* 크림 배경 + 타이틀 */}
       <motion.div
-        className="absolute left-0 w-full h-full"
+        className="absolute left-0 w-full h-full pointer-events-none"
         style={{ zIndex: 10 }}
         initial={{ x: "-120%" }}
         animate={
@@ -1198,6 +1223,26 @@ const IntroSection: React.FC = () => {
         </motion.div>
       </motion.div>
 
+      {/* skill */}
+
+      {phase >= 26 && (
+        <motion.div
+          className="absolute w-full h-full"
+          style={{ zIndex: 90, top: "100vh" }}  // 현재 화면 아래에서 시작
+          initial={{ y: 0 }}
+          animate={{ y: "-100vh" }}  // 위로 올라옴
+          transition={{ duration: 1, ease: "easeInOut" }}
+        >
+          {/* 치즈 웨이브 */}
+          <CheeseWaveTransition color="#FCBB09" />
+
+          {/* 다음 섹션 내용 */}
+          <div className="w-full h-full bg-[#4A7C23]">
+            {/* 초록색 배경 섹션 내용 */}
+          </div>
+        </motion.div>
+      )}
+
       {/* Project Kits Beam (Yellow) */}
       <motion.div
         className="absolute"
@@ -1237,23 +1282,27 @@ const IntroSection: React.FC = () => {
           <motion.div
             key={PROJECT_DATA[currentProject].id}
             className="absolute z-[90]"
-            style={{ left: "50%", top: "50%", transform: "translate(-50%, -50%)" }}
+            style={{ left: "50%", top: "50%" }}
             initial={{
               opacity: 0,
-              scale: 0.85,           // 작게 시작 (뒤에 있던 느낌)
-              y: 30,                 // 아래에서 올라옴
+              scale: 0.85,
+              x: "-50%",
+              y: "-45%",  // -50% + 약간 아래에서 시작
               filter: "brightness(0.7)",
             }}
             animate={{
               opacity: 1,
               scale: 1,
+              x: "-50%",
+              y: "-50%",
               filter: "brightness(1)",
               transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] },
             }}
             exit={{
               opacity: 0,
-              scale: 1.15,           // 앞으로 나가면서 커짐
-              y: -30,                // 위로 빠짐
+              scale: 1.15,
+              x: "-50%",
+              y: "-55%",  // 위로 빠짐
               filter: "brightness(1.2)",
               transition: { duration: 0.35, ease: "easeIn" },
             }}

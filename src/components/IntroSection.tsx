@@ -1707,18 +1707,6 @@ const IntroSection: React.FC = () => {
       {/* 얼굴 컨테이너 */}
       <motion.div
         id="face-container"
-        onUpdate={(latest) => {
-          // latest.scale / latest.x / latest.y 가 실제로 변하는지 확인
-          console.log("FACE", {
-            phase,
-            scale: latest.scale,
-            x: latest.x,
-            y: latest.y,
-            left: (latest as any).left,
-            top: (latest as any).top,
-            rotateY: (latest as any).rotateY,
-          });
-        }}
         className="absolute pointer-events-none"
         style={{
           width: "700px",
@@ -1727,42 +1715,39 @@ const IntroSection: React.FC = () => {
           zIndex: 100,
           overflow: "visible",
         }}
-        initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}
+        initial={{ left: "50%", top: "50%", x: "-50%", y: "150vh", scale: 0.8, rotateZ: -45, rotateX: 30, rotateY: 0 }}
         animate={
           phase >= 23
-            ? {
-              left: "90%",
-              top: "10%",
-              x: "-50%",
-              y: "-50%",
-              scale: 0.5,
-              rotateZ: -15,
-              rotateY: 0,
-            }
-            : phase >= 14  // 🔥 Phase 14부터 바로 작아지고 오른쪽 봄
-              ? {
-                left: "2px",
-                top: "50%",
-                x: "0",
-                y: `calc(-50% + 12vh + ${scrollOffset}px)`,
-                scale: 0.4,      // 🔥 700px * 0.17 ≈ 120px
-                rotateZ: 0,
-                rotateY: IS_FIXED ? FIXED_Y : 0,  // 🔥 오른쪽 바라봄
-              }
+            ? { /* 그대로 */ }
+            : phase >= 14
+              ? { /* 그대로 */ }
               : phase >= 9
-                ? {
-                  x: "-50%",
-                  y: "-50%",
-                  left: "50%",
-                  top: "50%",
-                  scale: 1,
-                  rotateZ: 0,
-                  rotateY: 0,
-                }
-                : { y: "150vh" }
+                ? { /* 그대로 */ }
+                : phase === 0
+                  ? {
+                    left: "50%",
+                    top: "50%",
+                    x: "-50%",
+                    y: "150vh",        // ✅ 0에서만 대기
+                    scale: 0.8,
+                    rotateZ: -45,
+                    rotateX: 30,
+                    rotateY: 0,
+                  }
+                  : {
+                    left: "50%",
+                    top: "50%",
+                    x: "-50%",
+                    // ✅ phase 1~8에서는 y를 "아예" 넣지 않음
+                    scale: 1,
+                    rotateZ: 0,
+                    rotateX: 0,
+                    rotateY: 0,
+                  }
         }
         transition={{ duration: 1.0, ease: "easeInOut" }}
       >
+
         {/* Hat attached to Face (Visible Phase 21+) */}
         {phase >= 21 && (
           <motion.div
@@ -1780,15 +1765,17 @@ const IntroSection: React.FC = () => {
           </motion.div>
         )}
 
-        <motion.div className="w-full h-full pointer-events-auto" style={{ transformStyle: "preserve-3d" }}>
-          {/* <LegoFace className="w-full h-full drop-shadow-2xl" /> */}
-
-          <div className={PART_BOX}> <LegoFace3D
-            className="w-full h-full drop-shadow-2xl"
-            followMouse={phase >= 2 && phase <= 12}
-            fixedRotationY={IS_FIXED ? FIXED_Y : 0}
-          /></div>
-
+        <motion.div
+          className="w-full h-full pointer-events-auto flex items-center justify-center"
+          style={{ transformStyle: "preserve-3d" }}
+        >
+          <div className={PART_BOX}>
+            <LegoFace3D
+              className="w-full h-full drop-shadow-2xl"
+              followMouse={phase >= 2 && phase <= 12}
+              fixedRotationY={IS_FIXED ? FIXED_Y : 0}
+            />
+          </div>
         </motion.div>
       </motion.div>
 

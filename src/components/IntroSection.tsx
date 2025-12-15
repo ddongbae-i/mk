@@ -988,14 +988,24 @@ const IntroSection: React.FC = () => {
     return () => container.removeEventListener('scroll', handleNaturalScroll);
   }, [isNaturalScrolling, phase]);
 
+  // 1) wheel: scope에 등록
   useEffect(() => {
+    const el = scope.current as HTMLElement | null;
+    if (!el) return;
+
     const onWheel = (e: WheelEvent) => {
       if (isNaturalScrolling) return;
-      if (Math.abs(e.deltaY) > 10) {
-        e.preventDefault();
-        handleScrollActionRef.current(e.deltaY > 0 ? 1 : -1);
-      }
+      if (Math.abs(e.deltaY) < 1) return;
+      e.preventDefault();
+      handleScrollActionRef.current(e.deltaY > 0 ? 1 : -1);
     };
+
+    el.addEventListener("wheel", onWheel, { passive: false });
+    return () => el.removeEventListener("wheel", onWheel);
+  }, [isNaturalScrolling]);
+
+  // 2) touch/keydown: window에 등록 (기존 그대로)
+  useEffect(() => {
     const onTouchStart = (e: TouchEvent) => {
       touchStartRef.current = e.touches[0].clientY;
     };
@@ -1018,13 +1028,11 @@ const IntroSection: React.FC = () => {
       }
     };
 
-    window.addEventListener("wheel", onWheel, { passive: false });
     window.addEventListener("touchstart", onTouchStart, { passive: false });
     window.addEventListener("touchend", onTouchEnd, { passive: false });
     window.addEventListener("keydown", onKeyDown);
 
     return () => {
-      window.removeEventListener("wheel", onWheel);
       window.removeEventListener("touchstart", onTouchStart);
       window.removeEventListener("touchend", onTouchEnd);
       window.removeEventListener("keydown", onKeyDown);

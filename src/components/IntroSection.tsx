@@ -447,12 +447,12 @@ const FloatingMenuBlock: React.FC<{
           rotate: { duration: 6 + (index % 4), repeat: Infinity, ease: "easeInOut", delay: randomDelay + 0.5 },
         }),
       }}
-      whileHover={shouldFloat ? {
+      whileHover={{
         scale: 1.15,
         rotate: 0,
         y: -30,
         transition: { type: "spring", stiffness: 400, damping: 10 }
-      } : undefined}
+      }}
       whileTap={{ scale: 0.95 }}
       className="absolute w-40 h-24 md:w-52 md:h-32 cursor-pointer pointer-events-auto"
     >
@@ -469,15 +469,18 @@ const StackedMenuBlock: React.FC<{
 }> = ({ index, hoveredIndex, onHover }) => {
   const label = BRICK_LABELS[index % BRICK_LABELS.length];
 
-  // 호버 시 위아래 벌어짐
   const getHoverOffset = () => {
     if (hoveredIndex === null) return 0;
     if (index === hoveredIndex) return 0;
-    if (index < hoveredIndex) return -20;  // 위 블럭들
-    return 20;  // 아래 블럭들
+    if (index < hoveredIndex) return -20;
+    return 20;
   };
 
   const isHovered = hoveredIndex === index;
+
+  // z-index: 빨간색(0)이 가장 위, 보라색(4)이 가장 아래
+  // 기본: 50, 49, 48, 47, 46 → 빨간색이 50으로 가장 위
+  const baseZIndex = 50 - index;
 
   return (
     <motion.div
@@ -488,7 +491,7 @@ const StackedMenuBlock: React.FC<{
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
       onMouseEnter={() => onHover(index)}
       onMouseLeave={() => onHover(null)}
-      style={{ zIndex: isHovered ? 60 : 50 - index }}
+      style={{ zIndex: isHovered ? 60 : baseZIndex }}
       className="w-40 h-24 md:w-52 md:h-32 cursor-pointer"
     >
       <LegoBrick label={label} index={index} />
@@ -523,7 +526,7 @@ const HamburgerIcon = ({
       src={`${import.meta.env.BASE_URL}images/hamburger_line3.svg`}
       alt=""
       className="w-8 h-[6px] origin-right"
-      animate={isOpen ? { rotate: 45, y: -6 } : { rotate: 0, y: 0 }}
+      animate={isOpen ? { rotate: -20, y: -6 } : { rotate: 0, y: 0 }}
       transition={{ duration: 0.3 }}
     />
   </div>
@@ -1613,9 +1616,6 @@ const IntroSection: React.FC = () => {
                   index={i}
                   id={`block-${i}`}
                   shouldFloat={phase === 9}
-                  isStacked={phase >= 10 && phase <= 12}
-                  hoveredIndex={hoveredBlockIndex}
-                  onHover={setHoveredBlockIndex}
                   style={pos}
                 />
               ))}
@@ -1627,7 +1627,7 @@ const IntroSection: React.FC = () => {
               className="fixed z-[110] pointer-events-auto"
               style={{
                 right: "180px",
-                top: "100px",
+                bottom: "40px",  // 하단 기준
               }}
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -1635,7 +1635,13 @@ const IntroSection: React.FC = () => {
             >
               <div className="flex flex-col items-center">
                 {[0, 1, 2, 3, 4].map((i) => (
-                  <div key={i} style={{ marginTop: i === 0 ? 0 : -50 }}>
+                  <div
+                    key={i}
+                    style={{
+                      marginTop: i === 0 ? 0 : -50,  // overlap
+                      zIndex: 50 - i,  // BUILD가 가장 위
+                    }}
+                  >
                     <StackedMenuBlock
                       index={i}
                       hoveredIndex={hoveredBlockIndex}

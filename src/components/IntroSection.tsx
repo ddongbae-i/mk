@@ -1737,83 +1737,12 @@ const IntroSection: React.FC = () => {
               />
             </div>
 
-            {/* 모자 Tooltip - face-container 내부지만 showHat 블록 바깥 */}
-            {phase === 16 && (
-              <div
-                className="absolute pointer-events-auto"
-                style={{
-                  left: "calc(50% + 160px)",
-                  top: "50%",
-                  zIndex: 10000,
-                }}
-              >
-                <motion.div
-                  className="flex items-center"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <motion.div
-                    className="w-4 h-4 rounded-full bg-[#2b2b2b] flex-shrink-0"
-                    style={{ boxShadow: "0 0 0 3px #FFF2D5" }}
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    transition={{ duration: 0.2, delay: 0.1 }}
-                  />
-                  <motion.div
-                    className="h-[3px] bg-[#2b2b2b] flex-shrink-0"
-                    initial={{ width: 0 }}
-                    animate={{ width: 120 }}
-                    transition={{ duration: 0.3, delay: 0.15 }}
-                  />
-                  <motion.div
-                    className="bg-[#FDD130] border-[3px] border-[#2b2b2b] shadow-[4px_4px_0_0_#2b2b2b] flex-shrink-0"
-                    style={{ width: "280px", padding: "20px 24px" }}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: 0.2 }}
-                  >
-                    <h3 className="font-bold text-[#2b2b2b] italic text-[20px] mb-2" style={{ fontFamily: 'Kanit, sans-serif' }}>
-                      {PART_DESCRIPTIONS[0].title}
-                    </h3>
-                    <p className="text-[#333] text-[14px] font-medium leading-[1.5]">
-                      {PART_DESCRIPTIONS[0].description}
-                    </p>
-                    <div className="mt-4 flex justify-center">
-                      <button
-                        onClick={() => setExpandedTooltip(expandedTooltip === 0 ? null : 0)}
-                        className="w-10 h-10 border-[2px] border-[#2b2b2b] bg-white flex items-center justify-center cursor-pointer hover:bg-[#f5f5f5]"
-                      >
-                        <svg
-                          width="20" height="20" viewBox="0 0 20 20" fill="none"
-                          style={{ transform: expandedTooltip === 0 ? "rotate(45deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
-                        >
-                          <path d="M10 4V16M4 10H16" stroke="#2b2b2b" strokeWidth="2.5" strokeLinecap="round" />
-                        </svg>
-                      </button>
-                    </div>
-                    <AnimatePresence>
-                      {expandedTooltip === 0 && PART_DESCRIPTIONS[0].details && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: "auto", opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          className="overflow-hidden"
-                        >
-                          <div className="pt-4 mt-4 border-t-2 border-[#2b2b2b]/30">
-                            <p className="text-[#555] text-[13px] leading-[1.6]">{PART_DESCRIPTIONS[0].details}</p>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </motion.div>
-                </motion.div>
-              </div>
-            )}
+
           </motion.div>
 
         )}
+
+
 
 
 
@@ -1826,6 +1755,80 @@ const IntroSection: React.FC = () => {
           />
         </motion.div>
       </motion.div>
+
+      {/* 모자 Tooltip - face-container 내부지만 showHat 블록 바깥 */}
+      {phase === 16 && (
+        <div
+          className="absolute pointer-events-auto"
+          style={{
+            left: "505px",
+            top: "2%",
+            zIndex: 10000,
+          }}
+        >
+          <motion.div
+            className="flex items-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <motion.div
+              className="w-4 h-4 rounded-full bg-[#2b2b2b] flex-shrink-0"
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 0.2, delay: 0.1 }}
+            />
+            <motion.div
+              className="h-[3px] bg-[#2b2b2b] flex-shrink-0"
+              initial={{ width: 0 }}
+              animate={{ width: 120 }}
+              transition={{ duration: 0.3, delay: 0.15 }}
+            />
+            <motion.div
+              className="bg-[#FDD130] border-[3px] border-[#2b2b2b] shadow-[4px_4px_0_0_#2b2b2b] flex-shrink-0"
+              style={{ width: "280px", padding: "20px 24px" }}
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.3, delay: 0.2 }}
+            >
+              <h3 className="font-bold text-[#2b2b2b] italic text-[20px] mb-2" style={{ fontFamily: 'Kanit, sans-serif' }}>
+                {PART_DESCRIPTIONS[0].title}
+              </h3>
+              <p className="text-[#333] text-[14px] font-medium leading-[1.5]">
+                {PART_DESCRIPTIONS[0].description}
+              </p>
+              <div className="mt-4 flex justify-center">
+                <button
+                  onClick={() => setExpandedTooltip(expandedTooltip === 0 ? null : 0)}
+                  className="w-10 h-10 border-[2px] border-[#2b2b2b] bg-white flex items-center justify-center cursor-pointer hover:bg-[#f5f5f5]"
+                >
+                  <svg
+                    width="20" height="20" viewBox="0 0 20 20" fill="none"
+                    style={{ transform: expandedTooltip === 0 ? "rotate(45deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
+                  >
+                    <path d="M10 4V16M4 10H16" stroke="#2b2b2b" strokeWidth="2.5" strokeLinecap="round" />
+                  </svg>
+                </button>
+              </div>
+              <AnimatePresence>
+                {expandedTooltip === 0 && PART_DESCRIPTIONS[0].details && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="pt-4 mt-4 border-t-2 border-[#2b2b2b]/30">
+                      <p className="text-[#555] text-[13px] leading-[1.6]">{PART_DESCRIPTIONS[0].details}</p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </motion.div>
+          </motion.div>
+        </div>
+      )}
 
       {/* 하단 안내 문구 */}
       {phase === 0 && <motion.div className="absolute bottom-10 text-gray-400 font-kanit font-semibold text-sm animate-bounce uppercase tracking-widest">Scroll to Start</motion.div>}

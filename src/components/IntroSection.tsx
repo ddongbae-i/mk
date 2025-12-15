@@ -11,9 +11,6 @@ const BG_CREAM = "#FFF2D5";
 const BEAM_COLOR = "#FCBB09";
 const PROJECT_TEXT_COLOR = "#8E00BD";
 
-const [hoveredBlockIndex, setHoveredBlockIndex] = useState<number | null>(null);
-
-
 // S2 DATA
 const S2_CONTENT = [
   {
@@ -427,63 +424,75 @@ const FloatingMenuBlock: React.FC<{
   hoveredIndex?: number | null;
   onHover?: (index: number | null) => void;
 }> = ({ index, style, id, shouldFloat, isStacked, hoveredIndex, onHover }) => {
-  const randomDelay = 0.4 + index * 0.2;
-  const durationX = 5 + (index % 3);
-  const durationY = 4 + (index % 2);
-  const durationR = 6 + (index % 4);
-
-  const color = BRICK_COLORS[index % BRICK_COLORS.length];
   const label = BRICK_LABELS[index % BRICK_LABELS.length];
 
+  // 스택 상태에서 호버 시 간격 벌어짐 계산
   const getStackHoverOffset = () => {
     if (!isStacked || hoveredIndex === null) return 0;
-    if (index === hoveredIndex) return 0;
-    if (index < hoveredIndex) return -20;  // 위에 있는 블럭들은 위로
-    return 20;  // 아래 있는 블럭들은 아래로
+    if (index === hoveredIndex) return 0;  // 호버된 블럭은 제자리
+    if (index < hoveredIndex) return -25;  // 위 블럭들은 위로
+    return 25;  // 아래 블럭들은 아래로
   };
 
-  const floatAnim = {
-    opacity: 1,
-    scale: 1,
-    y: [0, -15, 0],
-    x: [0, 8, 0],
-    rotate: [0, index % 2 === 0 ? 5 : -5, 0],
+  // 플로팅 애니메이션 (phase 9)
+  const floatVariants = {
+    float: {
+      opacity: 1,
+      scale: 1,
+      y: [0, -15, 0],
+      x: [0, 8, 0],
+      rotate: [0, index % 2 === 0 ? 5 : -5, 0],
+      transition: {
+        y: { duration: 4 + (index % 2), repeat: Infinity, ease: "easeInOut", delay: 0.4 + index * 0.2 },
+        x: { duration: 5 + (index % 3), repeat: Infinity, ease: "easeInOut", delay: 0.4 + index * 0.2 },
+        rotate: { duration: 6 + (index % 4), repeat: Infinity, ease: "easeInOut", delay: 0.4 + index * 0.2 },
+        opacity: { duration: 0.8, delay: 0.4 + index * 0.2 },
+        scale: { duration: 0.8, delay: 0.4 + index * 0.2 },
+      }
+    }
   };
+
+  // 스택 상태에서 호버된 블럭의 스타일
+  const isHovered = isStacked && hoveredIndex === index;
+  const stackedScale = isHovered ? 1.08 : 1;
+  const stackedY = getStackHoverOffset();
 
   return (
     <motion.div
-
       id={id}
-      style={{ ...style, zIndex: 50 - index } as React.CSSProperties}
+      style={{ ...style, zIndex: isHovered ? 60 : 50 - index } as React.CSSProperties}
       initial={{ opacity: 0, scale: 0.8 }}
-      animate={shouldFloat ? floatAnim : {
-        opacity: 1,
-        scale: 1,
-        y: getStackHoverOffset()  // 추가
-      }}
-      onMouseEnter={() => onHover?.(index)}
-      onMouseLeave={() => onHover?.(null)}
-      transition={{
-        opacity: { duration: 0.8, delay: randomDelay },
-        scale: { duration: 0.8, delay: randomDelay },
-        ...(shouldFloat
-          ? {
-            y: { duration: durationY, repeat: Infinity, ease: "easeInOut", delay: randomDelay + 0.5 },
-            x: { duration: durationX, repeat: Infinity, ease: "easeInOut", delay: randomDelay + 0.5 },
-            rotate: { duration: durationR, repeat: Infinity, ease: "easeInOut", delay: randomDelay + 0.5 },
+      animate={
+        shouldFloat
+          ? "float"
+          : {
+            opacity: 1,
+            scale: stackedScale,
+            y: stackedY,
+            rotate: 0,
           }
-          : {}),
-      }}
-      whileHover={{
-        scale: 1.15,
-        rotate: 0,
-        y: -30,  // 펄쩍 뛰기
-        transition: {
-          type: "spring",
-          stiffness: 400,
-          damping: 10
-        }
-      }}
+      }
+      variants={floatVariants}
+      transition={
+        !shouldFloat
+          ? {
+            y: { type: "spring", stiffness: 300, damping: 25 },
+            scale: { type: "spring", stiffness: 400, damping: 20 },
+          }
+          : undefined
+      }
+      onMouseEnter={() => isStacked && onHover?.(index)}
+      onMouseLeave={() => isStacked && onHover?.(null)}
+      whileHover={
+        shouldFloat
+          ? {
+            scale: 1.15,
+            rotate: 0,
+            y: -30,
+            transition: { type: "spring", stiffness: 400, damping: 10 },
+          }
+          : undefined  // 스택 상태에서는 whileHover 비활성화
+      }
       whileTap={{ scale: 0.95 }}
       className="absolute w-40 h-24 md:w-52 md:h-32 cursor-pointer pointer-events-auto"
     >
@@ -491,7 +500,6 @@ const FloatingMenuBlock: React.FC<{
     </motion.div>
   );
 };
-
 const HamburgerIcon = ({
   className,
   isOpen,
@@ -541,6 +549,8 @@ const IntroSection: React.FC = () => {
   const [naturalScrollY, setNaturalScrollY] = useState(0);
 
   const [phase, setPhase] = useState(0);
+  const [hoveredBlockIndex, setHoveredBlockIndex] = useState<number | null>(null);  // ✅ 여기에 추가!
+
   const phaseRef = useRef(phase);
 
   const isAnimatingRef = useRef(false);

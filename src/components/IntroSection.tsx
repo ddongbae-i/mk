@@ -1877,7 +1877,7 @@ const IntroSection: React.FC = () => {
             animate={{
               top: phase >= 23 ? "40px" : phase >= 21 ? "40px" : "-420px",
               opacity: 1,
-              scale: phase >= 21 ? 2 : 0.5,
+              scale: phase >= 21 ? 2 : 1,
               y: phase >= 21 ? 20 : -10,
               x: phase >= 21 ? -100 : 0,
               scaleX: phase >= 23 ? -1 : 1,  // 👈 반전!

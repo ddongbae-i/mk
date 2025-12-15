@@ -420,79 +420,39 @@ const FloatingMenuBlock: React.FC<{
   style?: React.CSSProperties;
   id?: string;
   shouldFloat: boolean;
-  isStacked?: boolean;
-  hoveredIndex?: number | null;
-  onHover?: (index: number | null) => void;
-}> = ({ index, style, id, shouldFloat, isStacked, hoveredIndex, onHover }) => {
+}> = ({ index, style, id, shouldFloat }) => {
   const label = BRICK_LABELS[index % BRICK_LABELS.length];
+  const randomDelay = 0.4 + index * 0.2;
 
-  // 스택 상태에서 호버 시 간격 벌어짐 계산
-  const getStackHoverOffset = () => {
-    if (!isStacked || hoveredIndex === null) return 0;
-    if (index === hoveredIndex) return 0;  // 호버된 블럭은 제자리
-    if (index < hoveredIndex) return -25;  // 위 블럭들은 위로
-    return 25;  // 아래 블럭들은 아래로
+  const floatAnim = {
+    opacity: 1,
+    scale: 1,
+    y: [0, -15, 0],
+    x: [0, 8, 0],
+    rotate: [0, index % 2 === 0 ? 5 : -5, 0],
   };
-
-  // 플로팅 애니메이션 (phase 9)
-  const floatVariants = {
-    float: {
-      opacity: 1,
-      scale: 1,
-      y: [0, -15, 0],
-      x: [0, 8, 0],
-      rotate: [0, index % 2 === 0 ? 5 : -5, 0],
-      transition: {
-        y: { duration: 4 + (index % 2), repeat: Infinity, ease: "easeInOut", delay: 0.4 + index * 0.2 },
-        x: { duration: 5 + (index % 3), repeat: Infinity, ease: "easeInOut", delay: 0.4 + index * 0.2 },
-        rotate: { duration: 6 + (index % 4), repeat: Infinity, ease: "easeInOut", delay: 0.4 + index * 0.2 },
-        opacity: { duration: 0.8, delay: 0.4 + index * 0.2 },
-        scale: { duration: 0.8, delay: 0.4 + index * 0.2 },
-      }
-    }
-  };
-
-  // 스택 상태에서 호버된 블럭의 스타일
-  const isHovered = isStacked && hoveredIndex === index;
-  const stackedScale = isHovered ? 1.08 : 1;
-  const stackedY = getStackHoverOffset();
 
   return (
     <motion.div
       id={id}
-      style={{ ...style, zIndex: isHovered ? 60 : 50 - index } as React.CSSProperties}
+      style={{ ...style, zIndex: 50 - index } as React.CSSProperties}
       initial={{ opacity: 0, scale: 0.8 }}
-      animate={
-        shouldFloat
-          ? "float"
-          : {
-            opacity: 1,
-            scale: stackedScale,
-            y: stackedY,
-            rotate: 0,
-          }
-      }
-      variants={floatVariants}
-      transition={
-        !shouldFloat
-          ? {
-            y: { type: "spring", stiffness: 300, damping: 25 },
-            scale: { type: "spring", stiffness: 400, damping: 20 },
-          }
-          : undefined
-      }
-      onMouseEnter={() => isStacked && onHover?.(index)}
-      onMouseLeave={() => isStacked && onHover?.(null)}
-      whileHover={
-        shouldFloat
-          ? {
-            scale: 1.15,
-            rotate: 0,
-            y: -30,
-            transition: { type: "spring", stiffness: 400, damping: 10 },
-          }
-          : undefined  // 스택 상태에서는 whileHover 비활성화
-      }
+      animate={shouldFloat ? floatAnim : { opacity: 1, scale: 1 }}
+      transition={{
+        opacity: { duration: 0.8, delay: randomDelay },
+        scale: { duration: 0.8, delay: randomDelay },
+        ...(shouldFloat && {
+          y: { duration: 4 + (index % 2), repeat: Infinity, ease: "easeInOut", delay: randomDelay + 0.5 },
+          x: { duration: 5 + (index % 3), repeat: Infinity, ease: "easeInOut", delay: randomDelay + 0.5 },
+          rotate: { duration: 6 + (index % 4), repeat: Infinity, ease: "easeInOut", delay: randomDelay + 0.5 },
+        }),
+      }}
+      whileHover={shouldFloat ? {
+        scale: 1.15,
+        rotate: 0,
+        y: -30,
+        transition: { type: "spring", stiffness: 400, damping: 10 }
+      } : undefined}
       whileTap={{ scale: 0.95 }}
       className="absolute w-40 h-24 md:w-52 md:h-32 cursor-pointer pointer-events-auto"
     >
@@ -500,6 +460,42 @@ const FloatingMenuBlock: React.FC<{
     </motion.div>
   );
 };
+
+
+const StackedMenuBlock: React.FC<{
+  index: number;
+  hoveredIndex: number | null;
+  onHover: (index: number | null) => void;
+}> = ({ index, hoveredIndex, onHover }) => {
+  const label = BRICK_LABELS[index % BRICK_LABELS.length];
+
+  // 호버 시 위아래 벌어짐
+  const getHoverOffset = () => {
+    if (hoveredIndex === null) return 0;
+    if (index === hoveredIndex) return 0;
+    if (index < hoveredIndex) return -20;  // 위 블럭들
+    return 20;  // 아래 블럭들
+  };
+
+  const isHovered = hoveredIndex === index;
+
+  return (
+    <motion.div
+      animate={{
+        y: getHoverOffset(),
+        scale: isHovered ? 1.05 : 1,
+      }}
+      transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      onMouseEnter={() => onHover(index)}
+      onMouseLeave={() => onHover(null)}
+      style={{ zIndex: isHovered ? 60 : 50 - index }}
+      className="w-40 h-24 md:w-52 md:h-32 cursor-pointer"
+    >
+      <LegoBrick label={label} index={index} />
+    </motion.div>
+  );
+};
+
 const HamburgerIcon = ({
   className,
   isOpen,
@@ -1609,7 +1605,7 @@ const IntroSection: React.FC = () => {
             )}
           </AnimatePresence>
 
-          {(phase >= 9 && phase <= 12) && (
+          {(phase >= 9 && phase <= 11) && (
             <div className="absolute inset-0 pointer-events-none z-[110]">
               {BLOCK_POSITIONS.map((pos, i) => (
                 <FloatingMenuBlock
@@ -1624,6 +1620,31 @@ const IntroSection: React.FC = () => {
                 />
               ))}
             </div>
+          )}
+
+          {phase === 12 && (
+            <motion.div
+              className="fixed z-[110] pointer-events-auto"
+              style={{
+                right: "180px",
+                top: "100px",
+              }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="flex flex-col items-center">
+                {[0, 1, 2, 3, 4].map((i) => (
+                  <div key={i} style={{ marginTop: i === 0 ? 0 : -50 }}>
+                    <StackedMenuBlock
+                      index={i}
+                      hoveredIndex={hoveredBlockIndex}
+                      onHover={setHoveredBlockIndex}
+                    />
+                  </div>
+                ))}
+              </div>
+            </motion.div>
           )}
         </div>
       </div>

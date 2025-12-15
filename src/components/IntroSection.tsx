@@ -1860,8 +1860,8 @@ const IntroSection: React.FC = () => {
         <div
           className="absolute pointer-events-auto"
           style={{
-            left: "505px",
-            top: "2%",
+            left: "27vw",
+            top: "9vh",
             zIndex: 10000,
           }}
         >

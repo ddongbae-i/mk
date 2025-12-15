@@ -14,7 +14,7 @@ const PROJECT_TEXT_COLOR = "#8E00BD";
 
 
 const CheeseWaveTransition = ({ color = "#FCBB09" }: { color?: string }) => (
-  <div className="absolute top-0 left-0 w-full overflow-hidden" style={{ height: "120px", transform: "translateY(-99%)" }}>
+  <div className="absolute left-0 w-full overflow-hidden" style={{ height: "150px", top: 0 }}>
     <svg
       viewBox="0 0 1200 120"
       preserveAspectRatio="none"
@@ -1227,17 +1227,17 @@ const IntroSection: React.FC = () => {
 
       {phase >= 26 && (
         <motion.div
-          className="absolute w-full h-full"
-          style={{ zIndex: 90, top: "100vh" }}  // 현재 화면 아래에서 시작
-          initial={{ y: 0 }}
-          animate={{ y: "-100vh" }}  // 위로 올라옴
+          className="absolute w-full"
+          style={{ zIndex: 90, top: 0, height: "200vh" }}  // 높이 2배로
+          initial={{ y: "100vh" }}  // 아래에서 시작
+          animate={{ y: 0 }}        // 제자리로
           transition={{ duration: 1, ease: "easeInOut" }}
         >
           {/* 치즈 웨이브 */}
           <CheeseWaveTransition color="#FCBB09" />
 
           {/* 다음 섹션 내용 */}
-          <div className="w-full h-full bg-[#4A7C23]">
+          <div className="absolute w-full bg-[#4A7C23]" style={{ top: "120px", height: "calc(100vh - 120px)" }}>
             {/* 초록색 배경 섹션 내용 */}
           </div>
         </motion.div>
@@ -1245,7 +1245,7 @@ const IntroSection: React.FC = () => {
 
       {/* Project Kits Beam (Yellow) */}
       <motion.div
-        className="absolute"
+        className="absolute pointer-events-none"
         style={{
           top: 0,
           left: 0,
@@ -1256,7 +1256,7 @@ const IntroSection: React.FC = () => {
           zIndex: 85,
         }}
         initial={{ opacity: 0 }}
-        animate={phase >= 24 ? { opacity: 1 } : { opacity: 0 }}
+        animate={phase >= 24 && phase < 26 ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
         <div
@@ -1278,7 +1278,7 @@ const IntroSection: React.FC = () => {
 
       {/* PROJECT KIT BOX */}
       <AnimatePresence mode="wait">
-        {phase >= 25 && (
+        {phase >= 25 && phase < 26 && (
           <motion.div
             key={PROJECT_DATA[currentProject].id}
             className="absolute z-[90]"
@@ -1443,7 +1443,7 @@ const IntroSection: React.FC = () => {
       {/* 조립 가이드 섹션 (Parts Wrapper) */}
       {phase >= 15 && (
         <motion.div
-          className="absolute z-[60]"
+          className="absolute z-[60] pointer-events-none"
           initial={{ left: "50%", top: "50%", x: "-50%", y: "-50%" }}
           animate={
             phase >= 23 ? {
@@ -1902,39 +1902,58 @@ const IntroSection: React.FC = () => {
           overflow: "visible",
         }}
         initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}
-        animate={
 
-          phase >= 23
+        animate={
+          phase >= 26
             ? {
-              left: "92%",
-              top: "20%",        // 👈 상단으로
+              left: "50%",
+              top: "50%",
               x: "-50%",
               y: "-50%",
-              scale: 1.3,
-              // 👈 아래를 내려다봄
+              scale: 0.8,
+              rotateY: 360,      // 한 바퀴 돌면서
+              rotateZ: 0,
             }
-            : phase >= 14
+            : phase >= 23
               ? {
-                left: "6vw",
-                top: "50%",
-                x: "0",
-                y: `calc(-50% + 13vh + ${scrollOffset}px)`,
-                scale: 0.28,
-                rotateX: 2,
-                rotateZ: 0,
-                rotateY: 25,
+                left: "92%",
+                top: "20%",
+                x: "-50%",
+                y: "-50%",
+                scale: 1.3,
               }
-              : phase >= 9
+              :
+              phase >= 23
                 ? {
+                  left: "92%",
+                  top: "20%",        // 👈 상단으로
                   x: "-50%",
                   y: "-50%",
-                  left: "50%",
-                  top: "50%",
-                  scale: 1,
-                  rotateZ: 0,
-                  rotateY: 0,
+                  scale: 1.3,
+                  // 👈 아래를 내려다봄
                 }
-                : { y: "150vh" }
+                : phase >= 14
+                  ? {
+                    left: "6vw",
+                    top: "50%",
+                    x: "0",
+                    y: `calc(-50% + 13vh + ${scrollOffset}px)`,
+                    scale: 0.28,
+                    rotateX: 2,
+                    rotateZ: 0,
+                    rotateY: 25,
+                  }
+                  : phase >= 9
+                    ? {
+                      x: "-50%",
+                      y: "-50%",
+                      left: "50%",
+                      top: "50%",
+                      scale: 1,
+                      rotateZ: 0,
+                      rotateY: 0,
+                    }
+                    : { y: "150vh" }
         }
         transition={{ duration: 1.0, ease: "easeInOut" }}
       >
@@ -1976,7 +1995,7 @@ const IntroSection: React.FC = () => {
 
               // 2. 좌우 회전 (여기를 수정!)
               // "23 이상이면 -90도, 그게 아니면 (14~23 사이일 때 15도, 아니면 0도)"
-              fixedRotationY={phase >= 23 ? -40 : (phase >= 14 && phase < 23 ? 15 : 0)}
+              fixedRotationY={phase >= 26 ? 0 : phase >= 23 ? -40 : (phase >= 14 && phase < 23 ? 15 : 0)}
 
               // 3. 위아래 회전
               // 14~23 사이일 때만 살짝 숙이고(3), 나머지는 정면(0) -> 23단계에선 정면 봄

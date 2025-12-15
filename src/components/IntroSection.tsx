@@ -1173,7 +1173,7 @@ const IntroSection: React.FC = () => {
                 zIndex: 40,
               }}
               animate={{
-                top: phase >= 21 ? "0px" : "-160px",
+                top: phase >= 21 ? "0px" : "-170px",
                 opacity: phase >= 21 ? 0 : 1,
               }}
               transition={{ duration: 0.6, ease: "backOut" }}
@@ -1192,14 +1192,14 @@ const IntroSection: React.FC = () => {
             <AnimatePresence>
               {phase < 21 && (
                 <motion.div
-                  className="absolute pointer-events-none flex items-center gap-[140px]"
+                  className="absolute pointer-events-none flex items-center gap-[120px]"
                   style={{
                     left: "20%",
                     transform: "translateX(-50%)",
                     zIndex: 50, // 라벨은 항상 위
                   }}
                   initial={{ opacity: 1 }}
-                  animate={{ top: "10px", opacity: 1 }}
+                  animate={{ top: "5px", opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
@@ -1236,14 +1236,14 @@ const IntroSection: React.FC = () => {
             <AnimatePresence>
               {phase < 21 && (
                 <motion.div
-                  className="absolute pointer-events-none flex items-center gap-[140px]"
+                  className="absolute pointer-events-none flex items-center gap-[120px]"
                   style={{
                     left: "20%",
                     transform: "translateX(-50%)",
                     zIndex: 50,
                   }}
                   initial={{ opacity: 1 }}
-                  animate={{ top: "250px", opacity: 1 }}
+                  animate={{ top: "200px", opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
@@ -1268,7 +1268,7 @@ const IntroSection: React.FC = () => {
             <motion.div
               className="absolute"
               style={{
-                left: "50%",
+                left: "58%",
                 transform: "translateX(-50%)",
                 zIndex: 20,
               }}
@@ -1279,7 +1279,7 @@ const IntroSection: React.FC = () => {
               transition={{ duration: 0.6, ease: "backOut" }}
             >
               <div className="relative flex flex-col items-center">
-                <div className="relative" style={{ width: "300px", height: "300px" }}>
+                <div className="relative" style={{ width: "240px", height: "240px" }}>
                   <PartPNG
                     src="images/lego_body.png"
                     alt="lego body"
@@ -1299,28 +1299,41 @@ const IntroSection: React.FC = () => {
             <AnimatePresence>
               {phase < 21 && (
                 <motion.div
-                  className="absolute pointer-events-none flex items-center gap-[140px]"
+                  className="absolute pointer-events-none flex items-center gap-[120px]"
                   style={{
                     left: "20%",
                     transform: "translateX(-50%)",
                     zIndex: 50,
                   }}
                   initial={{ opacity: 1 }}
-                  animate={{ top: "470px", opacity: 1 }}
+                  animate={{ top: "420px", opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
                   <span className="text-[28px] font-normal text-[#2b2b2b]">3</span>
-                  <svg width="24" height="40" viewBox="0 0 24 40">
-                    <path
-                      d="M12,0 L12,32 M6,26 L12,34 L18,26"
-                      stroke="#2b2b2b"
-                      strokeWidth="3"
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
+                  <div className='flex gap-8'>
+                    <svg width="24" height="40" viewBox="0 0 24 40">
+                      <path
+                        d="M12,0 L12,32 M6,26 L12,34 L18,26"
+                        stroke="#2b2b2b"
+                        strokeWidth="3"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <svg width="24" height="40" viewBox="0 0 24 40">
+                      <path
+                        d="M12,0 L12,32 M6,26 L12,34 L18,26"
+                        stroke="#2b2b2b"
+                        strokeWidth="3"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+
                 </motion.div>
               )}
             </AnimatePresence>
@@ -1342,7 +1355,7 @@ const IntroSection: React.FC = () => {
               transition={{ duration: 0.6, ease: "backOut" }}
             >
               <div className="relative flex flex-col items-center">
-                <div className="relative" style={{ width: "300px", height: "300px" }}>
+                <div className="relative" style={{ width: "240px", height: "240px" }}>
                   <PartPNG
                     src="images/lego_legs.png"
                     alt="lego legs"
@@ -1598,7 +1611,7 @@ const IntroSection: React.FC = () => {
                 top: "50%",
                 x: "0",
                 y: `calc(-50% + 12vh + ${scrollOffset}px)`,
-                scale: 0.3,
+                scale: 0.28,
                 rotateX: 2,
                 rotateZ: 0,
                 rotateY: 25,

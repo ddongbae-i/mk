@@ -1275,7 +1275,7 @@ const IntroSection: React.FC = () => {
                 transform: "translateX(-50%)",
               }}
               animate={{
-                top: phase >= 21 ? "160px" : "280px",
+                top: phase >= 21 ? "160px" : "210px",
                 opacity: phase >= 23 ? 0 : 1,
               }}
               transition={{ duration: 0.6, ease: "backOut" }}
@@ -1293,11 +1293,11 @@ const IntroSection: React.FC = () => {
                 </AnimatePresence>
 
                 {/* 3D 상체 */}
-                <div className="relative" style={{ width: "180px", height: "140px" }}>  {/* 300x300 → 180x140 */}
+                <div className="relative" style={{ width: "300px", height: "300px" }}>
                   <LegoPart3D
                     className="absolute inset-0"
                     modelPath="models/lego_body.glb"
-                    modelScale={2.0}
+                    modelScale={1.3}
                     rotateY={fixedPartsY}
                   />
                 </div>
@@ -1362,11 +1362,11 @@ const IntroSection: React.FC = () => {
                 </AnimatePresence>
 
                 {/* 3D 하체 */}
-                <div className="relative" style={{ width: "140px", height: "100px" }}>
+                <div className="relative" style={{ width: "300px", height: "300px" }}>
                   <LegoPart3D
                     className="absolute inset-0"
                     modelPath="models/lego_legs.glb"
-                    modelScale={1.4}
+                    modelScale={0.2}
                     rotateY={fixedPartsY}
                   />
                 </div>

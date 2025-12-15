@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useGLTF, Center } from "@react-three/drei";
+import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 
 function FitAndRender({
@@ -17,25 +17,26 @@ function FitAndRender({
     const { camera } = useThree();
 
     useEffect(() => {
+        // 모델의 바운딩 박스 계산
         const box = new THREE.Box3().setFromObject(scene);
         const center = box.getCenter(new THREE.Vector3());
-        scene.position.sub(center);
-
-        box.setFromObject(scene);
-
         const size = box.getSize(new THREE.Vector3());
-        const maxDim = Math.max(size.x, size.y, size.z) * scale;
 
-        const cam = camera as THREE.PerspectiveCamera;
-        const fov = cam.fov;
-        const fitHeightDistance = maxDim / (2 * Math.tan(THREE.MathUtils.degToRad(fov / 2)));
-        const distance = fitHeightDistance * 1.1;  // 1.25 → 1.1 (더 가깝게)
+        // 모델을 원점으로 이동 (중앙 정렬)
+        scene.position.x = -center.x;
+        scene.position.y = -center.y;
+        scene.position.z = -center.z;
 
-        cam.position.z = distance;
-        cam.updateProjectionMatrix();
+        // 카메라 거리 자동 계산
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const fov = (camera as THREE.PerspectiveCamera).fov;
+        const cameraDistance = maxDim / (2 * Math.tan((fov * Math.PI) / 360));
+
+        camera.position.set(0, 0, cameraDistance * 1.5);
+        camera.lookAt(0, 0, 0);
+        camera.updateProjectionMatrix();
 
     }, [scene, camera, scale]);
-
 
     useFrame(() => {
         if (!group.current) return;
@@ -67,16 +68,19 @@ export function LegoPart3D({
         <div className={className} style={{ width: "100%", height: "100%" }}>
             <Canvas
                 dpr={[1, 2]}
-                camera={{ position: [0, 0, 5], fov: 45 }}  // 10 → 5 (더 가깝게)
+                camera={{
+                    position: [0, 0, 5],
+                    fov: 45,
+                    near: 0.1,
+                    far: 1000
+                }}
                 style={{ width: "100%", height: "100%", background: "transparent" }}
                 gl={{ alpha: true, antialias: true, toneMapping: THREE.NoToneMapping }}
             >
                 <ambientLight intensity={1.6} />
                 <directionalLight position={[5, 5, 5]} intensity={1.6} />
                 <hemisphereLight intensity={1.0} groundColor="#ffffff" />
-                <Center>
-                    <FitAndRender url={url} scale={modelScale} rotateY={rotateY} />
-                </Center>
+                <FitAndRender url={url} scale={modelScale} rotateY={rotateY} />
             </Canvas>
         </div>
     );

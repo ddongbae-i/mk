@@ -232,7 +232,7 @@ const PartTooltip = ({
 
         {/* 카드 */}
         <motion.div
-          className="bg-[#FDD130] border-[3px] border-[#2b2b2b] shadow-[4px_4px_0_0_#2b2b2b] flex-shrink-0"
+          className="bg-[#FDD130] border-[3px] border-[#2b2b2b] shadow-[4px_4px_0_0_#2b2b2b]"
           style={{ width: "280px", padding: "20px 24px" }}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -245,22 +245,7 @@ const PartTooltip = ({
             {description}
           </p>
 
-          {/* + 버튼 */}
-          <div className="mt-4 flex justify-center">
-            <button
-              onClick={onToggle}
-              className="w-10 h-10 border-[2px] border-[#2b2b2b] bg-white flex items-center justify-center cursor-pointer hover:bg-[#f5f5f5]"
-            >
-              <svg
-                width="20" height="20" viewBox="0 0 20 20" fill="none"
-                style={{ transform: isExpanded ? "rotate(45deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
-              >
-                <path d="M10 4V16M4 10H16" stroke="#2b2b2b" strokeWidth="2.5" strokeLinecap="round" />
-              </svg>
-            </button>
-          </div>
-
-          {/* 확장 컨텐츠 */}
+          {/* 확장 컨텐츠 - 버튼 위에 */}
           <AnimatePresence>
             {isExpanded && details && (
               <motion.div
@@ -270,11 +255,26 @@ const PartTooltip = ({
                 className="overflow-hidden"
               >
                 <div className="pt-4 mt-4 border-t-2 border-[#2b2b2b]/30">
-                  <p className="text-[#555] text-[13px] leading-[1.6]">{details}</p>
+                  <p className="text-[#555] text-[13px] leading-[1.6]">{PART_DESCRIPTIONS[0].details}</p>
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* 버튼 - 항상 하단 고정 */}
+          <div className="mt-4 flex justify-center">
+            <button
+              onClick={onToggle}
+              className="w-10 h-10 border-[2px] border-[#2b2b2b] bg-white flex items-center justify-center cursor-pointer hover:bg-[#f5f5f5]"
+            >
+              <svg
+                width="20" height="20" viewBox="0 0 20 20" fill="none"
+                style={{ transform: expandedTooltip === 0 ? "rotate(45deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
+              >
+                <path d="M10 4V16M4 10H16" stroke="#2b2b2b" strokeWidth="2.5" strokeLinecap="round" />
+              </svg>
+            </button>
+          </div>
         </motion.div>
       </motion.div>
     )}
@@ -1086,8 +1086,6 @@ const IntroSection: React.FC = () => {
   };
 
   const scrollOffset = phase >= 16 ? -300 : (isNaturalScrolling ? Math.max(-300, -naturalScrollY) : 0);
-  const tooltipCounterRotateY = phase >= 14 && phase < 23 ? -25 : 0;
-  const tooltipCounterRotateX = phase >= 14 && phase < 23 ? -3 : 0;
   const globalY = phase >= 23 ? "-80vh" : "0px";
 
   return (
@@ -1348,7 +1346,7 @@ const IntroSection: React.FC = () => {
               }}
               transition={{ duration: 0.6, ease: "backOut" }}
             >
-              <div className="relative flex flex-col items-center">
+              <div className="relative flex flex-col items-center pointer-events-auto">
                 <div className="relative" style={{ width: "280px", height: "280px" }}>
                   <PartPNG
                     src="images/lego_body.png"
@@ -1364,8 +1362,6 @@ const IntroSection: React.FC = () => {
                   details={PART_DESCRIPTIONS[2].details}
                   isExpanded={expandedTooltip === 2}
                   onToggle={() => setExpandedTooltip(expandedTooltip === 2 ? null : 2)}
-                  counterRotateY={tooltipCounterRotateY}
-                  counterRotateX={tooltipCounterRotateX}
                   lineLength={80}
                 />
               </div>
@@ -1430,7 +1426,7 @@ const IntroSection: React.FC = () => {
               }}
               transition={{ duration: 0.6, ease: "backOut" }}
             >
-              <div className="relative flex flex-col items-center">
+              <div className="relative flex flex-col items-center pointer-events-auto">
                 <div className="relative" style={{ width: "280px", height: "280px" }}>
                   <PartPNG
                     src="images/lego_legs.png"
@@ -1798,6 +1794,25 @@ const IntroSection: React.FC = () => {
               <p className="text-[#333] text-[14px] font-medium leading-[1.5]">
                 {PART_DESCRIPTIONS[0].description}
               </p>
+
+
+              {/* 확장 컨텐츠 - 버튼 위에 */}
+              <AnimatePresence>
+                {expandedTooltip === 0 && PART_DESCRIPTIONS[0].details && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="pt-4 mt-4 border-t-2 border-[#2b2b2b]/30">
+                      <p className="text-[#555] text-[13px] leading-[1.6]">{details}</p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* + 버튼 - 항상 하단 */}
               <div className="mt-4 flex justify-center">
                 <button
                   onClick={() => setExpandedTooltip(expandedTooltip === 0 ? null : 0)}
@@ -1811,31 +1826,18 @@ const IntroSection: React.FC = () => {
                   </svg>
                 </button>
               </div>
-              <AnimatePresence>
-                {expandedTooltip === 0 && PART_DESCRIPTIONS[0].details && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="pt-4 mt-4 border-t-2 border-[#2b2b2b]/30">
-                      <p className="text-[#555] text-[13px] leading-[1.6]">{PART_DESCRIPTIONS[0].details}</p>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </motion.div>
           </motion.div>
         </div>
-      )}
+      )
+      }
 
       {/* 하단 안내 문구 */}
       {phase === 0 && <motion.div className="absolute bottom-10 text-gray-400 font-kanit font-semibold text-sm animate-bounce uppercase tracking-widest">Scroll to Start</motion.div>}
       {(phase === 3) && <motion.div className="absolute bottom-10 text-white/50 font-kanit text-xs uppercase tracking-widest" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>Scroll to Merge</motion.div>}
       {(phase >= 4 && phase < 9) && <motion.div className="absolute bottom-10 text-white/50 font-kanit text-xs uppercase tracking-widest" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>Scroll to Explore</motion.div>}
       {(phase === 9) && <motion.div className="absolute bottom-10 text-white/50 font-kanit text-xs uppercase tracking-widest" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>Scroll to Build</motion.div>}
-    </div>
+    </div >
   );
 };
 

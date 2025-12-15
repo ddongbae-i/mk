@@ -525,7 +525,7 @@ const IntroSection: React.FC = () => {
           0.8;
 
 
-  const showHat = phase >= 21 && phase < 23;
+  const showHat = phase >= 15 && phase < 23;
   const followParts = phase >= 2 && phase <= 12;
   const fixedPartsY = phase >= 14 && phase < 23 ? 25 : 0;
   const partsRotateY = followParts ? 0 : fixedPartsY;
@@ -1431,14 +1431,14 @@ const IntroSection: React.FC = () => {
                     className="w-full text-left"
                   >
                     <div className="text-center mb-8">
-                      <h2 className="text-3xl font-black text-gray-800 font-kanit mb-1">ASSEMBLED CHARACTER</h2>
-                      <p className="text-sm text-gray-500 font-medium">이 캐릭터는 다음 요소로 구성되어 있습니다.</p>
+                      <h2 className="text-[32px] font-bold text-[#131416] font-kanit mb-1">ASSEMBLED CHARACTER</h2>
+                      <p className="text-[14px] text-[#383D47] font-normal">이 캐릭터는 다음 요소로 구성되어 있습니다.</p>
                     </div>
 
                     <div className="space-y-6">
                       {RESUME_DATA.map((section) => (
                         <div key={section.id} className="border-t border-gray-300 pt-4 first:border-none first:pt-0">
-                          <h3 className="text-sm font-bold text-gray-400 font-kanit mb-1">BUILD {section.id} · {section.title}</h3>
+                          <h3 className="text-[16px] font-normal text-[#5F677C] font-kanit mb-1">BUILD {section.id} · {section.title}</h3>
                           <div className="pl-0">
                             {section.content.map((item: any, idx) => (
                               <div key={idx} className="mb-3 last:mb-0">
@@ -1633,22 +1633,31 @@ const IntroSection: React.FC = () => {
             className="absolute pointer-events-none"
             style={{
               left: "50%",
-              top: "40px",
-              x: "-50%",
+              x: "-30%",
               zIndex: 9999,
-              scale: 1 / faceScale,   // ✅ 핵심: 부모 축소를 상쇄
+              scale: 1 / faceScale, // 부모 축소 상쇄
             }}
             initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.25, ease: "easeOut" }}
+            animate={{
+              // ✅ 조립 전(모자 떠있음)  vs  조립 후(머리에 붙음)
+              top: phase >= 21 ? "50px" : "-360px",
+              opacity: phase >= 23 ? 0 : 1,
+              // 조립될 때 살짝 튕기듯 들어가게
+              y: phase >= 21 ? 0 : -10,
+            }}
+            transition={{
+              duration: 0.6,
+              ease: "backOut",
+            }}
           >
             <PartPNG
               src="images/hat.png"
-              className="w-[240px] h-[240px] object-contain"
+              className="w-[260px] h-[260px] object-contain"
               alt="hat"
             />
           </motion.div>
         )}
+
 
         <motion.div className="w-full h-full pointer-events-auto" style={{ transformStyle: "preserve-3d" }}>
           <LegoFace3D

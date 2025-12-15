@@ -6,13 +6,13 @@ import * as THREE from 'three';
 interface ModelProps {
     followMouse: boolean;
     fixedRotationY: number;
-    fixedRotationX: number; // 🔥 추가
+    fixedRotationX: number;
 }
 
 const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY, fixedRotationX }) => {
     const { scene } = useGLTF(`${import.meta.env.BASE_URL}models/lego_head.glb`);
     const modelRef = useRef<THREE.Group>(null);
-    const [targetRotation, setTargetRotation] = useState({ y: 0, z: 0 });
+    const [targetRotation, setTargetRotation] = useState({ x: 0, y: 0, z: 0 });  // ← x 추가!
 
     useEffect(() => {
         if (scene) {
@@ -23,11 +23,10 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY, fixedRot
     }, [scene]);
 
     useEffect(() => {
-        // 🔥 마우스 추적이 꺼져있으면 고정 회전값 사용
         if (!followMouse) {
             setTargetRotation({
+                x: THREE.MathUtils.degToRad(fixedRotationX),  // ← 순서 정리
                 y: THREE.MathUtils.degToRad(fixedRotationY),
-                x: THREE.MathUtils.degToRad(fixedRotationX),
                 z: 0
             });
             return;
@@ -38,8 +37,8 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY, fixedRot
             const yNorm = (e.clientY / window.innerHeight) - 0.5;
 
             setTargetRotation({
-                y: xNorm * 0.8,
                 x: -yNorm * 0.4,
+                y: xNorm * 0.8,
                 z: -xNorm * 0.2,
             });
         };
@@ -51,8 +50,8 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY, fixedRot
 
     useFrame(() => {
         if (modelRef.current) {
+            modelRef.current.rotation.x += (targetRotation.x - modelRef.current.rotation.x) * 0.1;
             modelRef.current.rotation.y += (targetRotation.y - modelRef.current.rotation.y) * 0.1;
-            modelRef.current.rotation.x += (targetRotation.x - modelRef.current.rotation.x) * 0.1;  // ← 추가
             modelRef.current.rotation.z += (targetRotation.z - modelRef.current.rotation.z) * 0.1;
         }
     });
@@ -68,10 +67,8 @@ export const LegoFace3D: React.FC<{
     className?: string;
     followMouse?: boolean;
     fixedRotationY?: number;
-    fixedRotationX?: number;  // ← 추가
+    fixedRotationX?: number;
 }> = ({ className, followMouse = true, fixedRotationY = 0, fixedRotationX = 0 }) => {
-
-
     return (
         <div
             className={className}
@@ -82,7 +79,7 @@ export const LegoFace3D: React.FC<{
             }}
         >
             <Canvas
-                dpr={1}                          // ✅ 이 줄 추가 (핵심)
+                dpr={1}
                 camera={{ position: [0, 0, 8], fov: 45 }}
                 resize={{ scroll: false }}
                 style={{

@@ -1165,7 +1165,6 @@ const IntroSection: React.FC = () => {
             }
             transition={{ duration: 0.8, ease: "easeInOut" }}
           >
-            {/* 1. 모자 */}
             <motion.div
               className="absolute"
               style={{
@@ -1173,16 +1172,16 @@ const IntroSection: React.FC = () => {
                 transform: "translateX(-50%)",
               }}
               animate={{
-                top: phase >= 21 ? "0px" : "-250px",
+                top: phase >= 21 ? "0px" : "-200px",  // -250px → -200px로 조정
                 opacity: phase >= 21 ? 0 : 1,
               }}
               transition={{ duration: 0.6, ease: "backOut" }}
             >
-              <div className="flex flex-col items-center relative w-[240px] h-[240px]">
+              <div className="flex flex-col items-center relative w-[240px] overflow-visible">  {/* h-[240px] 제거, overflow-visible 추가 */}
                 <AnimatePresence>
                   {phase < 21 && (
                     <motion.span
-                      className="absolute -left-[100px] top-[80px] text-[28px] font-bold text-[#2b2b2b]"
+                      className="absolute -left-[60px] top-[80px] text-[28px] font-bold text-[#2b2b2b]"
                       exit={{ opacity: 0 }}
                     >
                       1
@@ -1190,7 +1189,7 @@ const IntroSection: React.FC = () => {
                   )}
                 </AnimatePresence>
 
-                <PartPNG src="images/hat.png" className="w-[full] h-[full] object-cover" alt="hat" />
+                <PartPNG src="images/hat.png" className="w-[200px] h-[160px] object-contain" alt="hat" />
 
                 {/* 모자 아래 화살표 */}
                 <AnimatePresence>
@@ -1199,7 +1198,7 @@ const IntroSection: React.FC = () => {
                       width="24"
                       height="40"
                       viewBox="0 0 24 40"
-                      className="mt-1"
+                      className="mt-2"
                       exit={{ opacity: 0 }}
                       transition={{ duration: 0.3 }}
                     >
@@ -1716,8 +1715,8 @@ const IntroSection: React.FC = () => {
           <LegoFace3D
             className="w-full h-full drop-shadow-2xl"
             followMouse={phase >= 2 && phase <= 12}
-            fixedRotationY={phase >= 14 && phase < 23 ? 10 : 0}   // 좌우
-            fixedRotationX={phase >= 14 && phase < 23 ? -5 : 0}   // 위아래 (음수=위를 봄, 양수=아래를 봄)
+            fixedRotationY={phase >= 14 && phase < 23 ? 15 : 0}   // 좌우
+            fixedRotationX={phase >= 14 && phase < 23 ? 6 : 0}   // 위아래 (음수=위를 봄, 양수=아래를 봄)
           />
         </motion.div>
       </motion.div>

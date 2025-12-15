@@ -11,6 +11,8 @@ const BG_CREAM = "#FFF2D5";
 const BEAM_COLOR = "#FCBB09";
 const PROJECT_TEXT_COLOR = "#8E00BD";
 
+const [hoveredBlockIndex, setHoveredBlockIndex] = useState<number | null>(null);
+
 
 // S2 DATA
 const S2_CONTENT = [
@@ -421,7 +423,10 @@ const FloatingMenuBlock: React.FC<{
   style?: React.CSSProperties;
   id?: string;
   shouldFloat: boolean;
-}> = ({ index, style, id, shouldFloat }) => {
+  isStacked?: boolean;
+  hoveredIndex?: number | null;
+  onHover?: (index: number | null) => void;
+}> = ({ index, style, id, shouldFloat, isStacked, hoveredIndex, onHover }) => {
   const randomDelay = 0.4 + index * 0.2;
   const durationX = 5 + (index % 3);
   const durationY = 4 + (index % 2);
@@ -429,6 +434,13 @@ const FloatingMenuBlock: React.FC<{
 
   const color = BRICK_COLORS[index % BRICK_COLORS.length];
   const label = BRICK_LABELS[index % BRICK_LABELS.length];
+
+  const getStackHoverOffset = () => {
+    if (!isStacked || hoveredIndex === null) return 0;
+    if (index === hoveredIndex) return 0;
+    if (index < hoveredIndex) return -20;  // 위에 있는 블럭들은 위로
+    return 20;  // 아래 있는 블럭들은 아래로
+  };
 
   const floatAnim = {
     opacity: 1,
@@ -440,10 +452,17 @@ const FloatingMenuBlock: React.FC<{
 
   return (
     <motion.div
+
       id={id}
       style={{ ...style, zIndex: 50 - index } as React.CSSProperties}
       initial={{ opacity: 0, scale: 0.8 }}
-      animate={shouldFloat ? floatAnim : { opacity: 1, scale: 1 }}
+      animate={shouldFloat ? floatAnim : {
+        opacity: 1,
+        scale: 1,
+        y: getStackHoverOffset()  // 추가
+      }}
+      onMouseEnter={() => onHover?.(index)}
+      onMouseLeave={() => onHover?.(null)}
       transition={{
         opacity: { duration: 0.8, delay: randomDelay },
         scale: { duration: 0.8, delay: randomDelay },
@@ -1497,14 +1516,14 @@ const IntroSection: React.FC = () => {
       <div className="absolute top-0 left-0 w-full h-full max-w-[1920px] pointer-events-none px-6 md:px-16 xl:px-[180px] z-50">
         <div className="w-full h-24 flex items-center justify-between">
           <div className="w-20 h-20" />
-          <div id="hamburger" className="w-20 h-20 flex items-center justify-end pointer-events-auto">
+          <div id="hamburger" className="w-10 h-10 flex items-center justify-center pointer-events-auto">
             {(phase >= 9 && phase <= 12) && <HamburgerIcon isOpen={phase >= 12} onClick={handleHamburgerClick} />}
           </div>
         </div>
       </div>
 
       {/* 메인 콘텐츠 영역 */}
-      <div className="relative w-full h-full max-w-[1920px] px-6 md:px-16 xl:px-[180px] flex items-center justify-center pointer-events-none">
+      <div className="relative w-full h-full max-w-[1920px] px-6 md:px-16 xl:px-[180px] flex items-center justify-between pointer-events-none">
         <div className="relative z-10 flex items-center justify-center overflow-visible w-full h-full">
 
           {(phase === 0 || phase === 1) && (
@@ -1542,8 +1561,8 @@ const IntroSection: React.FC = () => {
                   animate={
                     phase >= 9
                       ? {
-                        left: 0,        // 🔥 핵심
-                        top: "40px",
+                        left: "-40px",        // 🔥 핵심
+                        top: "20px",
                         y: 0,
                         scale: 0.4,
                         opacity: 1,
@@ -1588,6 +1607,9 @@ const IntroSection: React.FC = () => {
                   index={i}
                   id={`block-${i}`}
                   shouldFloat={phase === 9}
+                  isStacked={phase >= 10 && phase <= 12}
+                  hoveredIndex={hoveredBlockIndex}
+                  onHover={setHoveredBlockIndex}
                   style={pos}
                 />
               ))}

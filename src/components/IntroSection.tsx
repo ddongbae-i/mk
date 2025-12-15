@@ -1173,16 +1173,16 @@ const IntroSection: React.FC = () => {
                 transform: "translateX(-50%)",
               }}
               animate={{
-                top: phase >= 21 ? "0px" : "-180px",
+                top: phase >= 21 ? "0px" : "-250px",
                 opacity: phase >= 21 ? 0 : 1,
               }}
               transition={{ duration: 0.6, ease: "backOut" }}
             >
-              <div className="flex flex-col items-center relative">
+              <div className="flex flex-col items-center relative w-[240px] h-[240px]">
                 <AnimatePresence>
                   {phase < 21 && (
                     <motion.span
-                      className="absolute -left-12 top-[70px] text-[28px] font-bold text-[#2b2b2b]"
+                      className="absolute -left-[100px] top-[80px] text-[28px] font-bold text-[#2b2b2b]"
                       exit={{ opacity: 0 }}
                     >
                       1
@@ -1190,7 +1190,7 @@ const IntroSection: React.FC = () => {
                   )}
                 </AnimatePresence>
 
-                <PartPNG src="images/hat.png" className="w-[180px] h-[140px] object-contain" alt="hat" />
+                <PartPNG src="images/hat.png" className="w-[full] h-[full] object-cover" alt="hat" />
 
                 {/* 모자 아래 화살표 */}
                 <AnimatePresence>
@@ -1226,7 +1226,7 @@ const IntroSection: React.FC = () => {
             {/* 2. 얼굴 자리 */}
             <div
               className="relative flex flex-col items-center"
-              style={{ width: "180px", height: "180px" }}
+              style={{ width: "240px", height: "240px" }}
             >
               <AnimatePresence>
                 {phase < 21 && (
@@ -1674,11 +1674,12 @@ const IntroSection: React.FC = () => {
             }
             : phase >= 14
               ? {
-                left: "2px",
+                left: "-20px",
                 top: "50%",
                 x: "0",
                 y: `calc(-50% + 12vh + ${scrollOffset}px)`,
                 scale: 0.4,
+                rotateX: 2,
                 rotateZ: 0,
                 rotateY: 25,
               }
@@ -1715,7 +1716,8 @@ const IntroSection: React.FC = () => {
           <LegoFace3D
             className="w-full h-full drop-shadow-2xl"
             followMouse={phase >= 2 && phase <= 12}
-            fixedRotationY={phase >= 14 && phase < 23 ? 25 : 0}
+            fixedRotationY={phase >= 14 && phase < 23 ? 10 : 0}   // 좌우
+            fixedRotationX={phase >= 14 && phase < 23 ? -5 : 0}   // 위아래 (음수=위를 봄, 양수=아래를 봄)
           />
         </motion.div>
       </motion.div>

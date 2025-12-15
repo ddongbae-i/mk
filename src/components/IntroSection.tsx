@@ -1658,12 +1658,14 @@ const IntroSection: React.FC = () => {
       </div>
 
       {/* 얼굴 컨테이너 - Z-Index 100 (ALWAYS TOP, MOVED TO ROOT) */}
+      {/* 얼굴 컨테이너 - Z-Index 100 */}
+      {/* 얼굴 컨테이너 */}
       <motion.div
         id="face-container"
         className="absolute pointer-events-none"
         style={{
-          width: "700px",   // 500 → 700
-          height: "700px",  // 500 → 700
+          width: "700px",
+          height: "700px",
           perspective: 1000,
           zIndex: 100,
           overflow: "visible",
@@ -1678,23 +1680,32 @@ const IntroSection: React.FC = () => {
               y: "-50%",
               scale: 0.5,
               rotateZ: -15,
+              rotateY: 0,
             }
-            : phase >= 14
+            : phase >= 14  // 🔥 Phase 14부터 바로 작아지고 오른쪽 봄
               ? {
                 left: "50%",
                 top: "50%",
                 x: "calc(-50% - 32vw)",
                 y: `calc(-50% + 12vh + ${scrollOffset}px)`,
-                scale: 1,
+                scale: 0.2,      // 🔥 700px * 0.17 ≈ 120px
                 rotateZ: 0,
+                rotateY: 25,      // 🔥 오른쪽 바라봄
               }
               : phase >= 9
-                ? { x: "-50%", y: "-50%", left: "50%", top: "50%", scale: 1, rotateZ: 0 }
+                ? {
+                  x: "-50%",
+                  y: "-50%",
+                  left: "50%",
+                  top: "50%",
+                  scale: 1,
+                  rotateZ: 0,
+                  rotateY: 0,
+                }
                 : { y: "150vh" }
         }
         transition={{ duration: 1.0, ease: "easeInOut" }}
       >
-
         {/* Hat attached to Face (Visible Phase 21+) */}
         {phase >= 21 && (
           <motion.div
@@ -1716,6 +1727,7 @@ const IntroSection: React.FC = () => {
           <LegoFace3D
             className="w-full h-full drop-shadow-2xl"
             followMouse={phase >= 2 && phase <= 12}
+            fixedRotationY={phase >= 14 && phase < 23 ? 25 : 0}  // 🔥 Phase 14~22에서 오른쪽 봄
           />
         </motion.div>
       </motion.div>

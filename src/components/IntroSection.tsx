@@ -142,13 +142,8 @@ const ProjectKitBox = ({
   onOpen: () => void;
 }) => (
   <motion.div
-    className="absolute z-[90] cursor-pointer"
+    className="relative z-[90] cursor-pointer"
     onClick={onOpen}
-    style={{
-      left: "50%",
-      top: "50%",
-      transform: "translate(-50%, -50%)",
-    }}
     whileHover={{ scale: 1.02 }}
     whileTap={{ scale: 0.98 }}
     initial={{ opacity: 0, scale: 0.92, y: 40 }}
@@ -1242,6 +1237,7 @@ const IntroSection: React.FC = () => {
           <motion.div
             key={PROJECT_DATA[currentProject].id}
             className="absolute z-[90]"
+            style={{ left: "50%", top: "50%", transform: "translate(-50%, -50%)" }}
             initial={{
               opacity: 0,
               scale: 0.85,           // 작게 시작 (뒤에 있던 느낌)
@@ -1273,7 +1269,7 @@ const IntroSection: React.FC = () => {
 
       {/* Purple Background Section */}
       <motion.div
-        className="absolute w-full h-full"
+        className="absolute w-full h-full pointer-events-none"
         style={{ zIndex: 80 }}
         initial={{ x: "120%" }}
         animate={

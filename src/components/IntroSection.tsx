@@ -517,7 +517,15 @@ const IntroSection: React.FC = () => {
   const [naturalScrollY, setNaturalScrollY] = useState(0);
 
   const [phase, setPhase] = useState(0);
-  const showHat = phase >= 14 && phase < 23;
+
+  const faceScale =
+    phase >= 23 ? 0.5 :
+      phase >= 14 ? 0.28 :
+        phase >= 9 ? 1 :
+          0.8;
+
+
+  const showHat = phase >= 21 && phase < 23;
   const followParts = phase >= 2 && phase <= 12;
   const fixedPartsY = phase >= 14 && phase < 23 ? 25 : 0;
   const partsRotateY = followParts ? 0 : fixedPartsY;
@@ -530,8 +538,11 @@ const IntroSection: React.FC = () => {
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const faceRotateY = useTransform(mouseX, [-window.innerWidth / 2, window.innerWidth / 2], [-25, 25]);
-  const faceRotateX = useTransform(mouseY, [-window.innerHeight / 2, window.innerHeight / 2], [20, -20]);
+  const [vw, setVw] = useState(() => window.innerWidth);
+  const [vh, setVh] = useState(() => window.innerHeight);
+  const faceRotateY = useTransform(mouseX, [-vw / 2, vw / 2], [-25, 25]);
+  const faceRotateX = useTransform(mouseY, [-vh / 2, vh / 2], [20, -20]);
+
 
   const TEXT_ANCHOR_X = "12vw";
 
@@ -878,6 +889,15 @@ const IntroSection: React.FC = () => {
     phaseRef.current = phase;
   }, [phase]);
 
+  useEffect(() => {
+    const onResize = () => {
+      setVw(window.innerWidth);
+      setVh(window.innerHeight);
+    };
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
+
   const handleScrollActionRef = useRef(handleScrollAction);
   useEffect(() => {
     handleScrollActionRef.current = handleScrollAction;
@@ -1163,31 +1183,6 @@ const IntroSection: React.FC = () => {
             transition={{ duration: 0.8, ease: "easeInOut" }}
             style={{ zIndex: 120 }} // 전체 래퍼 기준
           >
-            {/* =========================
-      1) HAT (zIndex: 40)
-     ========================= */}
-            <motion.div
-              className="absolute"
-              style={{
-                left: "52%",
-                transform: "translateX(-50%)",
-                zIndex: 40,
-              }}
-              animate={{
-                top: phase >= 21 ? "0px" : "-170px",
-                opacity: phase >= 21 ? 0 : 1,
-              }}
-              transition={{ duration: 0.6, ease: "backOut" }}
-            >
-              <div className="relative w-[240px] overflow-visible flex flex-col items-center">
-                <PartPNG src="images/hat.png" className="w-[240px] h-[240px] object-cover" alt="hat" />
-                <PartTooltip
-                  title={PART_DESCRIPTIONS[0].title}
-                  description={PART_DESCRIPTIONS[0].description}
-                  isVisible={phase === 16}
-                />
-              </div>
-            </motion.div>
 
             {/* ✅ (1) LABEL BETWEEN HAT ↔ FACE */}
             <AnimatePresence>
@@ -1586,6 +1581,7 @@ const IntroSection: React.FC = () => {
       {/* 얼굴 컨테이너 */}
       <motion.div
         id="face-container"
+
         className="absolute pointer-events-none"
         style={{
           width: "700px",
@@ -1596,6 +1592,7 @@ const IntroSection: React.FC = () => {
         }}
         initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}
         animate={
+
           phase >= 23
             ? {
               left: "90%",
@@ -1633,15 +1630,23 @@ const IntroSection: React.FC = () => {
       >
         {showHat && (
           <motion.div
-            className="absolute"
+            className="absolute pointer-events-none"
             style={{
               left: "50%",
+              top: "40px",
+              x: "-50%",
+              zIndex: 9999,
+              scale: 1 / faceScale,   // ✅ 핵심: 부모 축소를 상쇄
             }}
-            initial={{ top: "-100px", opacity: 0 }}
-            animate={{ top: "-50px", opacity: 1 }}
-            transition={{ duration: 0.4, ease: "backOut" }}
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.25, ease: "easeOut" }}
           >
-            <PartPNG src="images/hat.png" className="w-[240px] h-[240px] object-contain scale-[4] z-[200]" alt=" hat" />
+            <PartPNG
+              src="images/hat.png"
+              className="w-[240px] h-[240px] object-contain"
+              alt="hat"
+            />
           </motion.div>
         )}
 

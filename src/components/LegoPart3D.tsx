@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { useGLTF } from "@react-three/drei";
+import { useGLTF, Center } from "@react-three/drei";
 import * as THREE from "three";
 
 function FitAndRender({
@@ -17,25 +17,23 @@ function FitAndRender({
     const { camera } = useThree();
 
     useEffect(() => {
-        // 1) 센터링
         const box = new THREE.Box3().setFromObject(scene);
         const center = box.getCenter(new THREE.Vector3());
         scene.position.sub(center);
 
-        // 2) 모델 크기에 맞춰 카메라 거리 자동 설정
+        // ✅ center 이동 반영해서 다시 측정
+        box.setFromObject(scene);
+
         const size = box.getSize(new THREE.Vector3());
         const maxDim = Math.max(size.x, size.y, size.z) * scale;
 
-        const fov = (camera as THREE.PerspectiveCamera).fov;
+        const cam = camera as THREE.PerspectiveCamera;
+        const fov = cam.fov;
         const fitHeightDistance = maxDim / (2 * Math.tan(THREE.MathUtils.degToRad(fov / 2)));
-        const fitWidthDistance = fitHeightDistance; // 대충 동일 처리
-        const distance = 1.25 * Math.max(fitHeightDistance, fitWidthDistance);
+        const distance = 1.25 * fitHeightDistance;
 
-        camera.position.set(0, 0, distance);
-        camera.near = distance / 100;
-        camera.far = distance * 100;
-        camera.updateProjectionMatrix();
     }, [scene, camera, scale]);
+
 
     useFrame(() => {
         if (!group.current) return;
@@ -55,31 +53,38 @@ export function LegoPart3D({
     modelPath,
     modelScale = 1.2,
     rotateY = 0,
+    fitName,
+    followMouse = false,
+
 }: {
     className?: string;
-    modelPath: string;   // "models/lego_body.glb"
+    modelPath: string;
     modelScale?: number;
     rotateY?: number;
+    fitName?: string;
+    followMouse?: boolean;
 }) {
-    const url = `${import.meta.env.BASE_URL}${modelPath.replace(/^\/+/, "")}`;
+    const url = `${import.meta.env.BASE_URL}${modelPath}`;
 
     return (
-        <div className={className} style={{ width: "100%", height: "100%", overflow: "visible" }}>
+        <div className={className} style={{ width: "100%", height: "100%" }}>
             <Canvas
-                camera={{ fov: 45, position: [0, 0, 8] }}
-                style={{ background: "transparent", overflow: "visible" }}
+                dpr={[1, 2]}                 // ✅ 선명도
+                camera={{ position: [0, 0, 8], fov: 45 }}
+                style={{ width: "100%", height: "100%", background: "transparent" }}
                 gl={{ alpha: true, antialias: true, toneMapping: THREE.NoToneMapping }}
-                dpr={1}
             >
                 <ambientLight intensity={1.6} />
                 <directionalLight position={[5, 5, 5]} intensity={1.6} />
                 <hemisphereLight intensity={1.0} groundColor="#ffffff" />
-
-                <FitAndRender url={url} scale={modelScale} rotateY={rotateY} />
+                <Center>
+                    <FitAndRender url={url} scale={modelScale} rotateY={rotateY} />
+                </Center>
             </Canvas>
         </div>
     );
 }
+
 
 useGLTF.preload(`${import.meta.env.BASE_URL}models/lego_body.glb`);
 useGLTF.preload(`${import.meta.env.BASE_URL}models/lego_legs.glb`);

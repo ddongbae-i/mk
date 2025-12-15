@@ -10,12 +10,12 @@ const COLORS = [
 const BG_CREAM = "#FFF2D5";
 const BEAM_COLOR = "#FCBB09";
 const PROJECT_TEXT_COLOR = "#8E00BD";
+const PART_BOX = "w-[300px] h-[300px]";
+const FIXED_Y = 25;
 
-const followParts = phase >= 2 && phase <= 12;
-const fixedPartsY = phase >= 14 && phase < 23 ? 25 : 0;
 
 // 파츠들에 넘길 최종 rotateY
-const partsRotateY = followParts ? 0 : fixedPartsY;
+
 
 const PartPNG = ({
   src,
@@ -597,6 +597,9 @@ const IntroSection: React.FC = () => {
   const [naturalScrollY, setNaturalScrollY] = useState(0);
 
   const [phase, setPhase] = useState(0);
+  const followParts = phase >= 2 && phase <= 12;
+  const IS_FIXED = phase >= 14 && phase < 23;
+  const PARTS_ROTATE_Y = IS_FIXED ? 25 : 0;
   const [hoveredBlockIndex, setHoveredBlockIndex] = useState<number | null>(null);  // ✅ 여기에 추가!
 
   const phaseRef = useRef(phase);
@@ -623,8 +626,10 @@ const IntroSection: React.FC = () => {
     const r = element.getBoundingClientRect();
     const c = container.getBoundingClientRect();
     const style = window.getComputedStyle(element);
-    let matrix;
-    try { matrix = new DOMMatrix(style.transform); } catch (e) { matrix = new DOMMatrix(); }
+    let matrix = { m41: 0, m42: 0 } as any;
+    try {
+      matrix = new DOMMatrix(style.transform);
+    } catch { }
     const currentTx = matrix.m41;
     const currentTy = matrix.m42;
     const visualCenterX = (r.left - c.left) + r.width / 2;
@@ -1279,7 +1284,7 @@ const IntroSection: React.FC = () => {
                   )}
                 </AnimatePresence>
 
-                <PartPNG src="images/hat.png" className="w-[140px] h-[100px] object-contain" alt="hat" />
+                <PartPNG src="images/hat.png" className="w-[100%] h-[100%] object-cover" alt="hat" />
 
                 <AnimatePresence>
                   {phase < 21 && (
@@ -1362,15 +1367,15 @@ const IntroSection: React.FC = () => {
                   )}
                 </AnimatePresence>
 
-                <div style={{ width: "180px", height: "140px" }}>
+                <div style={{ width: "240px", height: "240px" }}>
                   <LegoPart3D
-                    className="w-[220px] h-[180px]"
+                    className="w-full h-full"
                     modelPath="models/lego_body.glb"
                     modelScale={1.2}
-                    rotateY={fixedPartsY}
+                    rotateY={IS_FIXED ? FIXED_Y : 0}
+                    followMouse={phase >= 2 && phase <= 12}
                   />
                 </div>
-
 
                 <AnimatePresence>
                   {phase < 21 && (
@@ -1458,12 +1463,13 @@ const IntroSection: React.FC = () => {
                   )}
                 </AnimatePresence>
 
-                <div style={{ width: "160px", height: "120px" }}>
+                <div style={{ width: "240px", height: "240px" }}>
                   <LegoPart3D
-                    className="w-[200px] h-[160px]"
+                    className="w-full h-full"
                     modelPath="models/lego_legs.glb"
                     modelScale={1.2}
-                    rotateY={fixedPartsY}
+                    rotateY={IS_FIXED ? FIXED_Y : 0}
+                    followMouse={phase >= 2 && phase <= 12}
                   />
                 </div>
 
@@ -1741,7 +1747,7 @@ const IntroSection: React.FC = () => {
                 y: `calc(-50% + 12vh + ${scrollOffset}px)`,
                 scale: 0.4,      // 🔥 700px * 0.17 ≈ 120px
                 rotateZ: 0,
-                rotateY: 25,      // 🔥 오른쪽 바라봄
+                rotateY: IS_FIXED ? FIXED_Y : 0,  // 🔥 오른쪽 바라봄
               }
               : phase >= 9
                 ? {
@@ -1776,11 +1782,13 @@ const IntroSection: React.FC = () => {
 
         <motion.div className="w-full h-full pointer-events-auto" style={{ transformStyle: "preserve-3d" }}>
           {/* <LegoFace className="w-full h-full drop-shadow-2xl" /> */}
-          <LegoFace3D
+
+          <div className={PART_BOX}> <LegoFace3D
             className="w-full h-full drop-shadow-2xl"
             followMouse={phase >= 2 && phase <= 12}
-            fixedRotationY={phase >= 14 && phase < 23 ? 25 : 0}  // 🔥 Phase 14~22에서 오른쪽 봄
-          />
+            fixedRotationY={IS_FIXED ? FIXED_Y : 0}
+          /></div>
+
         </motion.div>
       </motion.div>
 

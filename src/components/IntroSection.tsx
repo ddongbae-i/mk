@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion, useAnimate, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
 import { LegoFace3D } from './LegoFace3D';
+import { Suspense } from 'react';
 // import { LegoPart3D } from "./LegoPart3D";
 
 const COLORS = [
@@ -30,6 +31,11 @@ const PartPNG = ({
   />
 );
 
+const FaceLoadingPlaceholder = () => (
+  <div className="w-full h-full flex items-center justify-center">
+    <div className="w-32 h-32 rounded-full bg-[#FCBB09] animate-pulse" />
+  </div>
+);
 
 // S2 DATA
 const S2_CONTENT = [
@@ -1236,11 +1242,11 @@ const IntroSection: React.FC = () => {
           <motion.div
             key={PROJECT_DATA[currentProject].id}
             className="absolute z-[90]"
-            style={{ left: "40%", top: "60%", transform: "translate(-50%, -50%) rotate(-5deg)" }}
             initial={{
               opacity: 0,
-              scale: 0.92,
-              filter: "brightness(0.85)",
+              scale: 0.85,           // 작게 시작 (뒤에 있던 느낌)
+              y: 30,                 // 아래에서 올라옴
+              filter: "brightness(0.7)",
             }}
             animate={{
               opacity: 1,
@@ -1250,10 +1256,10 @@ const IntroSection: React.FC = () => {
             }}
             exit={{
               opacity: 0,
-              scale: 1.08,              // ✅ 뒤에서 밀듯이 커짐
-              y: -6,                    // ✅ 살짝 떠서 “밀려나감”
-              filter: "brightness(0.8)",
-              transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] },
+              scale: 1.15,           // 앞으로 나가면서 커짐
+              y: -30,                // 위로 빠짐
+              filter: "brightness(1.2)",
+              transition: { duration: 0.35, ease: "easeIn" },
             }}
           >
             <ProjectKitBox
@@ -1917,19 +1923,21 @@ const IntroSection: React.FC = () => {
           </motion.div>
         )}
         <motion.div className="w-full h-full pointer-events-auto" style={{ transformStyle: "preserve-3d" }}>
-          <LegoFace3D
-            className="w-full h-full drop-shadow-2xl"
-            // 1. 마우스 따라가기: 2~12단계만 켜짐 (23단계는 자동으로 꺼짐 -> OK)
-            followMouse={phase >= 2 && phase <= 12}
+          <Suspense fallback={<FaceLoadingPlaceholder />}>
+            <LegoFace3D
+              className="w-full h-full drop-shadow-2xl"
+              // 1. 마우스 따라가기: 2~12단계만 켜짐 (23단계는 자동으로 꺼짐 -> OK)
+              followMouse={phase >= 2 && phase <= 12}
 
-            // 2. 좌우 회전 (여기를 수정!)
-            // "23 이상이면 -90도, 그게 아니면 (14~23 사이일 때 15도, 아니면 0도)"
-            fixedRotationY={phase >= 23 ? -40 : (phase >= 14 && phase < 23 ? 15 : 0)}
+              // 2. 좌우 회전 (여기를 수정!)
+              // "23 이상이면 -90도, 그게 아니면 (14~23 사이일 때 15도, 아니면 0도)"
+              fixedRotationY={phase >= 23 ? -40 : (phase >= 14 && phase < 23 ? 15 : 0)}
 
-            // 3. 위아래 회전
-            // 14~23 사이일 때만 살짝 숙이고(3), 나머지는 정면(0) -> 23단계에선 정면 봄
-            fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}
-          />
+              // 3. 위아래 회전
+              // 14~23 사이일 때만 살짝 숙이고(3), 나머지는 정면(0) -> 23단계에선 정면 봄
+              fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}
+            />
+          </Suspense>
         </motion.div>
       </motion.div>
 

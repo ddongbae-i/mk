@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { motion, useAnimate, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
 import { LegoFace3D } from './LegoFace3D';
 import { Suspense } from 'react';
+import { useGLTF } from '@react-three/drei';
 // import { LegoPart3D } from "./LegoPart3D";
 
 const COLORS = [
@@ -614,6 +615,8 @@ const HamburgerIcon = ({
 // --- MAIN SECTION ---
 
 const IntroSection: React.FC = () => {
+  const { scene } = useGLTF('/models/lego_head.glb');
+  const isModelReady = !!scene;
   const [scope, animate] = useAnimate();
 
   const safeAnimate = async (selector: string, keyframes: any, options?: any) => {
@@ -717,6 +720,7 @@ const IntroSection: React.FC = () => {
   const handleScrollAction = async (direction: number) => {
     if (isAnimatingRef.current) return;
     if (isNaturalScrolling) return;
+    if (!isModelReady && phaseRef.current < 2) return;
 
     const currentPhase = phaseRef.current;
 

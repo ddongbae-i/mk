@@ -1,115 +1,176 @@
 import React, { useEffect } from 'react';
-import { FileText, Globe, X, Clock, Hash, Smile } from 'lucide-react';
+import { X, Calendar, User, Layers, FileText, Globe, ArrowRight, Layout, Github, Hash, ExternalLink } from 'lucide-react';
 
-// 타입 정의 (필요 없으면 지우고 props로 바로 쓰세요)
 interface ProjectDetailProps {
     onClose: () => void;
-    data?: any; // 부모에서 데이터를 넘겨준다면 사용
+    data?: any;
 }
 
 const ProjectDetailCard: React.FC<ProjectDetailProps> = ({ onClose, data }) => {
 
-    // 데이터가 없을 경우를 대비한 기본값 (연동 시 data.title 등으로 교체하세요)
     useEffect(() => {
-        // 팝업이 켜질 때: body 스크롤 막기
         document.body.style.overflow = 'hidden';
-
-        // 팝업이 꺼질 때: body 스크롤 다시 허용 (Cleanup 함수)
         return () => {
             document.body.style.overflow = 'unset';
         };
     }, []);
+
     const project = {
-        title: data?.title || "PLAYOUT",
-        subTitle: data?.subTitle || "Team Project Mini App Design",
-        description: data?.description || "이 프로젝트는 사용자들이 함께 모여 즐길 수 있는 미니 앱 디자인 및 프로토타입 프로젝트입니다. 레고 블록처럼 조립 가능한 UI 시스템을 구축하여, 누구나 쉽게 자신만의 인터페이스를 만들 수 있습니다.",
-        imgSrc: data?.detailImgSrc || "/api/placeholder/800/600", // 프로젝트 상세 이미지
-        tags: ["UI/UX", "Team Project", "Mobile"],
-        stats: {
-            age: "8+",
-            time: "672h",
-            code: "251114"
-        }
+        id: data?.id || "01",
+        title: data?.title || "PROJECT TITLE",
+        subTitle: data?.subTitle || data?.subtitle || "Project Subtitle",
+        description: data?.description || "프로젝트 설명이 들어갈 자리입니다.",
+        imgSrc: data?.detailImgSrc || "/api/placeholder/800/600",
+        tags: data?.tags || [],
+        // ✅ [추가] 프로젝트 고유 포인트 컬러 가져오기 (없으면 기본 검정)
+        accentColor: data?.color || "#222222",
+        specs: [
+            { icon: <Calendar size={16} />, label: "Timeline", value: data?.specs?.period || "-" },
+            { icon: <User size={16} />, label: "Role", value: data?.specs?.role || "-" },
+            { icon: <Layers size={16} />, label: "Tech Stack", value: data?.specs?.tech || "-" },
+        ],
+        buttons: data?.buttons || [
+            { label: "View Docs", url: "#", type: "gray" },
+            { label: "Visit Site", url: "#", type: "primary" }
+        ]
+    };
+
+    const getButtonIcon = (label: string) => {
+        const l = label.toLowerCase();
+        if (l.includes("site") || l.includes("web") || l.includes("방문") || l.includes("이동")) return <Globe size={16} />;
+        if (l.includes("github") || l.includes("git")) return <Github size={16} />;
+        if (l.includes("figma") || l.includes("design") || l.includes("시안")) return <Layout size={16} />;
+        return <FileText size={16} />;
     };
 
     return (
-        <div className="w-full h-full bg-white rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row relative">
+        // 전체 컨테이너: 부드러운 그림자, 깨끗한 흰색
+        <div className="w-full h-full md:h-auto md:max-h-[85vh] bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] flex flex-col relative rounded-lg overflow-hidden">
 
-            {/* 닫기 버튼 (우측 상단 고정) */}
-            <button
-                onClick={onClose}
-                className="absolute top-4 right-4 z-50 p-2 bg-white/80 backdrop-blur-sm rounded-full hover:bg-gray-100 transition-colors shadow-sm group"
-            >
-                <X size={24} className="text-gray-400 group-hover:text-red-500 transition-colors" />
-            </button>
-
-            {/* [왼쪽] 이미지 영역 (55%) */}
-            <div className="w-full md:w-[55%] h-full bg-slate-50 relative group overflow-hidden">
-                {/* 배경 이미지 */}
-                <img
-                    src={project.imgSrc}
-                    alt="Project Detail"
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                />
-                {/* 이미지 위 그라데이션 오버레이 */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent flex flex-col justify-end p-8 md:p-10">
-                    <h2 className="text-4xl md:text-5xl font-black text-white leading-tight mb-2 tracking-tight">
-                        {project.title}
-                    </h2>
-                    <p className="text-white/90 text-lg font-medium">{project.subTitle}</p>
+            {/* 헤더 바 */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 bg-white z-10">
+                <div className="flex items-center gap-3">
+                    {/* ✅ [포인트 1] Accent Color가 적용된 뱃지 */}
+                    <div
+                        className="text-white text-[11px] font-mono font-bold px-2.5 py-1 rounded-sm tracking-wider"
+                        style={{ backgroundColor: project.accentColor }}
+                    >
+                        NO.{project.id.toString().padStart(2, '0')}
+                    </div>
+                    <span className="text-xs font-mono text-gray-400 tracking-widest uppercase hidden sm:block">
+                        Project Specification
+                    </span>
                 </div>
+
+                <button
+                    onClick={onClose}
+                    className="p-2 -mr-2 text-gray-400 hover:text-black transition-colors rounded-full hover:bg-gray-100"
+                >
+                    <X size={24} strokeWidth={1.5} />
+                </button>
             </div>
 
-            {/* [오른쪽] 정보 및 버튼 영역 (45%) */}
-            <div className="w-full md:w-[45%] h-full p-8 md:p-10 flex flex-col bg-white">
+            {/* 컨텐츠 영역 */}
+            <div className="flex-1 overflow-y-auto custom-scrollbar bg-white">
+                {/* ✅ [비율 변경] 이미지를 더 넓게 (col-span-8), 정보를 좁게 (col-span-4) */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 min-h-full">
 
-                {/* 상단: 레고 박스 스펙 같은 정보 */}
-                <div className="flex gap-4 mb-8 border-b border-gray-100 pb-6">
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-yellow-100 rounded-lg text-yellow-700 font-bold text-sm">
-                        <Smile size={16} /> {project.stats.age}
+                    {/* [Left] Image Area (8/12) */}
+                    <div className="lg:col-span-8 bg-gray-50 p-8 md:p-12 flex items-center justify-center relative overflow-hidden">
+                        {/* 배경에 은은한 포인트 컬러 그라데이션 */}
+                        <div
+                            className="absolute inset-0 opacity-[0.03] bg-gradient-to-br from-transparent to-current pointer-events-none"
+                            style={{ color: project.accentColor }}
+                        />
+                        <div className="relative w-full max-w-3xl shadow-sm rounded-lg overflow-hidden border border-gray-100/50">
+                            <img
+                                src={project.imgSrc}
+                                alt="Project Preview"
+                                className="w-full h-auto object-cover block hover:scale-[1.02] transition-transform duration-500"
+                            />
+                        </div>
                     </div>
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 rounded-lg text-blue-600 font-bold text-sm">
-                        <Clock size={16} /> {project.stats.time}
-                    </div>
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 rounded-lg text-gray-500 font-mono text-sm">
-                        <Hash size={16} /> {project.stats.code}
+
+                    {/* [Right] Info Area (4/12) */}
+                    <div className="lg:col-span-4 p-8 flex flex-col border-t lg:border-t-0 lg:border-l border-gray-100 bg-white relative z-10">
+
+                        {/* Title */}
+                        <div className="mb-8">
+                            <h2 className="text-2xl md:text-3xl font-black text-gray-900 mb-3 tracking-tight leading-tight">
+                                {project.title}
+                            </h2>
+                            {/* ✅ [포인트 2] 서브타이틀에 포인트 컬러 적용 */}
+                            <p
+                                className="text-base font-bold leading-relaxed opacity-80"
+                                style={{ color: project.accentColor }}
+                            >
+                                {project.subTitle}
+                            </p>
+                        </div>
+
+                        {/* Description */}
+                        <div className="text-gray-600 text-sm leading-7 mb-8 whitespace-pre-line font-medium">
+                            {project.description}
+                        </div>
+
+                        {/* Specs */}
+                        <div className="grid grid-cols-1 gap-4 py-6 border-t border-gray-100">
+                            {project.specs.map((spec, index) => (
+                                <div key={index} className="flex items-start gap-3">
+                                    <div className="text-gray-400 mt-0.5">
+                                        {spec.icon}
+                                    </div>
+                                    <div>
+                                        <span className="block text-[10px] font-mono uppercase tracking-wider font-bold text-gray-500 mb-1">
+                                            {spec.label}
+                                        </span>
+                                        <div className="text-gray-900 font-bold text-sm">
+                                            {spec.value}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Tags */}
+                        <div className="flex flex-wrap gap-2 mb-8 mt-auto pt-6">
+                            {project.tags.map((tag, i) => (
+                                <span key={i} className="text-[11px] font-mono font-medium text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full">
+                                    #{tag}
+                                </span>
+                            ))}
+                        </div>
+
+                        {/* ✅ [레이아웃 변경] 버튼 영역: Grid 적용으로 4개 대응 */}
+                        <div className="pt-6 border-t border-gray-100 grid grid-cols-2 gap-2.5">
+                            {project.buttons.map((btn: any, index: number) => {
+                                const isPrimary = btn.type === 'primary';
+                                return (
+                                    <button
+                                        key={index}
+                                        onClick={() => window.open(btn.url, '_blank')}
+                                        // ✅ [포인트 3] Primary 버튼에 포인트 컬러 동적 적용
+                                        style={isPrimary ? { backgroundColor: project.accentColor, borderColor: project.accentColor } : {}}
+                                        className={`
+                                            flex items-center justify-center gap-2 px-4 py-3
+                                            text-[13px] font-bold tracking-wide transition-all duration-200
+                                            border rounded-md relative group overflow-hidden
+                                            ${isPrimary
+                                                ? "text-white hover:opacity-90 shadow-sm" // Primary 스타일 (배경색은 인라인으로 들어감)
+                                                : "bg-white text-gray-600 border-gray-200 hover:border-gray-400 hover:text-gray-900 hover:bg-gray-50" // Secondary 스타일
+                                            }
+                                        `}
+                                    >
+                                        {!isPrimary && getButtonIcon(btn.label)}
+                                        <span className="truncate">{btn.label}</span>
+                                        {isPrimary && <ArrowRight size={16} className="group-hover:translate-x-0.5 transition-transform" />}
+                                    </button>
+                                );
+                            })}
+                        </div>
+
                     </div>
                 </div>
-
-                {/* 설명 텍스트 */}
-                <div className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-                    <h3 className="text-xl font-bold text-gray-900 mb-3">Project Overview</h3>
-                    <p className="text-gray-600 leading-relaxed text-base whitespace-pre-line">
-                        {project.description}
-                    </p>
-
-                    <div className="mt-6 flex flex-wrap gap-2">
-                        {project.tags.map((tag, i) => (
-                            <span key={i} className="text-xs font-semibold text-gray-400 border border-gray-200 px-2 py-1 rounded">
-                                #{tag}
-                            </span>
-                        ))}
-                    </div>
-                </div>
-
-                {/* 하단 버튼 그룹 */}
-                <div className="mt-8 pt-6 border-t border-gray-100 flex gap-3">
-                    <button
-                        className="flex-1 flex items-center justify-center gap-2 bg-gray-50 hover:bg-gray-100 text-gray-700 py-4 rounded-xl font-bold text-base transition-all transform active:scale-95 border border-gray-200"
-                        onClick={() => window.open('#', '_blank')}
-                    >
-                        <FileText size={18} />
-                        기획서 보기
-                    </button>
-                    <button
-                        className="flex-1 flex items-center justify-center gap-2 bg-teal-500 hover:bg-teal-600 text-white py-4 rounded-xl font-bold text-base transition-all shadow-lg shadow-teal-200 transform active:scale-95"
-                        onClick={() => window.open('#', '_blank')}
-                    >
-                        <Globe size={18} />
-                        웹사이트 이동
-                    </button>
-                </div>
-
             </div>
         </div>
     );

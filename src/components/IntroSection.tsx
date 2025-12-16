@@ -3,7 +3,7 @@ import { motion, useAnimate, useMotionValue, useTransform, AnimatePresence } fro
 import { LegoFace3D } from './LegoFace3D';
 import SkillSection from './SkillSection';
 import ProjectDetailCard from './ProjectDetailCard';
-import Background from "three/src/renderers/common/Background.js";
+import { CustomCursor } from './CustomCursor';
 // import { LegoPart3D } from "./LegoPart3D";
 
 
@@ -161,16 +161,42 @@ const PROJECT_DATA = [
   {
     id: 1,
     title: "wellio",
-    subtitle: "미니앱 프로젝트",
+    subtitle: "가족 건강 공유 앱, 웰리오",
     image: "images/project2.png",
     color: "#8E00BD",
+    detailImgSrc: "images/info1.png",
+    description: "디자인 페이지 : 병원리스트 / 정보 / 접수 / 결제 / 커뮤니티 메인 / 캘린더 메인\n\n제작 : 로고 / 아이콘",
+    tags: ["UI/UX", "Mobile App", "Mobile App", "Vibe Coding"],
+    specs: { period: "25.08.13 - 25.08.27,", role: "디자인&개발", tech: "Figma,REACT,Typescript,Illustrator" },
+
+    // ▼ [수정] 버튼을 배열로 정의 (순서대로 렌더링됨)
+    // type: 'gray' (회색 버튼), 'primary' (노란색 강조 버튼)
+    buttons: [
+      { label: "기획서 보기", url: "https://www.figma.com/proto/YgY5CNo9U0iNRQcw6MiKZ5/3%EC%A1%B0-Ai--Wellio?page-id=10897%3A59342&node-id=10897-59350&viewport=639%2C155%2C0.1&t=uDXy317GRj0LX8Jv-1&scaling=scale-down&content-scaling=fixed", type: "gray" },
+      { label: "프로토타입", url: "https://www.figma.com/proto/YgY5CNo9U0iNRQcw6MiKZ5/3%EC%A1%B0-Ai--Wellio?page-id=8657%3A13196&node-id=8877-12777&viewport=8295%2C4598%2C0.26&t=3BuPl2X1rPy84xHQ-1&scaling=scale-down&content-scaling=fixed&starting-point-node-id=8877%3A13597", type: "gray" },
+      { label: "AI 웰리오 앱", url: "https://wellio-iota.vercel.app/", type: "primary" }, // 강조 버튼
+    ]
   },
   {
     id: 2,
-    title: "PROJECT TWO",
-    subtitle: "브랜드 리뉴얼",
+    title: "BEA",
+    subtitle: "조선미녀 반응형 웹사이트 리뉴얼",
     image: "images/project1.png",
     color: "#2B7000",
+
+    detailImgSrc: "images/project1_detail.png",
+    description: `제작 : 아이콘 / 인트로, 신제품 영상\n\n디자인 페이지 : SHOP\n\n 코딩 페이지 : SHOP / 메인(1024-360)반응형 / header&footer / 개발
+                총괄`,
+    tags: ["Dashboard", "Design System", "Admin"],
+    specs: {
+      period: "25.09.19 - 25.10.24",
+      role: "Dashboard UI Design, React Pub",
+      tech: "React, Chart.js, Tailwind"
+    },
+    links: {
+      docs: "https://www.figma.com/deck/YP3BTYoRHbMzOydhFS5qoO/-%ED%8C%80%ED%94%8C1-3%EC%A1%B0--%EA%B2%B0%EA%B3%BC%EB%B3%B4%EA%B3%A0%EC%84%9C_%EB%AC%B8%EC%96%B4%EC%A7%80%EC%A7%80%EB%A7%88?node-id=2078-4602&viewport=-3134%2C-1274%2C0.5&t=MZGqIbqakXF0yVpw-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1",
+      site: "#https://ddongbae-i.github.io/boj_en/"
+    }
   },
   {
     id: 3,
@@ -178,6 +204,21 @@ const PROJECT_DATA = [
     subtitle: "브랜드 리뉴얼",
     image: "images/project3.png",
     color: "#F25F09",
+
+    detailImgSrc: "images/project3_detail.png",
+    description: `함께하는 맛의 행복. 쿠우쿠우 고급화 전략에 맞춰 웹사이트를 리뉴얼한 프로젝트입니다.\n\n기존 웹사이트에 부족했던 메뉴,
+                쿠우쿠우 상점, 멤버쉽, 슬로건, 가독성 등을 개선하고 고급스러우면도 친화적인 디자인으로 쿠우쿠우 브랜드 이미지를
+                상승시킴과 동시에 방문자들의 니즈를 충족할 컨텐츠를 제공합니다`,
+    tags: ["Renewal", "Brand Design", "Responsive"],
+    specs: {
+      period: "8 Weeks (320 hours)",
+      role: "Web Design, Publishing",
+      tech: "Figma, HTML/CSS, GSAP"
+    },
+    links: {
+      docs: "https://www.figma.com/proto/ovfWPSdRr3myp4oidk8kwX/%EA%B9%80%EB%AF%BC%EA%B2%BD?page-id=2224%3A832&node-id=2224-833&viewport=506%2C284%2C0.11&t=gb20orGuQ99jHPkH-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=2224%3A833",
+      site: "https://www.figma.com/proto/ovfWPSdRr3myp4oidk8kwX/%EA%B9%80%EB%AF%BC%EA%B2%BD?page-id=2224%3A832&node-id=2229-2328&viewport=506%2C284%2C0.11&t=gb20orGuQ99jHPkH-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=2224%3A833"
+    }
   },
 ];
 
@@ -513,6 +554,7 @@ const FloatingMenuBlock: React.FC<{
     <motion.div
       id={id}
       style={{ ...style, zIndex: baseZIndex } as React.CSSProperties}
+      data-hoverable="true"
       initial={{ opacity: 0, scale: 0.8 }}
       animate={shouldFloat ? floatAnim : { opacity: 1, scale: 1 }}
       transition={{
@@ -552,30 +594,35 @@ const FloatingMenuBlock: React.FC<{
 const HamburgerIcon = ({
   className,
   isOpen,
-  onClick
+  onClick,
+  invert = false,
 }: {
-  className?: string,
-  isOpen: boolean,
-  onClick: () => void
+  className?: string;
+  isOpen: boolean;
+  onClick: () => void;
+  invert?: boolean;
 }) => (
   <div
     onClick={onClick}
-    className={`fixed top-[40px] right-[180px] z-50 flex flex-col justify-center items-end gap-1 cursor-pointer pointer-events-auto ${className}`}
+    className={`relative flex flex-col justify-center items-end gap-1 cursor-pointer pointer-events-auto ${className}`}
   >
     <img
       src={`${import.meta.env.BASE_URL}images/hamburger_line1.svg`}
       alt=""
-      className="w-8 h-[10px]"
+      className="w-8 h-[10px] block"
+      style={{ filter: invert ? "invert(1)" : "none" }}
     />
     <img
       src={`${import.meta.env.BASE_URL}images/hamburger_line2.svg`}
       alt=""
-      className="w-8 h-[6px]"
+      className="w-8 h-[6px] block"
+      style={{ filter: invert ? "invert(1)" : "none" }}
     />
     <motion.img
       src={`${import.meta.env.BASE_URL}images/hamburger_line3.svg`}
       alt=""
-      className="w-8 h-[6px] origin-right"
+      className="w-8 h-[6px] origin-right block"
+      style={{ filter: invert ? "invert(1)" : "none" }}
       animate={isOpen ? { rotate: -20, y: -6 } : { rotate: 0, y: 0 }}
       transition={{ duration: 0.3 }}
     />
@@ -587,10 +634,47 @@ const HamburgerIcon = ({
 const IntroSection: React.FC = () => {
   const [scope, animate] = useAnimate();
 
+  const [menuOpen, setMenuOpen] = useState(false);
+
   const safeAnimate = async (selector: string, keyframes: any, options?: any) => {
     const el = document.querySelector(selector);
     if (!el) return;
     await animate(selector, keyframes, options);
+  };
+
+  const handleMenuClick = (index: number) => {
+    // ✅ 메뉴 닫고 이동
+    setMenuOpen(false);
+
+    const label = BRICK_LABELS[index];
+
+    // 네 코드상 현재 “확실히 존재하는 섹션” 기준으로만 연결
+    // BUILD = 조립 가이드(phase 14 시작)
+    // PROJECT = 프로젝트 키트(phase 25)
+    // STACK = 스킬(phase 26)
+    // GALLERY / CONTACT 는 아직 phase가 없으니 임시 처리
+    const targetByLabel: Record<string, number | null> = {
+      BUILD: 14,
+      PROJECT: 25,
+      STACK: 26,
+      GALLERY: null,
+      CONTACT: null,
+    };
+
+    const target = targetByLabel[label];
+
+    if (target === null) {
+      console.log("아직 준비되지 않은 메뉴입니다:", label);
+      return;
+    }
+
+    // ✅ 애니메이션 잠금 + 즉시 점프
+    isAnimatingRef.current = true;
+    setPhase(target);
+
+    window.setTimeout(() => {
+      isAnimatingRef.current = false;
+    }, 700);
   };
 
   const headRef = useRef<HTMLDivElement>(null);
@@ -633,7 +717,7 @@ const IntroSection: React.FC = () => {
   const fixedPartsY = phase >= 14 && phase < 23 ? 25 : 0;
   const partsRotateY = followParts ? 0 : fixedPartsY;
   const [hoveredBlockIndex, setHoveredBlockIndex] = useState<number | null>(null);
-
+  const showMenuBlocks = menuOpen && phase >= 9;
   const phaseRef = useRef(phase);
 
   const isAnimatingRef = useRef(false);
@@ -670,6 +754,8 @@ const IntroSection: React.FC = () => {
     const layoutCenterX = visualCenterX - currentTx;
     const layoutCenterY = visualCenterY - currentTy;
     return { x: targetCenter.x - layoutCenterX, y: targetCenter.y - layoutCenterY };
+
+
   };
 
   const getStackPosition = (index: number) => {
@@ -1047,6 +1133,51 @@ const IntroSection: React.FC = () => {
     await Promise.all(pourAnims);
   };
 
+  const handleHamburgerToggle = async () => {
+    if (isAnimatingRef.current) return;
+
+    // ✅ 블럭이 햄버거 안에 들어가 있는 상태(phase 11) -> 쏟아내기(phase 12)
+    if (phase === 11) {
+      setMenuOpen(true);
+      isAnimatingRef.current = true;
+      setPhase(12);
+      await runStepB_PourOut();
+      isAnimatingRef.current = false;
+      return;
+    }
+
+    // ✅ 쏟아져 있는 상태(phase 12) -> 다시 흡수해서 phase 11로
+    if (phase === 12) {
+      setMenuOpen(false);
+      isAnimatingRef.current = true;
+
+      const absorbAnims = [];
+      for (let i = 0; i < 5; i++) {
+        const coords = getHamburgerAbsorbPosition(i);
+        absorbAnims.push(
+          safeAnimate(
+            `#block-${i}`,
+            { x: coords.x, y: coords.y, scale: 0.2, opacity: 0 },
+            { duration: 0.4, ease: "backIn", delay: (4 - i) * 0.05 }
+          )
+        );
+      }
+      await Promise.all(absorbAnims);
+
+      setPhase(11);
+      isAnimatingRef.current = false;
+      return;
+    }
+
+    // 그 외 구간에서는 아이콘만 토글(원하면 제거 가능)
+    setMenuOpen(v => !v);
+  };
+
+  useEffect(() => {
+    // ✅ 11/12에서는 menuOpen을 유지, 그 외 구간 이동 시 닫기
+    if (phase !== 11 && phase !== 12) setMenuOpen(false);
+  }, [phase]);
+
   // 다른 useEffect들 근처에 추가
   useEffect(() => {
     const handleMouseOver = (e: MouseEvent) => {
@@ -1196,7 +1327,8 @@ const IntroSection: React.FC = () => {
     const viewportHeight = window.innerHeight;
     const startY = viewportHeight * 1.3;
     const faceAnim = animate("#face-container", { y: [0, -150, startY], rotateZ: [0, 10, -45], rotateX: [0, 0, 30] }, { duration: 0.8, ease: "easeInOut", times: [0, 0.3, 1] });
-    const bgAnim = animate(scope.current, { backgroundColor: "#E5E5E5" }, { duration: 0.8, ease: "easeInOut" });
+    const bgAnim = animate(scope.current, { backgroundColor: "#8F1E20" }, { duration: 0.8, ease: "easeInOut" });
+
     animate(".hidden-char", { opacity: 0, width: 0, scale: 0 }, { duration: 0.2 });
     animate("#split-play", { x: 0 }, { duration: 0.6, ease: "backInOut" });
     animate("#split-out", { x: 0 }, { duration: 0.6, ease: "backInOut" });
@@ -1253,8 +1385,10 @@ const IntroSection: React.FC = () => {
       ref={scope}
       tabIndex={0}
       onMouseMove={handleMouseMove}
-      className="relative w-full h-full flex flex-col items-center justify-center bg-[#E5E5E5] overflow-hidden outline-none"
+      className="relative w-full h-full flex flex-col items-center justify-center bg-[#e5e5e5] overflow-hidden outline-none"
+
     >
+      <CustomCursor />
       {/* Phase 15에서 자연 스크롤을 위한 내부 컨테이너 */}
       <div
         ref={scrollContainerRef}
@@ -1906,12 +2040,30 @@ const IntroSection: React.FC = () => {
       )}
 
       {/* 햄버거 메뉴 */}
-      <div className="absolute top-0 left-0 w-full h-full max-w-[1920px] pointer-events-none px-6 md:px-16 xl:px-[180px] z-50">
-        <div className="w-full h-24 flex items-center justify-between">
-          <div className="w-20 h-20" />
-          <div id="hamburger" className="w-10 h-10 flex items-center justify-center pointer-events-auto">
-            {(phase >= 9 && phase <= 12) && <HamburgerIcon isOpen={phase >= 12} onClick={handleHamburgerClick} />}
-          </div>
+      <div className="fixed top-0 left-0 w-full h-24 max-w-[1920px] pointer-events-none px-6 md:px-16 xl:px-[180px] z-[999]">
+        <div className="w-full h-full flex items-center justify-between">
+          <div className="w-20 h-20" /> {/* 왼쪽 로고 여백 */}
+
+          {/* 👇 [수정] 배경 조건부 적용 */}
+          <motion.div
+            id="hamburger"
+            className="w-14 h-14 flex items-center justify-center pointer-events-auto rounded-full transition-colors duration-500"
+            // ✅ phase가 9보다 클 때만 배경과 블러 효과 적용
+            animate={{
+              backgroundColor: phase > 9 ? "rgba(143, 30, 32, 0.60)" : "rgba(143, 30, 32, 0)",
+              backdropFilter: phase > 9 ? "blur(8px)" : "blur(0px)",
+              boxShadow: phase > 9 ? "0 4px 6px rgba(0,0,0,0.05)" : "none"
+            }}
+            data-hoverable="true"
+          >
+            {/* 메뉴는 9단계부터 렌더링 */}
+            {(phase >= 9) && (
+              <HamburgerIcon
+                isOpen={menuOpen}              // ✅ phase >= 12 → menuOpen
+                onClick={handleHamburgerToggle} // ✅ handleHamburgerClick → handleHamburgerToggle
+              />
+            )}
+          </motion.div>
         </div>
       </div>
 
@@ -1991,19 +2143,49 @@ const IntroSection: React.FC = () => {
           {(phase >= 9 && phase <= 12) && (
             <div className="absolute inset-0 pointer-events-none z-[110]">
               {BLOCK_POSITIONS.map((pos, i) => (
-                <FloatingMenuBlock
+                <div
                   key={i}
-                  index={i}
-                  id={`block-${i}`}
-                  shouldFloat={phase === 9}
-                  isMenuOpen={phase === 12}
-                  hoveredIndex={hoveredBlockIndex}
-                  onHover={setHoveredBlockIndex}
-                  style={pos}
-                />
+                  className="pointer-events-auto"
+                  onClick={() => phase === 12 && handleMenuClick(i)} // ✅ phase 12에서만 클릭 이동
+                >
+                  <FloatingMenuBlock
+                    index={i}
+                    id={`block-${i}`}
+                    shouldFloat={phase === 9}       // ✅ 9에서만 둥둥
+                    isMenuOpen={phase === 12}       // ✅ 12에서만 메뉴 모드
+                    hoveredIndex={hoveredBlockIndex}
+                    onHover={setHoveredBlockIndex}
+                    style={pos}
+                  />
+                </div>
               ))}
             </div>
           )}
+
+          {/* ✅ 글로벌 메뉴: phase 12 이후 구간에서 햄버거 누르면 바로 뜨게 */}
+          {menuOpen && phase > 12 && (
+            <div className="fixed inset-0 pointer-events-none z-[1200]">
+              {BLOCK_POSITIONS.map((pos, i) => (
+                <div
+                  key={`global-${i}`}
+                  className="pointer-events-auto"
+                  onClick={() => handleMenuClick(i)}
+                  style={{ position: "absolute", ...pos }}  // ✅ pos를 여기서 직접 적용
+                >
+                  <FloatingMenuBlock
+                    index={i}
+                    id={`global-block-${i}`}
+                    shouldFloat={false}
+                    isMenuOpen={true}
+                    hoveredIndex={hoveredBlockIndex}
+                    onHover={setHoveredBlockIndex}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+
         </div>
       </div>
 
@@ -2012,6 +2194,7 @@ const IntroSection: React.FC = () => {
         id="face-container"
         ref={headRef}
         className="absolute pointer-events-auto"
+        data-lego-head="true"
         style={{
           width: "700px",
           height: "700px",

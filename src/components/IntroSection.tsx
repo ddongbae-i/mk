@@ -5,6 +5,8 @@ import SkillSection from './SkillSection';
 import ProjectDetailCard from './ProjectDetailCard';
 // import { LegoPart3D } from "./LegoPart3D";
 
+
+type FaceExpression = 'sad' | 'neutral' | 'happy' | 'sweat' | 'blank';
 const COLORS = [
   '#8F1E20', '#F25F09', '#FCBB09', '#8E00BD', '#2B7000', '#B7156C', '#8F1E20'
 ];
@@ -634,7 +636,7 @@ const IntroSection: React.FC = () => {
   const [isProjectOpen, setIsProjectOpen] = useState(false);
 
   const [faceExpression, setFaceExpression] =
-    useState<'sad' | 'neutral' | 'happy' | 'sweat'>('neutral');
+    useState<FaceExpression>('neutral');
 
   const [isWinking, setIsWinking] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
@@ -1068,6 +1070,49 @@ const IntroSection: React.FC = () => {
     await Promise.all(pourAnims);
   };
 
+  // 다른 useEffect들 근처에 추가
+  useEffect(() => {
+    const handleMouseOver = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('button, a, [role="button"], .cursor-pointer')) {
+        setFaceExpression('blank');
+      }
+    };
+
+    const handleMouseOut = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('button, a, [role="button"], .cursor-pointer')) {
+        // phase 26에서는 현재 레벨에 맞는 표정으로 복귀
+        if (phase >= 26) {
+          // SkillSection의 currentLevel에 따라 다르게 해야 하면 별도 state 필요
+          setFaceExpression('neutral');
+        }
+      }
+    };
+
+    const handleClick = (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('button, a, [role="button"], .cursor-pointer')) {
+        setFaceExpression('sweat');
+        setTimeout(() => {
+          if (phase >= 26) {
+            setFaceExpression('neutral');
+          }
+        }, 400);
+      }
+    };
+
+    document.addEventListener('mouseover', handleMouseOver);
+    document.addEventListener('mouseout', handleMouseOut);
+    document.addEventListener('click', handleClick);
+
+    return () => {
+      document.removeEventListener('mouseover', handleMouseOver);
+      document.removeEventListener('mouseout', handleMouseOut);
+      document.removeEventListener('click', handleClick);
+    };
+  }, [phase]);
+
   useEffect(() => {
     if (phase === 26) {
       setSpinY(360);
@@ -1225,11 +1270,12 @@ const IntroSection: React.FC = () => {
 
   const scrollOffset = phase >= 16 ? -300 : (isNaturalScrolling ? Math.max(-300, -naturalScrollY) : 0);
   const globalY = phase >= 23 ? "-80vh" : "0px";
-  const finalExpression: 'sad' | 'neutral' | 'happy' | 'sweat' | 'blank' =
+  const finalExpression: FaceExpression =
     phase >= 26
       ? faceExpression
-      : (isWinking ? 'sweat' : 'neutral');
-
+      : (faceExpression === 'blank' || faceExpression === 'sweat')
+        ? faceExpression
+        : (isWinking ? 'sweat' : 'neutral');
   return (
     <div
       ref={scope}

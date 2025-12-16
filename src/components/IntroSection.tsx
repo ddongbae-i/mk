@@ -1203,10 +1203,24 @@ const IntroSection: React.FC = () => {
     await Promise.all(anims);
   };
 
+  const prevMouseRef = useRef({ x: 0, y: 0, time: Date.now() });
+  const [mouseVelocity, setMouseVelocity] = useState({ x: 0, y: 0 });
+  const [absoluteMousePos, setAbsoluteMousePos] = useState({ x: 0, y: 0 });
+
   const handleMouseMove = (e: React.MouseEvent) => {
     const { clientX, clientY } = e;
     mouseX.set(clientX - window.innerWidth / 2);
     mouseY.set(clientY - window.innerHeight / 2);
+
+    // 스킬 충돌용 절대 좌표 & 속도
+    const now = Date.now();
+    const dt = Math.max(now - prevMouseRef.current.time, 1);
+    setMouseVelocity({
+      x: (clientX - prevMouseRef.current.x) / dt * 16,
+      y: (clientY - prevMouseRef.current.y) / dt * 16,
+    });
+    setAbsoluteMousePos({ x: clientX, y: clientY });
+    prevMouseRef.current = { x: clientX, y: clientY, time: now };
   };
 
   const scrollOffset = phase >= 16 ? -300 : (isNaturalScrolling ? Math.max(-300, -naturalScrollY) : 0);
@@ -1309,6 +1323,8 @@ const IntroSection: React.FC = () => {
                 onExpressionChange={setFaceExpression}
                 shakeTrigger={shakeTrigger}
                 headRef={headRef}
+                mousePos={absoluteMousePos}
+                mouseVelocity={mouseVelocity}
               />
             )}
           </div>
@@ -1958,8 +1974,23 @@ const IntroSection: React.FC = () => {
           cursor: phase === 26 ? "grab" : "default",
           touchAction: "none",
         }}
+        onMouseEnter={() => {
+          if (phase >= 26) {
+            setFaceExpression('blank');
+          }
+        }}
+        onMouseLeave={() => {
+          if (phase >= 26) {
+            setFaceExpression('neutral');
+          }
+        }}
         onClick={() => {
-          if (phase >= 26) return;
+          if (phase >= 26) {
+            // phase 26에서 클릭하면 sweat
+            setFaceExpression('sweat');
+            window.setTimeout(() => setFaceExpression('neutral'), 500);
+            return;
+          }
           setIsWinking(true);
           window.setTimeout(() => setIsWinking(false), 450);
         }}

@@ -6,7 +6,7 @@ import { useGLTF, useTexture } from "@react-three/drei";
 const MODEL_PATH = "/models/lego_head.glb";
 const FACE_MAT_NAME = "FaceMaterial"; // ✅ 블렌더에서 얼굴(스티커) 재질 이름을 이걸로!
 
-type Expression = "neutral" | "happy" | "sad" | "sweat";
+type Expression = "neutral" | "happy" | "sad" | "sweat" | "blank";
 
 interface ModelProps {
     followMouse: boolean;
@@ -236,7 +236,7 @@ export const LegoFace3D: React.FC<{
                 >
                     {/* ✅ 색감 안정: 과한 라이트 줄이고, 표정은 emissive로 보정했음 */}
                     <ambientLight intensity={2.0} />
-                    <directionalLight position={[0, 0, 9]} intensity={1.2} />
+                    <directionalLight position={[0, 0, 9]} intensity={1.0} />
                     <directionalLight position={[-5, 5, -5]} intensity={0.5} />
                     <hemisphereLight intensity={0.35} groundColor="#ffffff" />
                     <pointLight position={[0, 1, 6]} intensity={1.2} distance={30} />

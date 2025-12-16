@@ -62,56 +62,156 @@ const BurstEffect = ({ x, y }: { x: number; y: number }) => {
 };
 
 // 🍬 미니 아이콘 (바닥 올리고, 크기 키움)
-const MiniLegoHead = React.memo(({ skill, headX, headY }: { skill: any; headX: number; headY: number }) => {
-    // 1. 바닥 위치 수정: 화면 하단에서 300px 위 (확 올려서 잘 보이게)
-    // 모바일/데스크탑 대응을 위해 innerHeight의 비율(80%)로 잡아도 좋습니다.
+// 🎮 물리 기반 스킬 아이콘
+const MiniLegoHead = React.memo(({
+    skill,
+    headX,
+    headY,
+    mousePos,
+    mouseVelocity,
+}: {
+    skill: any;
+    headX: number;
+    headY: number;
+    mousePos: { x: number; y: number };
+    mouseVelocity: { x: number; y: number };
+}) => {
     const windowHeight = typeof window !== "undefined" ? window.innerHeight : 900;
-    const floorY = windowHeight - 300 + (Math.random() * 50); // 살짝 지그재그로 쌓이게
+    const windowWidth = typeof window !== "undefined" ? window.innerWidth : 1600;
+    const floorY = windowHeight - 180;
 
-    // 2. 좌우 확산
-    const randomX = (Math.random() - 0.5) * 1200;
+    // 물리 상태
+    const [pos, setPos] = useState({ x: headX, y: headY });
+    const [rotation, setRotation] = useState(0);
+    const [isLanded, setIsLanded] = useState(false);
 
-    // 3. 점프 높이 (더 높게)
-    const jumpHeight = 700 + Math.random() * 300;
+    const velRef = useRef({ x: (Math.random() - 0.5) * 20, y: -20 - Math.random() * 10 });
+    const rotVelRef = useRef((Math.random() - 0.5) * 25);
+    const posRef = useRef({ x: headX, y: headY });
+    const landedRef = useRef(false);
+    const lastMouseRef = useRef({ x: 0, y: 0 });
 
-    // 4. 회전
-    const randomRotate = (Math.random() - 0.5) * 1440;
+    // 물리 시뮬레이션
+    useEffect(() => {
+        const gravity = 0.6;
+        const bounce = 0.5;
+        const friction = 0.99;
+        const groundFriction = 0.95;
+
+        let raf: number;
+
+        const update = () => {
+            let { x, y } = posRef.current;
+            let vx = velRef.current.x;
+            let vy = velRef.current.y;
+            let rotVel = rotVelRef.current;
+
+            // 중력
+            vy += gravity;
+
+            // 위치 업데이트
+            x += vx;
+            y += vy;
+
+            // 바닥 충돌
+            if (y >= floorY) {
+                y = floorY;
+                if (Math.abs(vy) > 2) {
+                    vy = -vy * bounce;
+                    rotVel *= 0.7;
+                } else {
+                    vy = 0;
+                    landedRef.current = true;
+                    setIsLanded(true);
+                }
+                vx *= groundFriction;
+            }
+
+            // 좌우 벽
+            if (x < 40) { x = 40; vx = Math.abs(vx) * bounce; }
+            if (x > windowWidth - 40) { x = windowWidth - 40; vx = -Math.abs(vx) * bounce; }
+
+            // 공기 저항
+            vx *= friction;
+            rotVel *= 0.995;
+
+            posRef.current = { x, y };
+            velRef.current = { x: vx, y: vy };
+            rotVelRef.current = rotVel;
+
+            setPos({ x, y });
+            setRotation(prev => prev + rotVel);
+
+            raf = requestAnimationFrame(update);
+        };
+
+        raf = requestAnimationFrame(update);
+        return () => cancelAnimationFrame(raf);
+    }, [floorY, windowWidth]);
+
+    // 마우스 충돌 감지
+    useEffect(() => {
+        const { x, y } = posRef.current;
+        const dx = mousePos.x - x;
+        const dy = mousePos.y - y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        const hitRadius = 50;
+
+        if (dist < hitRadius && dist > 0) {
+            // 마우스 이동 방향으로 밀기
+            const speed = Math.sqrt(mouseVelocity.x ** 2 + mouseVelocity.y ** 2);
+            const minSpeed = 3;
+
+            if (speed > minSpeed) {
+                // 충돌 방향 (마우스 → 스킬)
+                const pushX = -dx / dist;
+                const pushY = -dy / dist;
+
+                // 힘 계산 (속도 기반)
+                const force = Math.min(speed * 1.5, 25);
+
+                velRef.current.x += pushX * force + mouseVelocity.x * 0.3;
+                velRef.current.y += pushY * force * 0.5 - 8; // 위로 살짝 튀기
+                rotVelRef.current += (Math.random() - 0.5) * force * 2;
+
+                // 착지 상태 해제
+                landedRef.current = false;
+                setIsLanded(false);
+            }
+        }
+
+        lastMouseRef.current = { x: mousePos.x, y: mousePos.y };
+    }, [mousePos, mouseVelocity]);
 
     return (
-        <motion.div
+        <div
             className="absolute pointer-events-none z-[300]"
-            style={{ left: 0, top: 0 }}
-            initial={{ x: headX, y: headY, scale: 0, rotate: 0 }}
-            animate={{
-                x: [headX, headX + randomX * 0.2, headX + randomX],
-                y: [headY, headY - jumpHeight, floorY],
-                scale: [0.5, 2.5, 1.5], // 🚀 튀어나올 때 2.5배 -> 바닥에서 1.5배 (크게 유지)
-                rotate: [0, randomRotate * 0.5, randomRotate]
-            }}
-            transition={{
-                duration: 1.1,
-                times: [0, 0.35, 1],
-                ease: [0.2, 1, 0.5, 1] // 튕겨나가는 탄성
+            style={{
+                left: pos.x - 32,
+                top: pos.y - 32,
+                transform: `rotate(${rotation}deg)`,
+                transition: 'none',
             }}
         >
-            {/* ✅ 이미지 크기 대폭 확대 (w-28 h-28) */}
             <img
                 src={skill.icon}
                 alt={skill.name}
                 className="w-16 h-16 object-contain"
-                style={{ filter: "drop-shadow(0 15px 30px rgba(0,0,0,0.3))" }}
+                style={{ filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.25))" }}
             />
-        </motion.div>
+        </div>
     );
 });
-
 
 interface SkillSectionProps {
     isActive: boolean;
     onSkillsCollected?: () => void;
-    onExpressionChange?: (expression: "sad" | "neutral" | "happy" | "sweat") => void;
+    onExpressionChange?: (expression: "sad" | "neutral" | "happy" | "sweat" | "blank") => void;
     shakeTrigger: number;
     headRef: React.RefObject<HTMLElement>;
+    mousePos?: { x: number; y: number };
+    mouseVelocity?: { x: number; y: number };
 }
 
 const SkillSection: React.FC<SkillSectionProps> = ({
@@ -120,6 +220,8 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     onExpressionChange,
     shakeTrigger,
     headRef,
+    mousePos = { x: 0, y: 0 },
+    mouseVelocity = { x: 0, y: 0 },
 }) => {
     const [poppedSkills, setPoppedSkills] = useState<any[]>([]);
     const [bursts, setBursts] = useState<{ id: number; x: number; y: number }[]>([]);
@@ -245,6 +347,8 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                         skill={item.skill}
                         headX={item.originX}
                         headY={item.originY}
+                        mousePos={mousePos}
+                        mouseVelocity={mouseVelocity}
                     />
                 ))}
             </div>

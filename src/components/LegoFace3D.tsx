@@ -1,37 +1,27 @@
 import React, { useRef, useEffect, useState, Suspense } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { useGLTF, Center, Html } from '@react-three/drei';
+import { Canvas, useFrame } from '@react-three/fiber';
+import { useGLTF, Center } from '@react-three/drei';
 import * as THREE from 'three';
-
-// 모델 경로를 상수로 정의
-const MODEL_PATH = `${import.meta.env.BASE_URL}models/lego_head.glb`;
 
 interface ModelProps {
     followMouse: boolean;
     fixedRotationY: number;
     fixedRotationX: number;
-    onLoaded?: () => void;
 }
 
-const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY, fixedRotationX, onLoaded }) => {
-    const { scene } = useGLTF(MODEL_PATH);
+const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY, fixedRotationX }) => {
+    const { scene } = useGLTF(`${import.meta.env.BASE_URL}models/lego_head.glb`);
     const modelRef = useRef<THREE.Group>(null);
     const [targetRotation, setTargetRotation] = useState({ x: 0, y: 0, z: 0 });
-    const [isReady, setIsReady] = useState(false);
 
-    // 모델 로드 완료 시 중앙 정렬
     useEffect(() => {
         if (scene) {
             const box = new THREE.Box3().setFromObject(scene);
             const center = box.getCenter(new THREE.Vector3());
             scene.position.sub(center);
-
-            setIsReady(true);
-            onLoaded?.();
         }
-    }, [scene, onLoaded]);
+    }, [scene]);
 
-    // 회전 타겟 설정
     useEffect(() => {
         if (!followMouse) {
             setTargetRotation({
@@ -57,9 +47,9 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY, fixedRot
         return () => window.removeEventListener("mousemove", handleMouseMove);
     }, [followMouse, fixedRotationY, fixedRotationX]);
 
-    // 부드러운 회전 애니메이션
+
     useFrame(() => {
-        if (modelRef.current && isReady) {
+        if (modelRef.current) {
             modelRef.current.rotation.x += (targetRotation.x - modelRef.current.rotation.x) * 0.1;
             modelRef.current.rotation.y += (targetRotation.y - modelRef.current.rotation.y) * 0.1;
             modelRef.current.rotation.z += (targetRotation.z - modelRef.current.rotation.z) * 0.1;
@@ -73,47 +63,12 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY, fixedRot
     );
 };
 
-// 로딩 플레이스홀더
-const LoadingFallback = () => (
-    <Html center>
-        <div className="w-32 h-32 rounded-full bg-[#FCBB09] animate-pulse" />
-    </Html>
-);
-
-// 에러 바운더리 컴포넌트
-class ModelErrorBoundary extends React.Component<
-    { children: React.ReactNode; fallback?: React.ReactNode },
-    { hasError: boolean }
-> {
-    constructor(props: { children: React.ReactNode; fallback?: React.ReactNode }) {
-        super(props);
-        this.state = { hasError: false };
-    }
-
-    static getDerivedStateFromError() {
-        return { hasError: true };
-    }
-
-    componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-        console.error('LegoFace3D Error:', error, errorInfo);
-    }
-
-    render() {
-        if (this.state.hasError) {
-            return this.props.fallback || null;
-        }
-        return this.props.children;
-    }
-}
-
 export const LegoFace3D: React.FC<{
     className?: string;
     followMouse?: boolean;
     fixedRotationY?: number;
     fixedRotationX?: number;
 }> = ({ className, followMouse = true, fixedRotationY = 0, fixedRotationX = 0 }) => {
-    const [isLoaded, setIsLoaded] = useState(false);
-
     return (
         <div
             className={className}
@@ -121,54 +76,41 @@ export const LegoFace3D: React.FC<{
                 width: "100%",
                 height: "100%",
                 overflow: "visible",
-                opacity: isLoaded ? 1 : 0,
-                transition: "opacity 0.3s ease-in-out",
             }}
         >
-            <ModelErrorBoundary
-                fallback={
-                    <div className="w-full h-full flex items-center justify-center">
-                        <div className="w-32 h-32 rounded-full bg-[#FCBB09]" />
-                    </div>
-                }
+            <Canvas
+                dpr={[1, 2]}
+                camera={{ position: [0, 0, 8], fov: 45 }}
+                resize={{ scroll: false, debounce: { scroll: 50, resize: 0 } }}
+                style={{
+                    background: 'transparent',
+                    overflow: "visible",
+                }}
+                gl={{
+                    alpha: true,
+                    antialias: true,
+                    toneMapping: THREE.NoToneMapping,
+                    powerPreference: "high-performance",
+                }}
+                linear
             >
-                <Canvas
-                    dpr={[1, 2]}
-                    camera={{ position: [0, 0, 8], fov: 45 }}
-                    resize={{ scroll: false, debounce: { scroll: 50, resize: 0 } }}
-                    style={{
-                        background: 'transparent',
-                        overflow: "visible",
-                    }}
-                    gl={{
-                        alpha: true,
-                        antialias: true,
-                        toneMapping: THREE.NoToneMapping,
-                        powerPreference: "high-performance",
-                    }}
-                    linear
-                    flat
-                >
-                    <ambientLight intensity={1.8} />
-                    <directionalLight position={[5, 5, 5]} intensity={1.8} />
-                    <directionalLight position={[-5, 5, -5]} intensity={1.2} />
-                    <hemisphereLight intensity={1.2} groundColor="#ffffff" />
+                <ambientLight intensity={1.8} />
+                <directionalLight position={[5, 5, 5]} intensity={1.8} />
+                <directionalLight position={[-5, 5, -5]} intensity={1.2} />
+                <hemisphereLight intensity={1.2} groundColor="#ffffff" />
 
-                    <Suspense fallback={<LoadingFallback />}>
-                        <Center>
-                            <LegoModel
-                                followMouse={followMouse}
-                                fixedRotationY={fixedRotationY}
-                                fixedRotationX={fixedRotationX}
-                                onLoaded={() => setIsLoaded(true)}
-                            />
-                        </Center>
-                    </Suspense>
-                </Canvas>
-            </ModelErrorBoundary>
+                <Suspense fallback={null}>
+                    <Center>
+                        <LegoModel
+                            followMouse={followMouse}
+                            fixedRotationY={fixedRotationY}
+                            fixedRotationX={fixedRotationX}
+                        />
+                    </Center>
+                </Suspense>
+            </Canvas>
         </div>
     );
 };
 
-// 프리로드 - 앱 시작 시 미리 로드
-useGLTF.preload(MODEL_PATH);
+useGLTF.preload(`${import.meta.env.BASE_URL}models/lego_head.glb`);

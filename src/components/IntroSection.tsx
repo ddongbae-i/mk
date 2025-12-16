@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, Suspense } from "react";
 import { motion, useAnimate, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
 import { LegoFace3D } from './LegoFace3D';
-import { Suspense } from 'react';
 import SkillSection from './SkillSection';
 // import { LegoPart3D } from "./LegoPart3D";
 
@@ -623,7 +622,7 @@ const IntroSection: React.FC = () => {
     await animate(selector, keyframes, options);
   };
 
-
+  const headRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isNaturalScrolling, setIsNaturalScrolling] = useState(false);
   const [naturalScrollY, setNaturalScrollY] = useState(0);
@@ -635,18 +634,10 @@ const IntroSection: React.FC = () => {
 
   const [faceExpression, setFaceExpression] =
     useState<'sad' | 'neutral' | 'happy' | 'sweat'>('neutral');
-  const [isHovering, setIsHovering] = useState(false);
   const [isWinking, setIsWinking] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
   const [shakeTrigger, setShakeTrigger] = useState(0);
-  const [headPosition, setHeadPosition] = useState(() => ({
-    x: typeof window !== 'undefined' ? window.innerWidth / 2 : 500,
-    y: typeof window !== 'undefined' ? window.innerHeight * 0.4 : 300,  // 40% 위치
-  }));
-  const shakeCountRef = useRef(0); // 흔들림 횟수 카운터
-  const lastShakeTimeRef = useRef(0); // 마지막 흔들림 시간 (쿨타임용)
   const [spinY, setSpinY] = useState(0);
-  const [skillsCollected, setSkillsCollected] = useState(false);
 
   const faceScale =
     phase >= 23 ? 0.5 :
@@ -948,30 +939,38 @@ const IntroSection: React.FC = () => {
     }
   };
 
-  const shakeTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const lastDirRef = useRef<"L" | "R" | null>(null);
+  const shakeCountRef = useRef(0);
+  const lastEmitRef = useRef(0);
 
-  // 기존 handleDrag 전체를 이걸로 교체
-  const handleDrag = (event: any, info: any) => {
-    const speed = Math.sqrt(info.velocity.x ** 2 + info.velocity.y ** 2);
-    const now = Date.now();
 
-    // ✅ 속도 임계값 낮춤 (150), 쿨타임 짧게 (80ms)
-    if (speed > 150 && now - lastShakeTimeRef.current > 80) {
-      lastShakeTimeRef.current = now;
-      setIsShaking(true);
+  const handleDrag = (_: any, info: any) => {
+    const dxDelta = info.delta?.x ?? 0;     // 순간 변화량
+    const dxOffset = info.offset?.x ?? 0;  // 누적 변화량(드래그 시작점 기준)
+    const now = performance.now();
+
+    // ✅ 너무 작은 입력 노이즈 컷(둘 중 하나라도 의미있으면 통과)
+    if (Math.abs(dxDelta) < 2 && Math.abs(dxOffset) < 10) return;
+
+    const dir: "L" | "R" = (dxDelta !== 0 ? dxDelta : dxOffset) > 0 ? "R" : "L";
+
+    // ✅ 방향 전환 = 흔들 1회
+    if (lastDirRef.current && dir !== lastDirRef.current) {
       shakeCountRef.current += 1;
 
-      // ✅ 2번 흔들면 바로 스킬 팝!
-      if (shakeCountRef.current >= 2) {
-        setShakeTrigger(prev => prev + 1);
-        shakeCountRef.current = 0;
-      }
+      const threshold = 2; // 2번 방향 전환마다 팡
 
-      if (shakeTimerRef.current) clearTimeout(shakeTimerRef.current);
-      shakeTimerRef.current = setTimeout(() => {
-        setIsShaking(false);
-      }, 150);
+      // ✅ 너무 연속 발사 방지
+      if (shakeCountRef.current >= threshold && now - lastEmitRef.current > 120) {
+        lastEmitRef.current = now;
+        shakeCountRef.current = 0;
+        setShakeTrigger((p) => p + 1);
+        setIsShaking(true);
+        window.setTimeout(() => setIsShaking(false), 150);
+      }
     }
+
+    lastDirRef.current = dir;
   };
   const runStepA_StackAndEnter = async () => {
     const stackAnims: Promise<any>[] = [];
@@ -1060,13 +1059,7 @@ const IntroSection: React.FC = () => {
   };
 
   useEffect(() => {
-    if (phase === 26) {
-      setSpinY(360);
-      setHeadPosition({
-        x: window.innerWidth / 2,
-        y: window.innerHeight * 0.3
-      });
-    }
+    if (phase === 26) setSpinY(360);
   }, [phase]);
   useEffect(() => {
     phaseRef.current = phase;
@@ -1203,14 +1196,9 @@ const IntroSection: React.FC = () => {
   const scrollOffset = phase >= 16 ? -300 : (isNaturalScrolling ? Math.max(-300, -naturalScrollY) : 0);
   const globalY = phase >= 23 ? "-80vh" : "0px";
   const finalExpression: 'sad' | 'neutral' | 'happy' | 'sweat' | 'blank' =
-    phase >= 26
-      ? faceExpression  // 스킬 섹션에서는 레벨 기반 표정만
-      : isWinking
-        ? 'sweat'
-        : isHovering
-          ? 'blank'
-          : 'neutral';
-
+    phase >= 15
+      ? (isWinking ? 'sweat' : faceExpression)
+      : (isWinking ? 'sweat' : 'neutral');
   return (
     <div
       ref={scope}
@@ -1287,9 +1275,9 @@ const IntroSection: React.FC = () => {
       {phase >= 26 && (
         <motion.div
           className="absolute w-full"
-          style={{ zIndex: 90, top: 0, height: "200vh" }}  // 높이 2배로
-          initial={{ y: "100vh" }}  // 아래에서 시작
-          animate={{ y: 0 }}        // 제자리로
+          style={{ zIndex: 90, top: 0, height: "100vh" }}
+          initial={{ y: "100vh" }}
+          animate={{ y: 0 }}
           transition={{ duration: 1, ease: "easeInOut" }}
         >
           {/* 치즈 웨이브 */}
@@ -1297,12 +1285,14 @@ const IntroSection: React.FC = () => {
 
           {/* 다음 섹션 내용 */}
           <div className="absolute w-full bg-[#4A7C23]" style={{ top: "120px", height: "calc(100vh - 120px)" }}>
+
             {phase >= 26 && (
               <SkillSection
                 isActive={phase === 26}
-                onSkillsCollected={() => setSkillsCollected(true)}
+                onSkillsCollected={() => { }}
                 onExpressionChange={setFaceExpression}
                 shakeTrigger={shakeTrigger}
+                headRef={headRef}
               />
             )}
           </div>
@@ -1954,6 +1944,7 @@ const IntroSection: React.FC = () => {
       {/* 얼굴 컨테이너 */}
       <motion.div
         id="face-container"
+        ref={headRef}
         className="absolute pointer-events-auto"
         style={{
           width: "700px",
@@ -1964,8 +1955,6 @@ const IntroSection: React.FC = () => {
           cursor: phase === 26 ? "grab" : "default",
           touchAction: "none", // 모바일 드래그 이슈 방지
         }}
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
         onClick={() => {
           if (phase >= 26) return;  // ✅ 추가
           setIsWinking(true);
@@ -1989,7 +1978,7 @@ const IntroSection: React.FC = () => {
           phase >= 26
             ? {
               left: "50%",
-              top: "25%",        // 30% → 25%
+              top: "50%",        // 30% → 25%
               x: "-50%",
               y: "-50%",
               scale: 0.5,        // 0.6 → 0.5 (약간 작게)
@@ -2052,83 +2041,84 @@ const IntroSection: React.FC = () => {
       </motion.div>
 
       {/* 모자 Tooltip - face-container 내부지만 showHat 블록 바깥 */}
-      {phase === 16 && (
-        <div
-          className="absolute pointer-events-auto"
-          style={{
-            left: "27vw",
-            top: "9vh",
-            zIndex: 10000,
-          }}
-        >
-          <motion.div
-            className="flex items-center"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+      {
+        phase === 16 && (
+          <div
+            className="absolute pointer-events-auto"
+            style={{
+              left: "27vw",
+              top: "9vh",
+              zIndex: 10000,
+            }}
           >
             <motion.div
-              className="w-4 h-4 rounded-full bg-[#2b2b2b] flex-shrink-0"
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ duration: 0.2, delay: 0.1 }}
-            />
-            <motion.div
-              className="h-[3px] bg-[#2b2b2b] flex-shrink-0"
-              initial={{ width: 0 }}
-              animate={{ width: 120 }}
-              transition={{ duration: 0.3, delay: 0.15 }}
-            />
-            <motion.div
-              className="bg-[#FDD130] border-[3px] border-[#2b2b2b] shadow-[4px_4px_0_0_#2b2b2b] flex-shrink-0"
-              style={{ width: "280px", padding: "20px 24px" }}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.3, delay: 0.2 }}
+              className="flex items-center"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
             >
-              <h3 className="font-bold text-[#2b2b2b] italic text-[20px] mb-2" style={{ fontFamily: 'Kanit, sans-serif' }}>
-                {PART_DESCRIPTIONS[0].title}
-              </h3>
-              <p className="text-[#333] text-[14px] font-medium leading-[1.5]">
-                {PART_DESCRIPTIONS[0].description}
-              </p>
+              <motion.div
+                className="w-4 h-4 rounded-full bg-[#2b2b2b] flex-shrink-0"
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.2, delay: 0.1 }}
+              />
+              <motion.div
+                className="h-[3px] bg-[#2b2b2b] flex-shrink-0"
+                initial={{ width: 0 }}
+                animate={{ width: 120 }}
+                transition={{ duration: 0.3, delay: 0.15 }}
+              />
+              <motion.div
+                className="bg-[#FDD130] border-[3px] border-[#2b2b2b] shadow-[4px_4px_0_0_#2b2b2b] flex-shrink-0"
+                style={{ width: "280px", padding: "20px 24px" }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.3, delay: 0.2 }}
+              >
+                <h3 className="font-bold text-[#2b2b2b] italic text-[20px] mb-2" style={{ fontFamily: 'Kanit, sans-serif' }}>
+                  {PART_DESCRIPTIONS[0].title}
+                </h3>
+                <p className="text-[#333] text-[14px] font-medium leading-[1.5]">
+                  {PART_DESCRIPTIONS[0].description}
+                </p>
 
 
-              {/* 확장 컨텐츠 - 버튼 위에 */}
-              <AnimatePresence>
-                {expandedTooltip === 0 && PART_DESCRIPTIONS[0].details && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden"
+                {/* 확장 컨텐츠 - 버튼 위에 */}
+                <AnimatePresence>
+                  {expandedTooltip === 0 && PART_DESCRIPTIONS[0].details && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pt-4 mt-4 border-t-2 border-[#2b2b2b]/30">
+                        <p className="text-[#555] text-[13px] leading-[1.6]">{PART_DESCRIPTIONS[0].details}</p>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* + 버튼 - 항상 하단 */}
+                <div className="mt-4 flex justify-center">
+                  <button
+                    onClick={() => setExpandedTooltip(expandedTooltip === 0 ? null : 0)}
+                    className="w-10 h-10 border-[2px] border-[#2b2b2b] bg-white flex items-center justify-center cursor-pointer hover:bg-[#f5f5f5]"
                   >
-                    <div className="pt-4 mt-4 border-t-2 border-[#2b2b2b]/30">
-                      <p className="text-[#555] text-[13px] leading-[1.6]">{PART_DESCRIPTIONS[0].details}</p>
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* + 버튼 - 항상 하단 */}
-              <div className="mt-4 flex justify-center">
-                <button
-                  onClick={() => setExpandedTooltip(expandedTooltip === 0 ? null : 0)}
-                  className="w-10 h-10 border-[2px] border-[#2b2b2b] bg-white flex items-center justify-center cursor-pointer hover:bg-[#f5f5f5]"
-                >
-                  <svg
-                    width="20" height="20" viewBox="0 0 20 20" fill="none"
-                    style={{ transform: expandedTooltip === 0 ? "rotate(45deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
-                  >
-                    <path d="M10 4V16M4 10H16" stroke="#2b2b2b" strokeWidth="2.5" strokeLinecap="round" />
-                  </svg>
-                </button>
-              </div>
+                    <svg
+                      width="20" height="20" viewBox="0 0 20 20" fill="none"
+                      style={{ transform: expandedTooltip === 0 ? "rotate(45deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
+                    >
+                      <path d="M10 4V16M4 10H16" stroke="#2b2b2b" strokeWidth="2.5" strokeLinecap="round" />
+                    </svg>
+                  </button>
+                </div>
+              </motion.div>
             </motion.div>
-          </motion.div>
-        </div>
-      )
+          </div>
+        )
       }
 
       {/* 하단 안내 문구 */}

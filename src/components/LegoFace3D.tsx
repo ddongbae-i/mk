@@ -1,7 +1,10 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, Center } from '@react-three/drei';
 import * as THREE from 'three';
+
+// 모델 경로 상수
+const MODEL_PATH = `${import.meta.env.BASE_URL}models/lego_head.glb`;
 
 interface ModelProps {
     followMouse: boolean;
@@ -10,9 +13,9 @@ interface ModelProps {
 }
 
 const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY, fixedRotationX }) => {
-    const { scene } = useGLTF(`${import.meta.env.BASE_URL}models/lego_head.glb`);
+    const { scene } = useGLTF(MODEL_PATH);
     const modelRef = useRef<THREE.Group>(null);
-    const [targetRotation, setTargetRotation] = useState({ x: 0, y: 0, z: 0 });  // ← x 추가!
+    const [targetRotation, setTargetRotation] = useState({ x: 0, y: 0, z: 0 });
 
     useEffect(() => {
         if (scene) {
@@ -25,7 +28,7 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY, fixedRot
     useEffect(() => {
         if (!followMouse) {
             setTargetRotation({
-                x: THREE.MathUtils.degToRad(fixedRotationX),  // ← 순서 정리
+                x: THREE.MathUtils.degToRad(fixedRotationX),
                 y: THREE.MathUtils.degToRad(fixedRotationY),
                 z: 0
             });
@@ -63,6 +66,9 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY, fixedRot
     );
 };
 
+// 로딩 중 빈 컴포넌트 (Canvas 내부용)
+const LoadingFallback = () => null;
+
 export const LegoFace3D: React.FC<{
     className?: string;
     followMouse?: boolean;
@@ -98,16 +104,19 @@ export const LegoFace3D: React.FC<{
                 <directionalLight position={[-5, 5, -5]} intensity={1.2} />
                 <hemisphereLight intensity={1.2} groundColor="#ffffff" />
 
-                <Center>
-                    <LegoModel
-                        followMouse={followMouse}
-                        fixedRotationY={fixedRotationY}
-                        fixedRotationX={fixedRotationX}
-                    />
-                </Center>
+                <Suspense fallback={<LoadingFallback />}>
+                    <Center>
+                        <LegoModel
+                            followMouse={followMouse}
+                            fixedRotationY={fixedRotationY}
+                            fixedRotationX={fixedRotationX}
+                        />
+                    </Center>
+                </Suspense>
             </Canvas>
         </div>
     );
 };
 
-useGLTF.preload(`${import.meta.env.BASE_URL}models/lego_head.glb`);
+// 프리로드
+useGLTF.preload(MODEL_PATH);

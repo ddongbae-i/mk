@@ -5,7 +5,7 @@ import { useEffect } from "react";
 export default function App() {
   useEffect(() => {
     // GLB 파일 미리 fetch
-    fetch('/models/lego-face.glb').then(r => r.blob());
+    fetch('/models/lego_head.glb').then(r => r.blob());
   }, []);
 
   return (

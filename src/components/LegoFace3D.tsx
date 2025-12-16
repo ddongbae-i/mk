@@ -1,7 +1,9 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, Center } from '@react-three/drei';
 import * as THREE from 'three';
+
+const MODEL_PATH = '/models/lego_head.glb';
 
 interface ModelProps {
     followMouse: boolean;
@@ -10,31 +12,21 @@ interface ModelProps {
 }
 
 const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY, fixedRotationX }) => {
-    // 경로 직접 하드코딩해서 테스트
-    const modelPath = '/models/lego_head.glb';
-
-    console.log('🎯 Attempting to load model from:', modelPath);
-
-    const { scene, errors } = useGLTF(modelPath) as any;
-
-    useEffect(() => {
-        if (errors) {
-            console.error('❌ GLB Load Error:', errors);
-        }
-        if (scene) {
-            console.log('✅ GLB Loaded Successfully!', scene);
-        }
-    }, [scene, errors]);
-
+    const { scene } = useGLTF(MODEL_PATH);
     const modelRef = useRef<THREE.Group>(null);
     const [targetRotation, setTargetRotation] = useState({ x: 0, y: 0, z: 0 });
 
-    useEffect(() => {
-        if (scene) {
-            const box = new THREE.Box3().setFromObject(scene);
-            const center = box.getCenter(new THREE.Vector3());
-            scene.position.sub(center);
-        }
+    // scene을 clone해서 사용 (여러 인스턴스 문제 방지)
+    const clonedScene = useMemo(() => {
+        if (!scene) return null;
+        const clone = scene.clone(true);
+
+        // 중앙 정렬
+        const box = new THREE.Box3().setFromObject(clone);
+        const center = box.getCenter(new THREE.Vector3());
+        clone.position.sub(center);
+
+        return clone;
     }, [scene]);
 
     useEffect(() => {
@@ -70,14 +62,11 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY, fixedRot
         }
     });
 
-    if (!scene) {
-        console.log('⏳ Scene not ready yet...');
-        return null;
-    }
+    if (!clonedScene) return null;
 
     return (
         <group ref={modelRef}>
-            <primitive object={scene} scale={1.3} />
+            <primitive object={clonedScene} scale={1.3} />
         </group>
     );
 };
@@ -88,11 +77,6 @@ export const LegoFace3D: React.FC<{
     fixedRotationY?: number;
     fixedRotationX?: number;
 }> = ({ className, followMouse = true, fixedRotationY = 0, fixedRotationX = 0 }) => {
-
-    useEffect(() => {
-        console.log('🚀 LegoFace3D component mounted');
-    }, []);
-
     return (
         <div
             className={className}
@@ -116,7 +100,6 @@ export const LegoFace3D: React.FC<{
                     toneMapping: THREE.NoToneMapping,
                 }}
                 linear
-                onCreated={() => console.log('🎨 Canvas created!')}
             >
                 <ambientLight intensity={1.8} />
                 <directionalLight position={[5, 5, 5]} intensity={1.8} />
@@ -136,4 +119,4 @@ export const LegoFace3D: React.FC<{
 };
 
 // 프리로드
-useGLTF.preload('/models/lego_head.glb');
+useGLTF.preload(MODEL_PATH);

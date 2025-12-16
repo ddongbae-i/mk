@@ -19,22 +19,12 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY, fixedRot
     const [targetRotation, setTargetRotation] = useState({ x: 0, y: 0, z: 0 });
     const [isReady, setIsReady] = useState(false);
 
-    // 모델 로드 완료 시 중앙 정렬 + 클론
+    // 모델 로드 완료 시 중앙 정렬
     useEffect(() => {
         if (scene) {
-            // 씬 클론해서 사용 (여러 인스턴스 문제 방지)
-            const clonedScene = scene.clone();
-            const box = new THREE.Box3().setFromObject(clonedScene);
+            const box = new THREE.Box3().setFromObject(scene);
             const center = box.getCenter(new THREE.Vector3());
-            clonedScene.position.sub(center);
-
-            if (modelRef.current) {
-                // 기존 자식들 제거
-                while (modelRef.current.children.length > 0) {
-                    modelRef.current.remove(modelRef.current.children[0]);
-                }
-                modelRef.current.add(clonedScene);
-            }
+            scene.position.sub(center);
 
             setIsReady(true);
             onLoaded?.();
@@ -77,7 +67,9 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY, fixedRot
     });
 
     return (
-        <group ref={modelRef} scale={1.3} />
+        <group ref={modelRef}>
+            <primitive object={scene} scale={1.3} />
+        </group>
     );
 };
 

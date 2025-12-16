@@ -86,10 +86,6 @@ const MiniLegoHead = ({ skill, startPos, onMousePush }: any) => {
     const floorY = typeof window !== 'undefined'
         ? window.innerHeight - 180 - Math.random() * 80
         : 600;
-
-    const direction = Math.random() > 0.5 ? 1 : -1;  // 좌우 랜덤
-    const power = 400 + Math.random() * 600;         // 400~1000px
-    const randomX = direction * power;
     const finalX = startPos.x + randomX;
     const finalRotate = (Math.random() - 0.5) * 40;
 

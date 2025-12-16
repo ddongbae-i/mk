@@ -160,7 +160,7 @@ const ProjectKitBox = ({
 const PROJECT_DATA = [
   {
     id: 1,
-    title: "wellio",
+    title: "WELLIO",
     subtitle: "가족 건강 공유 앱, 웰리오",
     image: "images/project2.png",
     color: "#8E00BD",
@@ -169,8 +169,6 @@ const PROJECT_DATA = [
     tags: ["UI/UX", "Mobile App", "Mobile App", "Vibe Coding"],
     specs: { period: "25.08.13 - 25.08.27,", role: "디자인&개발", tech: "Figma,REACT,Typescript,Illustrator" },
 
-    // ▼ [수정] 버튼을 배열로 정의 (순서대로 렌더링됨)
-    // type: 'gray' (회색 버튼), 'primary' (노란색 강조 버튼)
     buttons: [
       { label: "기획서 보기", url: "https://www.figma.com/proto/YgY5CNo9U0iNRQcw6MiKZ5/3%EC%A1%B0-Ai--Wellio?page-id=10897%3A59342&node-id=10897-59350&viewport=639%2C155%2C0.1&t=uDXy317GRj0LX8Jv-1&scaling=scale-down&content-scaling=fixed", type: "gray" },
       { label: "프로토타입", url: "https://www.figma.com/proto/YgY5CNo9U0iNRQcw6MiKZ5/3%EC%A1%B0-Ai--Wellio?page-id=8657%3A13196&node-id=8877-12777&viewport=8295%2C4598%2C0.26&t=3BuPl2X1rPy84xHQ-1&scaling=scale-down&content-scaling=fixed&starting-point-node-id=8877%3A13597", type: "gray" },
@@ -179,12 +177,12 @@ const PROJECT_DATA = [
   },
   {
     id: 2,
-    title: "BEA",
+    title: "BEAUTY OF JOSEON",
     subtitle: "조선미녀 반응형 웹사이트 리뉴얼",
     image: "images/project1.png",
     color: "#2B7000",
 
-    detailImgSrc: "images/project1_detail.png",
+    detailImgSrc: "images/info2.png",
     description: `제작 : 아이콘 / 인트로, 신제품 영상\n\n디자인 페이지 : SHOP\n\n 코딩 페이지 : SHOP / 메인(1024-360)반응형 / header&footer / 개발
                 총괄`,
     tags: ["Dashboard", "Design System", "Admin"],
@@ -193,35 +191,41 @@ const PROJECT_DATA = [
       role: "Dashboard UI Design, React Pub",
       tech: "React, Chart.js, Tailwind"
     },
-    links: {
-      docs: "https://www.figma.com/deck/YP3BTYoRHbMzOydhFS5qoO/-%ED%8C%80%ED%94%8C1-3%EC%A1%B0--%EA%B2%B0%EA%B3%BC%EB%B3%B4%EA%B3%A0%EC%84%9C_%EB%AC%B8%EC%96%B4%EC%A7%80%EC%A7%80%EB%A7%88?node-id=2078-4602&viewport=-3134%2C-1274%2C0.5&t=MZGqIbqakXF0yVpw-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1",
-      site: "#https://ddongbae-i.github.io/boj_en/"
-    }
+    buttons: [
+      {
+        label: "기획서 보기", url: "https://www.figma.com/deck/YP3BTYoRHbMzOydhFS5qoO/-%ED%8C%80%ED%94%8C1-3%EC%A1%B0--%EA%B2%B0%EA%B3%BC%EB%B3%B4%EA%B3%A0%EC%84%9C_%EB%AC%B8%EC%96%B4%EC%A7%80%EC%A7%80%EB%A7%88?node-id=2078-4602&viewport=-3134%2C-1274%2C0.5&t=MZGqIbqakXF0yVpw-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1", type: "gray"
+      },
+      { label: "웹사이트 보기", url: "https://ddongbae-i.github.io/boj_en/", type: "gray" },
+    ]
   },
   {
     id: 3,
     title: "QooQoo",
-    subtitle: "브랜드 리뉴얼",
+    subtitle: "쿠우쿠우 반응형 웹사이트 리뉴얼",
     image: "images/project3.png",
     color: "#F25F09",
 
-    detailImgSrc: "images/project3_detail.png",
-    description: `함께하는 맛의 행복. 쿠우쿠우 고급화 전략에 맞춰 웹사이트를 리뉴얼한 프로젝트입니다.\n\n기존 웹사이트에 부족했던 메뉴,
-                쿠우쿠우 상점, 멤버쉽, 슬로건, 가독성 등을 개선하고 고급스러우면도 친화적인 디자인으로 쿠우쿠우 브랜드 이미지를
-                상승시킴과 동시에 방문자들의 니즈를 충족할 컨텐츠를 제공합니다`,
+    detailImgSrc: "images/info3.png",
+    description: `함께하는 맛의 행복. 쿠우쿠우 고급화 전략에 맞춰 웹사이트를 리뉴얼한 프로젝트입니다.\n기존 웹사이트에 부족했던 메뉴,                쿠우쿠우 상점, 멤버쉽, 슬로건, 가독성 등을 개선하고 고급스러우면도 친화적인 디자인으로 쿠우쿠우 브랜드 이미지를 상승시킴과 동시에 방문자들의 니즈를 충족할 컨텐츠를 제공합니다`,
     tags: ["Renewal", "Brand Design", "Responsive"],
     specs: {
       period: "8 Weeks (320 hours)",
       role: "Web Design, Publishing",
       tech: "Figma, HTML/CSS, GSAP"
     },
-    links: {
-      docs: "https://www.figma.com/proto/ovfWPSdRr3myp4oidk8kwX/%EA%B9%80%EB%AF%BC%EA%B2%BD?page-id=2224%3A832&node-id=2224-833&viewport=506%2C284%2C0.11&t=gb20orGuQ99jHPkH-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=2224%3A833",
-      site: "https://www.figma.com/proto/ovfWPSdRr3myp4oidk8kwX/%EA%B9%80%EB%AF%BC%EA%B2%BD?page-id=2224%3A832&node-id=2229-2328&viewport=506%2C284%2C0.11&t=gb20orGuQ99jHPkH-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=2224%3A833"
-    }
+    buttons: [
+      {
+        label: "Web(1920)", url: "https://www.figma.com/proto/ovfWPSdRr3myp4oidk8kwX/%EA%B9%80%EB%AF%BC%EA%B2%BD?page-id=2224%3A832&node-id=2224-833&viewport=506%2C284%2C0.11&t=gb20orGuQ99jHPkH-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=2224%3A833", type: "gray"
+      },
+      {
+        label: "Tablet(1024)", url: "https://www.figma.com/proto/ovfWPSdRr3myp4oidk8kwX/%EA%B9%80%EB%AF%BC%EA%B2%BD?page-id=2224%3A832&node-id=2229-2328&viewport=506%2C284%2C0.11&t=gb20orGuQ99jHPkH-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=2224%3A833", type: "gray"
+      },
+      { label: "Tablet(744", url: "https://www.figma.com/proto/ovfWPSdRr3myp4oidk8kwX/%EA%B9%80%EB%AF%BC%EA%B2%BD?page-id=2224%3A832&node-id=2229-3754&viewport=316%2C427%2C0.18&t=D3dfPhSgangy8CES-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=2224%3A833", type: "gray" },
+      { label: "Mobile(412)", url: "https://ddongbae-i.github.io/boj_en/", type: "gray" },
+    ]
+
   },
 ];
-
 // --- TOOLTIP COMPONENT ---
 
 const PartTooltip = ({
@@ -526,9 +530,11 @@ const FloatingMenuBlock: React.FC<{
   id?: string;
   shouldFloat: boolean;
   isMenuOpen?: boolean;
+
   hoveredIndex?: number | null;
+  onClick?: () => void;
   onHover?: (index: number | null) => void;
-}> = ({ index, style, id, shouldFloat, isMenuOpen = false, hoveredIndex = null, onHover }) => {
+}> = ({ index, style, id, shouldFloat, isMenuOpen = false, hoveredIndex = null, onHover, onClick }) => {
   const label = BRICK_LABELS[index % BRICK_LABELS.length];
   const randomDelay = 0.4 + index * 0.2;
 
@@ -553,6 +559,7 @@ const FloatingMenuBlock: React.FC<{
   return (
     <motion.div
       id={id}
+      onClick={onClick}
       style={{ ...style, zIndex: baseZIndex } as React.CSSProperties}
       data-hoverable="true"
       initial={{ opacity: 0, scale: 0.8 }}
@@ -633,8 +640,8 @@ const HamburgerIcon = ({
 
 const IntroSection: React.FC = () => {
   const [scope, animate] = useAnimate();
-
   const [menuOpen, setMenuOpen] = useState(false);
+  const [didIntroMenuAnim, setDidIntroMenuAnim] = useState(false);
 
   const safeAnimate = async (selector: string, keyframes: any, options?: any) => {
     const el = document.querySelector(selector);
@@ -642,40 +649,63 @@ const IntroSection: React.FC = () => {
     await animate(selector, keyframes, options);
   };
 
-  const handleMenuClick = (index: number) => {
-    // ✅ 메뉴 닫고 이동
-    setMenuOpen(false);
-
+  const handleMenuClick = async (index: number) => {
     const label = BRICK_LABELS[index];
 
-    // 네 코드상 현재 “확실히 존재하는 섹션” 기준으로만 연결
-    // BUILD = 조립 가이드(phase 14 시작)
-    // PROJECT = 프로젝트 키트(phase 25)
-    // STACK = 스킬(phase 26)
-    // GALLERY / CONTACT 는 아직 phase가 없으니 임시 처리
     const targetByLabel: Record<string, number | null> = {
       BUILD: 14,
       PROJECT: 25,
       STACK: 26,
-      GALLERY: null,
-      CONTACT: null,
+      GALLERY: 27,
+      CONTACT: 28,
     };
 
     const target = targetByLabel[label];
+    if (target == null) return;
 
-    if (target === null) {
-      console.log("아직 준비되지 않은 메뉴입니다:", label);
-      return;
-    }
-
-    // ✅ 애니메이션 잠금 + 즉시 점프
+    // ✅ 애니메이션 잠금
+    if (isAnimatingRef.current) return;
     isAnimatingRef.current = true;
+
+    // ✅ 메뉴가 열려있으면 "흡수"로 닫아주고
+    if (menuOpen) await closeMenu();
+
+    // ✅ 블럭 좌표/투명도 상태 초기화(중요)
+    await resetMenuBlocks();
+
+    // ✅ 네비 점프 전에 스크롤 오버레이/상태 정리 (2번 문제도 같이 해결)
+    setIsNaturalScrolling(false);
+    setNaturalScrollY(0);
+    if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
+
+    setExpandedTooltip(null);
+    setIsProjectOpen(false);
+
+    // ✅ 이동
     setPhase(target);
 
     window.setTimeout(() => {
       isAnimatingRef.current = false;
-    }, 700);
+    }, 400);
   };
+
+
+  const resetMenuBlocks = async () => {
+    // framer/useAnimate로 박혀있는 x/y/scale/opacity를 원점으로 정리
+    const jobs: Promise<any>[] = [];
+    for (let i = 0; i < 5; i++) {
+      jobs.push(
+        safeAnimate(
+          `#block-${i}`,
+          { x: 0, y: 0, rotate: 0, scale: 1, opacity: 1 },
+          { duration: 0.01 }
+        )
+      );
+    }
+    await Promise.all(jobs);
+  };
+
+
 
   const headRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -831,13 +861,21 @@ const IntroSection: React.FC = () => {
       } else if (currentPhase === 9) {
         isAnimatingRef.current = true;
         setPhase(10);
+
         try {
           await new Promise(r => setTimeout(r, 50));
-          await runStepA_StackAndEnter();
-          setPhase(11);
+
+          if (!didIntroMenuAnim) {
+            await runStepA_StackAndEnter();   // 착착 + 쏙(흡수)
+            setDidIntroMenuAnim(true);
+            setMenuOpen(false);              // 흡수된 상태로 시작
+          }
+
+          setPhase(11); // phase는 “연출 완료 상태”로만 의미 부여
         } finally {
           isAnimatingRef.current = false;
         }
+
       } else if (currentPhase === 11) {
         isAnimatingRef.current = true;
         setPhase(13);
@@ -1133,45 +1171,52 @@ const IntroSection: React.FC = () => {
     await Promise.all(pourAnims);
   };
 
+  const openMenu = async () => {
+    isAnimatingRef.current = true;
+    setMenuOpen(true);
+
+    await new Promise(r => setTimeout(r, 0));
+    await runStepB_PourOut();
+
+    isAnimatingRef.current = false;
+  };
+
+  const closeMenu = async () => {
+    isAnimatingRef.current = true;
+
+    const absorbAnims = [];
+    for (let i = 0; i < 5; i++) {
+      const coords = getHamburgerAbsorbPosition(i);
+      absorbAnims.push(
+        safeAnimate(
+          `#block-${i}`,
+          { x: coords.x, y: coords.y, scale: 0.2, opacity: 0 },
+          { duration: 0.4, ease: "backIn", delay: (4 - i) * 0.05 }
+        )
+      );
+    }
+    await Promise.all(absorbAnims);
+
+    setMenuOpen(false);
+    isAnimatingRef.current = false;
+  };
+
   const handleHamburgerToggle = async () => {
     if (isAnimatingRef.current) return;
-
-    // ✅ 블럭이 햄버거 안에 들어가 있는 상태(phase 11) -> 쏟아내기(phase 12)
-    if (phase === 11) {
-      setMenuOpen(true);
-      isAnimatingRef.current = true;
-      setPhase(12);
-      await runStepB_PourOut();
-      isAnimatingRef.current = false;
-      return;
-    }
-
-    // ✅ 쏟아져 있는 상태(phase 12) -> 다시 흡수해서 phase 11로
-    if (phase === 12) {
-      setMenuOpen(false);
-      isAnimatingRef.current = true;
-
-      const absorbAnims = [];
-      for (let i = 0; i < 5; i++) {
-        const coords = getHamburgerAbsorbPosition(i);
-        absorbAnims.push(
-          safeAnimate(
-            `#block-${i}`,
-            { x: coords.x, y: coords.y, scale: 0.2, opacity: 0 },
-            { duration: 0.4, ease: "backIn", delay: (4 - i) * 0.05 }
-          )
-        );
-      }
-      await Promise.all(absorbAnims);
-
-      setPhase(11);
-      isAnimatingRef.current = false;
-      return;
-    }
-
-    // 그 외 구간에서는 아이콘만 토글(원하면 제거 가능)
-    setMenuOpen(v => !v);
+    if (!menuOpen) await openMenu();
+    else await closeMenu();
   };
+
+
+  useEffect(() => {
+    // phase가 바뀌면 자연스크롤은 무조건 끄기 (특히 메뉴 점프 대비)
+    if (phase !== 15 && isNaturalScrolling) {
+      setIsNaturalScrolling(false);
+      setNaturalScrollY(0);
+      if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
+    }
+  }, [phase, isNaturalScrolling]);
+
 
   useEffect(() => {
     // ✅ 11/12에서는 menuOpen을 유지, 그 외 구간 이동 시 닫기
@@ -1937,7 +1982,7 @@ const IntroSection: React.FC = () => {
             animate={{ opacity: (phase >= 16 && phase < 22) ? 1 : 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="relative w-[540px] h-[600px] flex flex-col items-center justify-center p-6 bg-[#f0f0f0]">
+            <div className="relative w-[540px] h-[600px] flex flex-col items-center justify-center p-6">
               <motion.div
                 className="absolute bg-[#2b2b2b]"
                 style={{ top: 0, left: 0, height: 2 }}
@@ -2140,22 +2185,19 @@ const IntroSection: React.FC = () => {
             )}
           </AnimatePresence>
 
-          {(phase >= 9 && phase <= 12) && (
+          {phase >= 9 && (
             <div className="absolute inset-0 pointer-events-none z-[110]">
               {BLOCK_POSITIONS.map((pos, i) => (
-                <div
-                  key={i}
-                  className="pointer-events-auto"
-                  onClick={() => phase === 12 && handleMenuClick(i)} // ✅ phase 12에서만 클릭 이동
-                >
+                <div key={i} className="pointer-events-none">
                   <FloatingMenuBlock
                     index={i}
                     id={`block-${i}`}
-                    shouldFloat={phase === 9}       // ✅ 9에서만 둥둥
-                    isMenuOpen={phase === 12}       // ✅ 12에서만 메뉴 모드
+                    shouldFloat={phase === 9 && !didIntroMenuAnim}
+                    isMenuOpen={menuOpen}                    // ✅ phase 말고 menuOpen
                     hoveredIndex={hoveredBlockIndex}
                     onHover={setHoveredBlockIndex}
                     style={pos}
+                    onClick={() => menuOpen && handleMenuClick(i)}
                   />
                 </div>
               ))}
@@ -2317,8 +2359,8 @@ const IntroSection: React.FC = () => {
             <>
               {/* 라벨 1: 머리-몸통 사이 */}
               <motion.div
-                className="absolute pointer-events-none flex items-center gap-[100px]"
-                style={{ left: "34%", top: "20%", zIndex: 150 }}
+                className="absolute pointer-events-none flex items-center gap-[160px]"
+                style={{ left: "26%", top: "20%", zIndex: 150 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -2331,8 +2373,8 @@ const IntroSection: React.FC = () => {
 
               {/* 라벨 2: 몸통-다리 사이 */}
               <motion.div
-                className="absolute pointer-events-none flex items-center gap-[100px]"
-                style={{ left: "34%", top: "53%", zIndex: 150 }}
+                className="absolute pointer-events-none flex items-center gap-[160px]"
+                style={{ left: "26%", top: "53%", zIndex: 150 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -2347,12 +2389,12 @@ const IntroSection: React.FC = () => {
 
               <motion.div
                 className="absolute pointer-events-none flex items-center gap-[100px]"
-                style={{ left: "34%", top: "100%", zIndex: 150 }}
+                style={{ left: "26%", top: "100%", zIndex: 150 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <div className="flex gap-[68px]">
+                <div className="flex gap-[120px]">
                   <span className="text-[32px] font-normal text-[#2b2b2b] -ml-2">3</span>
                   <div className="flex gap-[80px]">
                     <svg width="20" height="40" viewBox="0 0 24 60" className="translate-y-1">

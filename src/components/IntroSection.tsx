@@ -1072,10 +1072,9 @@ const IntroSection: React.FC = () => {
   useEffect(() => {
     if (phase === 26) {
       setSpinY(360);
-      // ✅ 얼굴 위치도 설정
       setHeadPosition({
         x: window.innerWidth / 2,
-        y: window.innerHeight * 0.25  // 상단 25% 위치
+        y: window.innerHeight * 0.3
       });
     }
   }, [phase]);
@@ -1312,12 +1311,8 @@ const IntroSection: React.FC = () => {
               <SkillSection
                 isActive={phase === 26}
                 onSkillsCollected={() => setSkillsCollected(true)}
-                onExpressionChange={(expr) => {
-                  console.log('Expression changed to:', expr); // 디버깅용
-                  setFaceExpression(expr);
-                }}
+                onExpressionChange={setFaceExpression}
                 shakeTrigger={shakeTrigger}
-                headPosition={headPosition}
               />
             )}
           </div>
@@ -2004,10 +1999,10 @@ const IntroSection: React.FC = () => {
           phase >= 26
             ? {
               left: "50%",
-              top: "35%",           // ← 45% → 35%
+              top: "30%",        // ← 35% → 30% (더 위로)
               x: "-50%",
-              y: "-70%",            // ← -50% → -70% (더 위로)
-              scale: 0.6,           // ← 0.7 → 0.6
+              y: "-50%",         // ← -70% → -50% (정확히 중앙 정렬)
+              scale: 0.6,
               rotateY: spinY,
               rotateZ: isShaking ? [-3, 3, -3, 3, 0] : 0,
             }

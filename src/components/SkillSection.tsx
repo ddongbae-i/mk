@@ -214,7 +214,6 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     // 레벨 변경 시 표정 업데이트
     useEffect(() => {
         const expressions: ('sad' | 'neutral' | 'happy')[] = ['sad', 'neutral', 'happy'];
-        console.log('Level changed to:', currentLevel, '-> Expression:', expressions[currentLevel - 1]);
         onExpressionChange?.(expressions[currentLevel - 1]);
     }, [currentLevel]);
 

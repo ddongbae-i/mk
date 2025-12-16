@@ -3,6 +3,7 @@ import { motion, useAnimate, useMotionValue, useTransform, AnimatePresence } fro
 import { LegoFace3D } from './LegoFace3D';
 import SkillSection from './SkillSection';
 import ProjectDetailCard from './ProjectDetailCard';
+import Background from "three/src/renderers/common/Background.js";
 // import { LegoPart3D } from "./LegoPart3D";
 
 
@@ -65,22 +66,22 @@ const PART_DESCRIPTIONS = [
   {
     title: "Navigation Headlight",
     description: "무엇을 가장 먼저 해결해야하는지 찾아냅니다.",
-    details: "프로젝트의 방향성을 설정하고 핵심 문제를 정의하는 역할을 합니다.",
+    details: "창업과 기획 경험을 바탕으로, 프로젝트 초기 단계의 모호한 요구사항을 명확한 목표로 구체화하여 흔들리지 않는 방향성을 제시합니다.",
   },
   {
     title: "Insight Mask",
     description: "사용자보다 먼저 불편함을 감지합니다. ",
-    details: "사용성 테스트와 휴리스틱 평가를 통해 잠재적인 UX 문제를 사전에 발견합니다.",
+    details: "사소한 불편함도 지나치지 못하는 성향을 발휘하여, 사용자가 겪을 수 있는 이탈 요소를 미리 발견하고 매끄러운 UX/UI 흐름으로 개선합니다.",
   },
   {
     title: "Layout Harness",
     description: "뒤죽박죽 섞인 정보들을 이해하기 쉬운 구조로 정리합니다.",
-    details: "사용성 테스트와 휴리스틱 평가를 통해 잠재적인 UX 문제를 사전에 발견합니다.",
+    details: "디자인과 퍼블리싱(Code)을 모두 고려하여, 복잡한 데이터를 시각적 위계에 맞춰 재배치하고 구현 가능성이 높은 최적의 구조를 설계합니다..",
   },
   {
     title: "Responsibility Legs",
     description: "맡은 일은 마지막까지 책임감을 가지고 작업합니다",
-    details: "사용성 테스트와 휴리스틱 평가를 통해 잠재적인 UX 문제를 사전에 발견합니다.",
+    details: "단순한 완료가 아닌 완벽한 마무리를 지향합니다. 난관에 부딪혀도 포기하지 않고 끈기 있게 문제를 해결하여 안정적인 결과물을 전달합니다.",
   },
 ];
 
@@ -246,15 +247,15 @@ const PartTooltip = ({
         {/* 카드 */}
         <motion.div
           className="bg-[#f0f0f0] border-[3px] border-[#2b2b2b] shadow-[4px_4px_0_0_#2b2b2b]"
-          style={{ width: "280px", padding: "20px 24px" }}
+          style={{ width: "320px", padding: "20px 24px" }}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3, delay: 0.2 }}
         >
-          <h3 className="font-bold text-[#2b2b2b] italic text-[20px] mb-2" style={{ fontFamily: 'Kanit, sans-serif' }}>
+          <h3 className="font-bold text-[#2b2b2b] italic text-[26px] mb-2" style={{ fontFamily: 'Kanit, sans-serif' }}>
             {title}
           </h3>
-          <p className="text-[#333] text-[14px] font-medium leading-[1.5]">
+          <p className="text-[#333] text-[18px] font-medium leading-[1.5]">
             {description}
           </p>
 
@@ -267,8 +268,8 @@ const PartTooltip = ({
                 exit={{ height: 0, opacity: 0 }}
                 className="overflow-hidden"
               >
-                <div className="pt-4 mt-4 border-t-2 border-[#2b2b2b]/30">
-                  <p className="text-[#555] text-[13px] leading-[1.6]">{details}</p>
+                <div className="pt-4 mt-4 border-t-[1px] border-[#d9d9d9]">
+                  <p className="text-[#555] text-[14px] leading-[1.5]">{details}</p>
                 </div>
               </motion.div>
             )}
@@ -1795,14 +1796,14 @@ const IntroSection: React.FC = () => {
           <motion.div
             className="absolute"
             style={{
-              left: "140px",
+              left: "80px",
               top: "-30vh",
             }}
             initial={{ opacity: 0 }}
             animate={{ opacity: (phase >= 16 && phase < 22) ? 1 : 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="relative w-[540px] h-[600px] flex flex-col items-center justify-center p-6">
+            <div className="relative w-[540px] h-[600px] flex flex-col items-center justify-center p-6 bg-[#f0f0f0]">
               <motion.div
                 className="absolute bg-[#2b2b2b]"
                 style={{ top: 0, left: 0, height: 2 }}
@@ -1843,7 +1844,7 @@ const IntroSection: React.FC = () => {
                     key="placeholder"
                     initial={{ scale: 1 }}
                     exit={{ opacity: 0, scale: 1.1 }}  // 👈 나갈 때 살짝 커짐
-                    className="flex flex-col px-8"  // 👈 패딩 줄임
+                    className="flex flex-col px-8 mt-[-100px]"  // 👈 패딩 줄임
                   >
                     <div className="text-[100px] font-normal font-kanit text-[#333333] text-center">?</div>
                     <div className=" text-[20px] font-medium tracking-wider text-[#333333] font-kanit text-center">
@@ -1865,7 +1866,7 @@ const IntroSection: React.FC = () => {
 
                     <div className="space-y-4 b">
                       {RESUME_DATA.map((section) => (
-                        <div key={section.id} className="border-t border-[#bbbbbb] pt-4 first:border-none first:pt-0">
+                        <div key={section.id} className="border-t border-[#d9d9d9] pt-4 first:border-none first:pt-0">
                           <h3 className="text-[14px] font-medium text-[#5F677C] font-kanit mb-2">BUILD {section.id} · {section.title}</h3>
                           <div className="pl-0">
                             {section.content.map((item: any, idx) => (
@@ -2051,7 +2052,7 @@ const IntroSection: React.FC = () => {
                   rotateY: 0
                 }
                 : phase >= 9
-                  ? { left: "50%", top: "56%", x: "-50%", y: "-50%", scale: 1, rotateZ: 0, rotateY: 0 }
+                  ? { left: "47%", top: "56%", x: "-50%", y: "-50%", scale: 1, rotateZ: 0, rotateY: 0 }
                   : { y: "150vh" }
         }
         transition={{ duration: 1.0, ease: "easeInOut" }}

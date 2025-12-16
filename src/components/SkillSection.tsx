@@ -84,7 +84,7 @@ const MiniLegoHead = React.memo(({
 
     // ✅ 수정 1: 바닥 위치를 더 위로 올림 (180 -> 350)
     // 화면 하단에서 더 높게 위치하여 잘 보이도록 수정
-    const floorY = windowHeight - 100;
+    const floorY = windowHeight - 150;
 
     const [pos, setPos] = useState({ x: headX, y: headY });
     const [rotation, setRotation] = useState(0);

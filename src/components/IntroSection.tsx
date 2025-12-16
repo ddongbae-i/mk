@@ -639,7 +639,10 @@ const IntroSection: React.FC = () => {
   const [isWinking, setIsWinking] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
   const [shakeTrigger, setShakeTrigger] = useState(0);
-  const [headPosition, setHeadPosition] = useState({ x: 0, y: 0 }); // 머리 위치 저장
+  const [headPosition, setHeadPosition] = useState({
+    x: typeof window !== 'undefined' ? window.innerWidth / 2 : 0,
+    y: typeof window !== 'undefined' ? window.innerHeight / 2 : 0
+  });
   const shakeCountRef = useRef(0); // 흔들림 횟수 카운터
   const lastShakeTimeRef = useRef(0); // 마지막 흔들림 시간 (쿨타임용)
   const [spinY, setSpinY] = useState(0);
@@ -947,29 +950,34 @@ const IntroSection: React.FC = () => {
 
   const shakeTimerRef = useRef<NodeJS.Timeout | null>(null);
 
+  // 기존 handleDrag 전체를 이걸로 교체
   const handleDrag = (event: any, info: any) => {
-    if (typeof window !== 'undefined') {
-      setHeadPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
-    }
+    // 화면 중앙 기준 위치 설정 (스킬이 여기서 튀어나옴)
+    setHeadPosition({
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2 - 50 // 얼굴 위쪽에서 나오도록
+    });
 
-    const moveDistance = Math.sqrt(info.offset.x ** 2 + info.offset.y ** 2);
+    // 속도 계산
     const speed = Math.sqrt(info.velocity.x ** 2 + info.velocity.y ** 2);
-
     const now = Date.now();
 
-    if ((speed > 300 || moveDistance > 10) && now - lastShakeTimeRef.current > 100) {
-
-      if (shakeTimerRef.current) clearTimeout(shakeTimerRef.current);
-
-      setIsShaking(true);
-      shakeCountRef.current += 1;
+    // 빠르게 움직일 때만 흔들림 감지 (쿨타임 100ms)
+    if (speed > 200 && now - lastShakeTimeRef.current > 100) {
       lastShakeTimeRef.current = now;
 
+      // 흔들림 시작
+      setIsShaking(true);
+      shakeCountRef.current += 1;
+
+      // 3번 흔들면 스킬 팝!
       if (shakeCountRef.current >= 3) {
         setShakeTrigger(prev => prev + 1);
         shakeCountRef.current = 0;
       }
 
+      // 흔들림 종료 (200ms 후)
+      if (shakeTimerRef.current) clearTimeout(shakeTimerRef.current);
       shakeTimerRef.current = setTimeout(() => {
         setIsShaking(false);
       }, 200);
@@ -1201,8 +1209,8 @@ const IntroSection: React.FC = () => {
 
   const scrollOffset = phase >= 16 ? -300 : (isNaturalScrolling ? Math.max(-300, -naturalScrollY) : 0);
   const globalY = phase >= 23 ? "-80vh" : "0px";
-  const finalExpression: 'sad' | 'neutral' | 'happy' | 'sweat' =
-    isWinking ? 'sweat' : isHovering ? 'sad' : faceExpression;
+  const finalExpression: 'sad' | 'neutral' | 'happy' | 'sweat' | 'blank' =
+    isWinking ? 'sweat' : isHovering ? 'blank' : faceExpression;
 
   return (
     <div
@@ -1949,7 +1957,6 @@ const IntroSection: React.FC = () => {
       <motion.div
         id="face-container"
         className="absolute pointer-events-auto"
-        drag={phase === 26}
         style={{
           width: "700px",
           height: "700px",

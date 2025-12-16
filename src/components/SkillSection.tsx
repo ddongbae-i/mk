@@ -2,14 +2,29 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const SKILLS_DATA = [
+    // 레벨 1 (1~6번) → 😢 sad 표정
     { id: 'skill-1', name: 'Excel', level: 1, color: '#217346', icon: '📊' },
     { id: 'skill-2', name: 'PPT', level: 1, color: '#D24726', icon: '📑' },
-    { id: 'skill-3', name: 'Figma', level: 2, color: '#F24E1E', icon: '🎨' },
-    { id: 'skill-4', name: 'HTML/CSS', level: 2, color: '#E44D26', icon: '🌐' },
-    { id: 'skill-5', name: 'Photoshop', level: 2, color: '#31A8FF', icon: '🖼️' },
-    { id: 'skill-6', name: 'React', level: 3, color: '#61DAFB', icon: '⚛️' },
-    { id: 'skill-7', name: 'TypeScript', level: 3, color: '#3178C6', icon: '📘' },
-    { id: 'skill-8', name: 'UI/UX', level: 3, color: '#FF6B6B', icon: '✨' },
+    { id: 'skill-3', name: 'Word', level: 1, color: '#2B579A', icon: '📝' },
+    { id: 'skill-4', name: 'Notion', level: 1, color: '#000000', icon: '📓' },
+    { id: 'skill-5', name: 'Canva', level: 1, color: '#00C4CC', icon: '🎨' },
+    { id: 'skill-6', name: 'Miro', level: 1, color: '#FFD02F', icon: '🗒️' },
+
+    // 레벨 2 (7~12번) → 😐 neutral 표정
+    { id: 'skill-7', name: 'Figma', level: 2, color: '#F24E1E', icon: '🎨' },
+    { id: 'skill-8', name: 'HTML/CSS', level: 2, color: '#E44D26', icon: '🌐' },
+    { id: 'skill-9', name: 'Photoshop', level: 2, color: '#31A8FF', icon: '🖼️' },
+    { id: 'skill-10', name: 'Illustrator', level: 2, color: '#FF9A00', icon: '✏️' },
+    { id: 'skill-11', name: 'JavaScript', level: 2, color: '#F7DF1E', icon: '⚡' },
+    { id: 'skill-12', name: 'Git', level: 2, color: '#F05032', icon: '🔀' },
+
+    // 레벨 3 (13~18번) → 😊 happy 표정
+    { id: 'skill-13', name: 'React', level: 3, color: '#61DAFB', icon: '⚛️' },
+    { id: 'skill-14', name: 'TypeScript', level: 3, color: '#3178C6', icon: '📘' },
+    { id: 'skill-15', name: 'UI/UX', level: 3, color: '#FF6B6B', icon: '✨' },
+    { id: 'skill-16', name: 'Blender', level: 3, color: '#F5792A', icon: '🧊' },
+    { id: 'skill-17', name: 'Three.js', level: 3, color: '#000000', icon: '🎮' },
+    { id: 'skill-18', name: 'Framer', level: 3, color: '#0055FF', icon: '🚀' },
 ];
 
 // 🍬 미니 레고 헤드 (바닥에 쌓이는 모션)

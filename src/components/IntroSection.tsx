@@ -634,6 +634,10 @@ const IntroSection: React.FC = () => {
 
   const [faceExpression, setFaceExpression] = useState<'sad' | 'neutral' | 'happy'>('neutral');
   const [isShaking, setIsShaking] = useState(false);
+  const [shakeTrigger, setShakeTrigger] = useState(0);
+  const [headPosition, setHeadPosition] = useState({ x: 0, y: 0 }); // 머리 위치 저장
+  const shakeCountRef = useRef(0); // 흔들림 횟수 카운터
+  const lastShakeTimeRef = useRef(0); // 마지막 흔들림 시간 (쿨타임용)
   const [spinY, setSpinY] = useState(0);
   const [skillsCollected, setSkillsCollected] = useState(false);
 
@@ -934,6 +938,28 @@ const IntroSection: React.FC = () => {
         setPhase(0);
         isAnimatingRef.current = false;
       }
+    }
+  };
+
+  const handleDrag = (event: any, info: any) => {
+
+    setHeadPosition({ x: info.point.x, y: info.point.y });
+
+    const speed = Math.sqrt(info.velocity.x ** 2 + info.velocity.y ** 2);
+    const now = Date.now();
+
+    if (speed > 500 && now - lastShakeTimeRef.current > 150) {
+      setIsShaking(true);
+      shakeCountRef.current += 1;
+      lastShakeTimeRef.current = now;
+
+
+      if (shakeCountRef.current >= 3) {
+        setShakeTrigger(prev => prev + 1);
+        shakeCountRef.current = 0;
+      }
+
+      setTimeout(() => setIsShaking(false), 200);
     }
   };
 
@@ -1255,6 +1281,8 @@ const IntroSection: React.FC = () => {
                 isActive={phase === 26}
                 onSkillsCollected={() => setSkillsCollected(true)}
                 onExpressionChange={setFaceExpression}
+                shakeTrigger={shakeTrigger}
+                headPosition={headPosition} // 👈 [추가] 머리 위치 전달
               />
             )}
           </div>
@@ -1699,7 +1727,7 @@ const IntroSection: React.FC = () => {
             animate={{ opacity: (phase >= 16 && phase < 22) ? 1 : 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="relative w-[540px] flex flex-col items-center justify-center p-8">
+            <div className="relative w-[540px] h-[600px] flex flex-col items-center justify-center p-6">
               <motion.div
                 className="absolute bg-[#2b2b2b]"
                 style={{ top: 0, left: 0, height: 2 }}
@@ -1731,10 +1759,6 @@ const IntroSection: React.FC = () => {
 
               <motion.div
                 className="relative flex flex-col items-center justify-center p-8"
-                initial={{ width: "400px" }}  // 👈 작게 시작
-                animate={{
-                  width: phase >= 21 ? "540px" : "400px",
-                }}
                 transition={{ duration: 0.6, ease: "easeOut" }}
               ></motion.div>
 
@@ -1744,10 +1768,10 @@ const IntroSection: React.FC = () => {
                     key="placeholder"
                     initial={{ scale: 1 }}
                     exit={{ opacity: 0, scale: 1.1 }}  // 👈 나갈 때 살짝 커짐
-                    className="flex flex-col items-center py-12"  // 👈 패딩 줄임
+                    className="flex flex-col px-6"  // 👈 패딩 줄임
                   >
-                    <div className="text-[100px] font-normal font-kanit text-[#333333]">?</div>
-                    <div className="mt-4 text-[20px] font-normal tracking-wider text-[#333333] font-kanit text-center">
+                    <div className="text-[100px] font-normal font-kanit text-[#333333] text-center">?</div>
+                    <div className=" text-[20px] font-medium tracking-wider text-[#333333] font-kanit text-center">
                       ASSEMBLED CHARACTER
                     </div>
                   </motion.div>
@@ -1760,23 +1784,23 @@ const IntroSection: React.FC = () => {
                     className="w-full text-left"
                   >
                     <div className="text-center mb-8">
-                      <h2 className="text-[32px] font-bold text-[#131416] font-kanit mb-1">ASSEMBLED CHARACTER</h2>
+                      <h2 className="text-[32px] font-bold text-[#131416] font-kanit mb-1 -mt-[70px]">ASSEMBLED CHARACTER</h2>
                       <p className="text-[14px] text-[#777777] font-normal">이 캐릭터는 다음 요소로 구성되어 있습니다.</p>
                     </div>
 
                     <div className="space-y-4 b">
                       {RESUME_DATA.map((section) => (
                         <div key={section.id} className="border-t border-[#bbbbbb] pt-4 first:border-none first:pt-0">
-                          <h3 className="text-[16px] font-medium text-[#5F677C] font-kanit mb-1">BUILD {section.id} · {section.title}</h3>
+                          <h3 className="text-[14px] font-medium text-[#5F677C] font-kanit mb-2">BUILD {section.id} · {section.title}</h3>
                           <div className="pl-0">
                             {section.content.map((item: any, idx) => (
-                              <div key={idx} className="mb-3 last:mb-0">
+                              <div key={idx} className="mb-1 last:mb-0">
                                 {item.type === 'text' && (
-                                  <div className="text-[20px] font-bold text-[#383D47]">{item.text}</div>
+                                  <div className="text-[16px] font-bold text-[#383D47]">{item.text}</div>
                                 )}
                                 {item.type === 'job' && (
                                   <div className="mb-1 last:mb-0">
-                                    <div className="text-[20px] font-bold text-[#383D47] mb-1">{item.role}</div>
+                                    <div className="text-[16px] font-bold text-[#383D47] mb-1">{item.role}</div>
                                     <ul className="list-none space-y-1 text-[14px] text-[#383D47] pl-0">
                                       {item.tasks.map((task: string, tIdx: number) => (
                                         <li key={tIdx} className="before:content-['–'] before:mr-2 before:text-gray-400">
@@ -1911,16 +1935,24 @@ const IntroSection: React.FC = () => {
       <motion.div
         id="face-container"
 
-        className="absolute pointer-events-none"
+        className={`absolute ${phase === 26 ? "pointer-events-auto" : "pointer-events-none"}`}
+
         style={{
           width: "700px",
           height: "700px",
           perspective: 1000,
           zIndex: 100,
           overflow: "visible",
+          cursor: phase === 26 ? "grab" : "default",
         }}
-        initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}
 
+        drag={phase === 26}
+        dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
+        dragElastic={0.2}
+        onDrag={handleDrag}
+        whileDrag={{ scale: 1.1, cursor: "grabbing" }}
+
+        initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}
         animate={
           phase >= 26
             ? {

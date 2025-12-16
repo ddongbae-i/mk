@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useState, useMemo } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, Center } from '@react-three/drei';
 import * as THREE from 'three';
+import { useGLTF, Center, useTexture } from '@react-three/drei';
 
 const MODEL_PATH = '/models/lego_head.glb';
 
@@ -10,7 +11,7 @@ interface ModelProps {
     fixedRotationY: number;
     fixedRotationX: number;
     spinY?: number;
-    expression?: 'sad' | 'neutral' | 'happy';
+    expression?: 'sad' | 'neutral' | 'happy' | 'sweat';
     isShaking?: boolean;
 }
 
@@ -55,6 +56,50 @@ const LegoModel: React.FC<ModelProps> = ({
             }
         });
     }, [clonedScene, expression]);
+
+    // ✅ 표정 PNG 텍스처 로드 (4장 따로)
+    const faceTex = useTexture({
+        neutral: `${import.meta.env.BASE_URL}tex/face_neutral.png`,
+        happy: `${import.meta.env.BASE_URL}tex/face_happy.png`,
+        sad: `${import.meta.env.BASE_URL}tex/face_sad.png`,
+        sweat: `${import.meta.env.BASE_URL}tex/face_sweat.png`,
+    });
+
+    // ✅ 텍스처로 표정 변경 (UV 기반)
+    useEffect(() => {
+        if (!clonedScene) return;
+
+        const t = faceTex[expression as keyof typeof faceTex];
+        if (!t) return;
+
+        // GLB/Three에서 텍스처 뒤집힘 방지
+        t.flipY = false;
+        t.colorSpace = THREE.SRGBColorSpace;
+
+        clonedScene.traverse((child) => {
+            if (!(child instanceof THREE.Mesh)) return;
+
+            // 🔥 중요: clone(true)는 material을 깊게 복제 안 해서,
+            // 여기서 material을 clone해줘야 다른 곳에 영향 안 감.
+            if (child.material) {
+                // material이 배열일 수도 있어서 둘 다 처리
+                if (Array.isArray(child.material)) {
+                    child.material = child.material.map((m) => {
+                        const mm = (m as THREE.MeshStandardMaterial).clone();
+                        mm.map = t;
+                        mm.needsUpdate = true;
+                        return mm;
+                    });
+                } else {
+                    const m = (child.material as THREE.MeshStandardMaterial).clone();
+                    m.map = t;
+                    m.needsUpdate = true;
+                    child.material = m;
+                }
+            }
+        });
+    }, [clonedScene, expression, faceTex]);
+
 
     useEffect(() => {
         if (!followMouse) {

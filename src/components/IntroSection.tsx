@@ -632,7 +632,8 @@ const IntroSection: React.FC = () => {
   const [currentProject, setCurrentProject] = useState(0);
   const [isProjectOpen, setIsProjectOpen] = useState(false);
 
-  const [faceExpression, setFaceExpression] = useState<'sad' | 'neutral' | 'happy'>('neutral');
+  const [faceExpression, setFaceExpression] =
+    useState<'sad' | 'neutral' | 'happy' | 'sweat'>('neutral');
   const [isShaking, setIsShaking] = useState(false);
   const [shakeTrigger, setShakeTrigger] = useState(0);
   const [headPosition, setHeadPosition] = useState({ x: 0, y: 0 }); // 머리 위치 저장

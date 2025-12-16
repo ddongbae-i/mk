@@ -1210,7 +1210,13 @@ const IntroSection: React.FC = () => {
   const scrollOffset = phase >= 16 ? -300 : (isNaturalScrolling ? Math.max(-300, -naturalScrollY) : 0);
   const globalY = phase >= 23 ? "-80vh" : "0px";
   const finalExpression: 'sad' | 'neutral' | 'happy' | 'sweat' | 'blank' =
-    isWinking ? 'sweat' : isHovering ? 'blank' : faceExpression;
+    phase >= 26
+      ? faceExpression
+      : isWinking
+        ? 'sweat'
+        : isHovering
+          ? 'blank'
+          : faceExpression;
 
   return (
     <div
@@ -1993,10 +1999,10 @@ const IntroSection: React.FC = () => {
           phase >= 26
             ? {
               left: "50%",
-              top: "45%",        // ← 50%에서 45%로 (살짝 위로)
+              top: "35%",           // ← 45% → 35%
               x: "-50%",
-              y: "-50%",
-              scale: 0.7,        // ← 0.8에서 0.7로 (조금 작게)
+              y: "-70%",            // ← -50% → -70% (더 위로)
+              scale: 0.6,           // ← 0.7 → 0.6
               rotateY: spinY,
               rotateZ: isShaking ? [-3, 3, -3, 3, 0] : 0,
             }

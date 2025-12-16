@@ -78,10 +78,18 @@ const MiniLegoHead = ({ skill, startPos, onMousePush }: any) => {
     const [position, setPosition] = useState({ x: 0, y: 0, rotate: 0 });
     const [hasLanded, setHasLanded] = useState(false);
 
-    // 바닥 위치 계산
-    const floorY = typeof window !== 'undefined' ? window.innerHeight - 150 - Math.random() * 100 : 600;
+    const direction = useRef(Math.random() > 0.5 ? 1 : -1).current;
+    const power = useRef(400 + Math.random() * 600).current;
+    const randomX = direction * power;
 
-    const randomX = (Math.random() - 0.5) * 1000;
+    // 바닥 위치 계산
+    const floorY = typeof window !== 'undefined'
+        ? window.innerHeight - 180 - Math.random() * 80
+        : 600;
+
+    const direction = Math.random() > 0.5 ? 1 : -1;  // 좌우 랜덤
+    const power = 400 + Math.random() * 600;         // 400~1000px
+    const randomX = direction * power;
     const finalX = startPos.x + randomX;
     const finalRotate = (Math.random() - 0.5) * 40;
 
@@ -144,19 +152,19 @@ const MiniLegoHead = ({ skill, startPos, onMousePush }: any) => {
                 opacity: 1,
             } : {
                 opacity: 1,
-                scale: [0, 1.3, 1],
-                y: [startPos.y - 100, startPos.y - 250, floorY],
-                x: [startPos.x, startPos.x + randomX * 0.3, finalX],
-                rotate: [0, 360 + finalRotate, finalRotate],
+                scale: [0, 1.5, 1.2, 1],                              // 더 크게 팡!
+                y: [startPos.y, startPos.y - 300, startPos.y - 150, floorY],  // 위로 확 튀었다 내려옴
+                x: [startPos.x, startPos.x + randomX * 0.5, finalX * 0.8, finalX],  // 좌우로 팡!
+                rotate: [0, direction * 180, direction * 360 + finalRotate, finalRotate],  // 회전!
             }}
             transition={hasLanded ? {
                 type: "spring",
-                stiffness: 100,
-                damping: 15,
+                stiffness: 120,
+                damping: 12,
             } : {
-                duration: 1.2,
-                times: [0, 0.3, 1],
-                ease: ["easeOut", "easeIn"],
+                duration: 1.0,
+                times: [0, 0.15, 0.4, 1],      // 4개 keyframe에 맞춤
+                ease: "easeOut",
             }}
         >
             <img

@@ -3,28 +3,28 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const SKILLS_DATA = [
     // 레벨 1 (1~6번) → 😢 sad 표정
-    { id: 'skill-1', name: 'CSS', level: 1, icon: '/images/skills/css.png' },
-    { id: 'skill-2', name: 'Midjourney', level: 1, icon: '/images/skills/midjourney.png' },
-    { id: 'skill-3', name: 'AI', level: 1, icon: '/images/skills/ai.png' },
-    { id: 'skill-4', name: 'Keynote', level: 1, icon: '/images/skills/keynote.png' },
-    { id: 'skill-5', name: 'Figma', level: 1, icon: '/images/skills/figma.png' },
-    { id: 'skill-6', name: 'Premiere', level: 1, icon: '/images/skills/premiere.png' },
+    { id: 'skill-1', name: 'skill_gsap', level: 1, icon: '/images/skill_gsap.png' },
+    { id: 'skill-2', name: 'skill_js', level: 1, icon: '/images/skill_js.png' },
+    { id: 'skill-3', name: 'skill_premiere', level: 1, icon: '/images/skill_premiere.png' },
+    { id: 'skill-4', name: 'skill_react', level: 1, icon: '/images/skill_react.png' },
+    { id: 'skill-5', name: 'skill_typescript', level: 1, icon: '/images/skill_typescript.png' },
 
     // 레벨 2 (7~12번) → 😐 neutral 표정
-    { id: 'skill-7', name: 'Photoshop', level: 2, icon: '/images/skills/photoshop.png' },
-    { id: 'skill-8', name: 'GPT', level: 2, icon: '/images/skills/gpt.png' },
-    { id: 'skill-9', name: 'Figma', level: 2, icon: '/images/skills/figma2.png' },
-    { id: 'skill-10', name: 'TypeScript', level: 2, icon: '/images/skills/typescript.png' },
-    { id: 'skill-11', name: 'React', level: 2, icon: '/images/skills/react.png' },
-    { id: 'skill-12', name: 'Claude', level: 2, icon: '/images/skills/claude.png' },
+    { id: 'skill-6', name: 'skill_aistudio', level: 2, icon: '/images/skill_aistudio.png' },
+    { id: 'skill-7', name: 'skill_midjourney', level: 2, icon: '/images/skill_midjourney.png' },
+    { id: 'skill-8', name: 'skill_tailwind', level: 2, icon: '/images/skill_tailwind.png' },
+    { id: 'skill-9', name: 'skill_firefly', level: 3, icon: '/images/skill_firefly.png' },
 
     // 레벨 3 (13~18번) → 😊 happy 표정
-    { id: 'skill-13', name: 'HTML', level: 3, icon: '/images/skills/html.png' },
-    { id: 'skill-14', name: 'JavaScript', level: 3, icon: '/images/skills/javascript.png' },
-    { id: 'skill-15', name: 'Blender', level: 3, icon: '/images/skills/blender.png' },
-    { id: 'skill-16', name: 'Three.js', level: 3, icon: '/images/skills/threejs.png' },
-    { id: 'skill-17', name: 'Framer', level: 3, icon: '/images/skills/framer.png' },
-    { id: 'skill-18', name: 'Node.js', level: 3, icon: '/images/skills/nodejs.png' },
+    { id: 'skill-10', name: 'skill_claude', level: 3, icon: '/images/skill_claude.png' },
+    { id: 'skill-11', name: 'skill_css', level: 3, icon: '/images/skill_css.png' },
+    { id: 'skill-12', name: 'skill_figma', level: 3, icon: '/images/skill_figma.png' },
+    { id: 'skill-13', name: 'skill_gemini', level: 3, icon: '/images/skill_gemini.png' },
+    { id: 'skill-14', name: 'skill_git.js', level: 3, icon: '/images/skill_git.png' },
+    { id: 'skill-15', name: 'skill_gpt', level: 3, icon: '/images/skill_gpt.png' },
+    { id: 'skill-16', name: 'skill_html', level: 3, icon: '/images/skill_html.png' },
+    { id: 'skill-17', name: 'skill_illustrator', level: 3, icon: '/images/skill_illustrator.png' },
+    { id: 'skill-18', name: 'skill_photoshop', level: 3, icon: '/images/skill_photoshop.png' },
 ];
 
 // 💥 팡팡 터지는 이펙트

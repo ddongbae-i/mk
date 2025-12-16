@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const SKILLS_DATA = [
+    // ... 데이터는 기존과 동일 ...
     { id: "skill-1", name: "skill_gsap", level: 1, icon: "/images/skill_gsap.png" },
     { id: "skill-2", name: "skill_js", level: 1, icon: "/images/skill_js.png" },
     { id: "skill-3", name: "skill_premiere", level: 1, icon: "/images/skill_premiere.png" },
@@ -24,7 +25,7 @@ const SKILLS_DATA = [
     { id: "skill-18", name: "skill_photoshop", level: 3, icon: "/images/skill_photoshop.png" },
 ];
 
-// 💥 팡팡
+// 💥 팡팡 이펙트
 const BurstEffect = ({ x, y }: { x: number; y: number }) => {
     const particles = Array.from({ length: 8 }, (_, i) => ({
         id: i,
@@ -43,11 +44,8 @@ const BurstEffect = ({ x, y }: { x: number; y: number }) => {
                     key={p.id}
                     className="absolute rounded-full"
                     style={{
-                        width: p.size,
-                        height: p.size,
-                        backgroundColor: p.color,
-                        left: -p.size / 2,
-                        top: -p.size / 2,
+                        width: p.size, height: p.size, backgroundColor: p.color,
+                        left: -p.size / 2, top: -p.size / 2,
                     }}
                     initial={{ scale: 0, x: 0, y: 0, opacity: 1 }}
                     animate={{
@@ -59,62 +57,32 @@ const BurstEffect = ({ x, y }: { x: number; y: number }) => {
                     transition={{ duration: 0.6, ease: "easeOut" }}
                 />
             ))}
-            <motion.div
-                className="absolute rounded-full bg-white"
-                style={{ width: 40, height: 40, left: -20, top: -20 }}
-                initial={{ scale: 0, opacity: 1 }}
-                animate={{ scale: [0, 2, 0], opacity: [1, 0.8, 0] }}
-                transition={{ duration: 0.3 }}
-            />
         </div>
     );
 };
 
-// 🍬 미니 아이콘
-const MiniLegoHead = ({ skill, headX, headY }: { skill: any; headX: number; headY: number }) => {
-    const ref = useRef<HTMLDivElement>(null);
-    const [position, setPosition] = useState({ x: 0, y: 0, rotate: 0 });
-    const [hasLanded, setHasLanded] = useState(false);
-
-    const direction = useRef(Math.random() > 0.5 ? 1 : -1).current;
-    const power = useRef(200 + Math.random() * 400).current;
-    const randomX = direction * power;
-
-    const floorY =
-        typeof window !== "undefined" ? window.innerHeight - 150 - Math.random() * 100 : 600;
-
-    const finalX = headX + randomX;
-    const finalRotate = (Math.random() - 0.5) * 60;
-
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setHasLanded(true);
-            setPosition({ x: finalX, y: floorY, rotate: finalRotate });
-        }, 1200);
-        return () => clearTimeout(timer);
-    }, [finalX, floorY, finalRotate]);
+// 🍬 미니 아이콘 (물리: 좌표 고정 후 바닥으로 추락)
+const MiniLegoHead = React.memo(({ skill, headX, headY }: { skill: any; headX: number; headY: number }) => {
+    const floorY = typeof window !== "undefined" ? window.innerHeight - 100 : 800;
+    const randomX = (Math.random() - 0.5) * 400; // 좌우 랜덤 확산
+    const finalRotate = (Math.random() - 0.5) * 180;
 
     return (
         <motion.div
-            ref={ref}
             className="absolute pointer-events-none z-[300]"
             style={{ left: 0, top: 0 }}
-            initial={{ x: headX, y: headY, scale: 0, rotate: 0, opacity: 1 }}
-            animate={
-                hasLanded
-                    ? { x: position.x, y: position.y, scale: 1, rotate: position.rotate }
-                    : {
-                        x: [headX, headX + randomX * 0.3, headX + randomX * 0.7, finalX],
-                        y: [headY, headY - 200, headY - 100, floorY],
-                        scale: [0, 1.3, 1.1, 1],
-                        rotate: [0, direction * 180, direction * 360, finalRotate],
-                    }
-            }
-            transition={
-                hasLanded
-                    ? { type: "spring", stiffness: 100, damping: 15 }
-                    : { duration: 1.0, times: [0, 0.2, 0.5, 1], ease: "easeOut" }
-            }
+            initial={{ x: headX, y: headY, scale: 0, rotate: 0 }}
+            animate={{
+                x: [headX, headX + randomX * 0.5, headX + randomX],
+                y: [headY, headY - 150, floorY], // 솟구쳤다 바닥으로
+                scale: [0, 1.2, 1],
+                rotate: finalRotate
+            }}
+            transition={{
+                duration: 0.8,
+                times: [0, 0.3, 1],
+                ease: [0.22, 1, 0.36, 1]
+            }}
         >
             <img
                 src={skill.icon}
@@ -124,7 +92,7 @@ const MiniLegoHead = ({ skill, headX, headY }: { skill: any; headX: number; head
             />
         </motion.div>
     );
-};
+});
 
 interface SkillSectionProps {
     isActive: boolean;
@@ -144,28 +112,28 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     const [poppedSkills, setPoppedSkills] = useState<any[]>([]);
     const [bursts, setBursts] = useState<{ id: number; x: number; y: number }[]>([]);
     const [currentLevel, setCurrentLevel] = useState(1);
+
+    // 흔들림 감지용 ref
+    const shakeCountRef = useRef(0);
     const prevShakeTrigger = useRef(shakeTrigger);
 
-    // ✅ 머리 “윗부분” 좌표 계산 (주둥이처럼)
+    // ✅ 머리 좌표 계산
     const getHeadMouth = useCallback(() => {
         const el = headRef?.current;
-        if (!el) {
-            return { x: window.innerWidth / 2, y: window.innerHeight * 0.25 };
-        }
+        if (!el) return { x: window.innerWidth / 2, y: window.innerHeight * 0.3 };
         const r = el.getBoundingClientRect();
-        return {
-            x: r.left + r.width / 2,
-            y: r.top + r.height * 0.08, // 여기 숫자만 조절하면 “윗부분” 위치가 바뀜
-        };
+        return { x: r.left + r.width / 2, y: r.top + r.height * 0.1 };
     }, [headRef]);
 
     const poppedIds = poppedSkills.map((p) => p.skill.id);
     const currentLevelSkills = SKILLS_DATA.filter((s) => s.level === currentLevel);
     const remainingSkills = currentLevelSkills.filter((s) => !poppedIds.includes(s.id));
 
+    // ✅ 스킬 발사 함수
     const popSkill = useCallback(() => {
         if (!isActive) return;
 
+        // 현재 레벨 다 모으면 다음 레벨로 (표정 전환의 핵심)
         if (remainingSkills.length === 0) {
             if (currentLevel < 3) setCurrentLevel((p) => p + 1);
             return;
@@ -175,72 +143,75 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         const id = Date.now();
         const { x, y } = getHeadMouth();
 
-        // ✅ 발사 좌표를 저장해두면, 머리가 움직여도 “그때 그 위치”에서 튄다
         setPoppedSkills((prev) => [...prev, { id, skill, originX: x, originY: y }]);
-
         setBursts((prev) => [...prev, { id, x, y }]);
-        window.setTimeout(() => {
+        setTimeout(() => {
             setBursts((prev) => prev.filter((b) => b.id !== id));
         }, 600);
     }, [isActive, remainingSkills, currentLevel, getHeadMouth]);
 
-    // ✅ shakeTrigger 변화 즉시 팝
+
+    // ✅ 흔들림 감지 & 빈도 조절
     useEffect(() => {
         if (!isActive) return;
-        if (shakeTrigger > prevShakeTrigger.current) {
+
+        if (shakeTrigger !== prevShakeTrigger.current) {
             prevShakeTrigger.current = shakeTrigger;
-            popSkill();
+            shakeCountRef.current += 1;
+
+            // 3번 흔들 때마다 1개 발사 (빈도 조절)
+            if (shakeCountRef.current % 3 === 0) {
+                popSkill();
+            }
         }
     }, [shakeTrigger, isActive, popSkill]);
 
-    // ✅ 레벨별 기본 표정 (필요하면 sweat로도 바꿀 수 있게 그대로 둠)
-    useEffect(() => {
-        const expressions: ("sad" | "neutral" | "happy")[] = ["sad", "neutral", "happy"];
-        onExpressionChange?.(expressions[currentLevel - 1]);
-    }, [currentLevel, onExpressionChange]);
 
+    // ✅ [핵심 수정] 표정 제어 로직
+    // 흔드는 여부(isShaking)와 상관없이, 오직 '현재 레벨'에 따라 표정이 결정됨
+    useEffect(() => {
+        if (!isActive) return;
+
+        if (currentLevel === 1) {
+            onExpressionChange?.("sad");     // Level 1: 못함 (Sad)
+        } else if (currentLevel === 2) {
+            onExpressionChange?.("neutral"); // Level 2: 보통 (Neutral)
+        } else if (currentLevel === 3) {
+            onExpressionChange?.("happy");   // Level 3: 잘함 (Happy)
+        }
+
+        // (참고) 만약 다 끝났을 때 표정을 바꾸고 싶다면 아래에 추가 가능
+        if (poppedSkills.length >= SKILLS_DATA.length) {
+            onExpressionChange?.("happy");
+        }
+
+    }, [currentLevel, isActive, onExpressionChange, poppedSkills.length]);
+
+
+    // 완료 체크
     useEffect(() => {
         if (poppedIds.length >= SKILLS_DATA.length) onSkillsCollected?.();
     }, [poppedIds.length, onSkillsCollected]);
 
+
     return (
         <div className="absolute inset-0 z-[200] overflow-hidden">
-            {/* ✅ UI 레이어: 클릭/호버 가능 */}
+            {/* UI 레이어 */}
             <div className="absolute inset-0 pointer-events-auto">
                 <AnimatePresence>
                     {isActive && poppedSkills.length < SKILLS_DATA.length && (
                         <motion.div
-                            className="absolute top-20 w-full text-center text-white z-[250]"
+                            className="absolute top-24 w-full text-center text-white z-[250]"
                             initial={{ y: -20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            onMouseEnter={() => onExpressionChange?.("happy")}
-                            onMouseLeave={() => onExpressionChange?.("neutral")}
                         >
-                            <h2
-                                className="text-5xl font-black italic drop-shadow-lg mb-3"
-                                style={{ fontFamily: "Kanit, sans-serif" }}
-                            >
+                            <h2 className="text-5xl font-black italic drop-shadow-lg mb-2" style={{ fontFamily: "Kanit, sans-serif" }}>
                                 SHAKE IT!
                             </h2>
-                            <p className="text-xl opacity-90">머리를 잡고 흔들어보세요!</p>
-                            <p className="text-sm opacity-70 mt-2">
-                                Level {currentLevel} · {poppedSkills.length} / {SKILLS_DATA.length} skills
-                            </p>
-
-                            {/* ✅ 테스트 버튼 (원하면 지워도 됨) */}
-                            <div className="mt-6 flex justify-center gap-3">
-                                <button
-                                    className="px-4 py-2 rounded-lg bg-white/20 backdrop-blur border border-white/30"
-                                    onMouseEnter={() => onExpressionChange?.("happy")}
-                                    onMouseLeave={() => onExpressionChange?.("neutral")}
-                                    onMouseDown={() => onExpressionChange?.("sweat")}
-                                    onMouseUp={() => onExpressionChange?.("happy")}
-                                    onClick={() => popSkill()}
-                                >
-                                    POP (테스트)
-                                </button>
-                            </div>
+                            <p className="text-lg opacity-90 drop-shadow-md">머리를 마구 흔들어주세요!</p>
+                            {/* 현재 레벨 디버깅용 (필요 없으면 삭제) */}
+                            <p className="text-sm opacity-60 mt-2">Level {currentLevel}</p>
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -252,8 +223,6 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                             initial={{ scale: 0, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ type: "spring", stiffness: 300 }}
-                            onMouseEnter={() => onExpressionChange?.("happy")}
-                            onMouseLeave={() => onExpressionChange?.("neutral")}
                         >
                             <p className="text-5xl font-black text-white drop-shadow-lg">
                                 🎉 ALL SKILLS UNLOCKED! 🎉
@@ -263,7 +232,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                 </AnimatePresence>
             </div>
 
-            {/* ✅ 이펙트/아이콘 레이어: 클릭 막기 */}
+            {/* 이펙트 레이어 */}
             <div className="absolute inset-0 pointer-events-none">
                 {bursts.map((burst) => (
                     <BurstEffect key={burst.id} x={burst.x} y={burst.y} />

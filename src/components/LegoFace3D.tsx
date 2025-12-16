@@ -6,7 +6,7 @@ import { useGLTF, useTexture } from "@react-three/drei";
 const MODEL_PATH = "/models/lego_head.glb";
 const FACE_MAT_NAME = "FaceMaterial"; // ✅ 블렌더에서 얼굴(스티커) 재질 이름을 이걸로!
 
-type Expression = "neutral" | "happy" | "sad" | "sweat" | "blank";
+type Expression = "neutral" | "happy" | "sad" | "sweat";
 
 interface ModelProps {
     followMouse: boolean;
@@ -84,18 +84,12 @@ const LegoModel: React.FC<ModelProps> = ({
                 if (mat.name !== FACE_MAT_NAME) return mat;
 
                 const m = (mat as THREE.MeshStandardMaterial).clone();
-
-                m.map = t;                 // ✅ 핵심: 표정 텍스처 연결
-                m.map.needsUpdate = true;
-
-                m.color.setRGB(1, 1, 1);
-                m.roughness = 1;
-                m.metalness = 0;
-                m.toneMapped = false;
-
+                m.color.setRGB(1, 1, 1);     // 원래 재질 색(노랑 등) 영향 제거
+                m.roughness = 1;             // 반사 줄여서 탁함 감소
+                m.metalness = 0;             // 금속성 제거
+                m.toneMapped = false;        // 톤매핑 영향 제거(표정 색 유지)
                 m.transparent = true;
                 m.alphaTest = 0.01;
-
                 m.needsUpdate = true;
                 return m;
             };

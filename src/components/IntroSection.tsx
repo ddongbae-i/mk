@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef, Suspense } from "react";
 import { motion, useAnimate, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
 import { LegoFace3D } from './LegoFace3D';
 import SkillSection from './SkillSection';
+import ProjectDetailCard from './ProjectDetailCard';
 // import { LegoPart3D } from "./LegoPart3D";
 
 const COLORS = [
@@ -167,7 +168,7 @@ const ProjectKitBox = ({
   onOpen: () => void;
 }) => (
   <motion.div
-    className="relative z-[90] cursor-pointer"
+    className="relative z-[90] cursor-pointer -bottom-[100px]"
     onClick={onOpen}
     whileHover={{ scale: 1.02 }}
     whileTap={{ scale: 0.98 }}
@@ -180,7 +181,7 @@ const ProjectKitBox = ({
       src={`${import.meta.env.BASE_URL}${project.image}`} // PROJECT_DATA의 image 경로 사용
       alt={`${project.title} kit`}
       draggable={false}
-      className="w-[80vw] max-w-[1407px] aspect-[16/10] object-contain select-none shadow-2xl"
+      className="w-[80vw] max-w-[1000px] aspect-[16/10] object-contain select-none"
       style={{ display: "block" }}
     />
   </motion.div>
@@ -634,10 +635,17 @@ const IntroSection: React.FC = () => {
 
   const [faceExpression, setFaceExpression] =
     useState<'sad' | 'neutral' | 'happy' | 'sweat'>('neutral');
+
   const [isWinking, setIsWinking] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
   const [shakeTrigger, setShakeTrigger] = useState(0);
+  const [headPosition, setHeadPosition] = useState(() => ({
+    x: typeof window !== 'undefined' ? window.innerWidth / 2 : 500,
+    y: typeof window !== 'undefined' ? window.innerHeight * 0.4 : 300,  // 40% 위치
+  }));
+  const lastShakeTimeRef = useRef(0); // 마지막 흔들림 시간 (쿨타임용)
   const [spinY, setSpinY] = useState(0);
+  const [skillsCollected, setSkillsCollected] = useState(false);
 
   const faceScale =
     phase >= 23 ? 0.5 :
@@ -944,23 +952,25 @@ const IntroSection: React.FC = () => {
   const lastEmitRef = useRef(0);
 
 
+  // 기존 handleDrag 전체를 이걸로 교체
   const handleDrag = (_: any, info: any) => {
-    const dxDelta = info.delta?.x ?? 0;     // 순간 변화량
-    const dxOffset = info.offset?.x ?? 0;  // 누적 변화량(드래그 시작점 기준)
+    const dx = info.delta?.x ?? 0;
     const now = performance.now();
 
-    // ✅ 너무 작은 입력 노이즈 컷(둘 중 하나라도 의미있으면 통과)
-    if (Math.abs(dxDelta) < 2 && Math.abs(dxOffset) < 10) return;
+    // 노이즈 컷
+    if (Math.abs(dx) < 6) return;
 
-    const dir: "L" | "R" = (dxDelta !== 0 ? dxDelta : dxOffset) > 0 ? "R" : "L";
+    const dir: "L" | "R" = dx > 0 ? "R" : "L";
 
-    // ✅ 방향 전환 = 흔들 1회
+    // 방향 전환 = 흔들 1회
     if (lastDirRef.current && dir !== lastDirRef.current) {
       shakeCountRef.current += 1;
 
-      const threshold = 2; // 2번 방향 전환마다 팡
+      // 2~3번마다 (2로 고정하면 더 경쾌 / 랜덤 원하면 아래 주석 참고)
+      const threshold = 2;
+      // const threshold = (now % 2 < 1) ? 2 : 3; // 대충 랜덤 느낌 원하면 이런식도 가능
 
-      // ✅ 너무 연속 발사 방지
+      // 너무 연속 발사 방지
       if (shakeCountRef.current >= threshold && now - lastEmitRef.current > 120) {
         lastEmitRef.current = now;
         shakeCountRef.current = 0;
@@ -1059,7 +1069,13 @@ const IntroSection: React.FC = () => {
   };
 
   useEffect(() => {
-    if (phase === 26) setSpinY(360);
+    if (phase === 26) {
+      setSpinY(360);
+      setHeadPosition({
+        x: window.innerWidth / 2,
+        y: window.innerHeight * 0.3
+      });
+    }
   }, [phase]);
   useEffect(() => {
     phaseRef.current = phase;
@@ -1196,9 +1212,10 @@ const IntroSection: React.FC = () => {
   const scrollOffset = phase >= 16 ? -300 : (isNaturalScrolling ? Math.max(-300, -naturalScrollY) : 0);
   const globalY = phase >= 23 ? "-80vh" : "0px";
   const finalExpression: 'sad' | 'neutral' | 'happy' | 'sweat' | 'blank' =
-    phase >= 15
-      ? (isWinking ? 'sweat' : faceExpression)
+    phase >= 26
+      ? faceExpression
       : (isWinking ? 'sweat' : 'neutral');
+
   return (
     <div
       ref={scope}
@@ -1275,9 +1292,9 @@ const IntroSection: React.FC = () => {
       {phase >= 26 && (
         <motion.div
           className="absolute w-full"
-          style={{ zIndex: 90, top: 0, height: "100vh" }}
-          initial={{ y: "100vh" }}
-          animate={{ y: 0 }}
+          style={{ zIndex: 90, top: 0, height: "200vh" }}  // 높이 2배로
+          initial={{ y: "100vh" }}  // 아래에서 시작
+          animate={{ y: 0 }}        // 제자리로
           transition={{ duration: 1, ease: "easeInOut" }}
         >
           {/* 치즈 웨이브 */}
@@ -1285,11 +1302,10 @@ const IntroSection: React.FC = () => {
 
           {/* 다음 섹션 내용 */}
           <div className="absolute w-full bg-[#4A7C23]" style={{ top: "120px", height: "calc(100vh - 120px)" }}>
-
             {phase >= 26 && (
               <SkillSection
                 isActive={phase === 26}
-                onSkillsCollected={() => { }}
+                onSkillsCollected={() => setSkillsCollected(true)}
                 onExpressionChange={setFaceExpression}
                 shakeTrigger={shakeTrigger}
                 headRef={headRef}
@@ -1457,41 +1473,28 @@ const IntroSection: React.FC = () => {
       <AnimatePresence>
         {isProjectOpen && (
           <motion.div
-            className="fixed inset-0 z-[200] bg-white"
-            style={{
-              transformStyle: "preserve-3d",
-              perspective: 1500,
-              transformOrigin: "center bottom",  // 👈 하단 기준
-            }}
-            initial={{
-              rotateX: -90,  // 👈 뒤집힌 상태로 시작 (바닥에 누워있음)
-              opacity: 0,
-            }}
-            animate={{
-              rotateX: 0,    // 👈 펼쳐짐
-              opacity: 1,
-            }}
-            exit={{
-              rotateX: -90,
-              opacity: 0,
-            }}
-            transition={{
-              duration: 0.6,
-              ease: [0.22, 1, 0.36, 1],
-            }}
+            className="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-sm" /* 배경 어둡게 */
+            style={{ perspective: 1500 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
-            <button
-              onClick={() => setIsProjectOpen(false)}
-              className="absolute top-8 right-8 w-12 h-12 flex items-center justify-center z-10"
+            {/* ▼ 모달 크기를 여기서 조절합니다 (화면의 85%) */}
+            <motion.div
+              className="relative w-[85vw] h-[80vh] max-w-6xl"
+              initial={{ rotateX: -30, opacity: 0, y: 100, scale: 0.9 }}
+              animate={{ rotateX: 0, opacity: 1, y: 0, scale: 1 }}
+              exit={{ rotateX: -30, opacity: 0, y: 100, scale: 0.9 }}
+              transition={{ duration: 0.5, type: "spring", bounce: 0.2 }}
             >
-              <svg width="24" height="24" viewBox="0 0 24 24">
-                <path d="M18 6L6 18M6 6l12 12" stroke="#333" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-            </button>
 
-            <div className="w-full h-full flex items-center justify-center">
-              <h1 className="text-4xl font-bold">{PROJECT_DATA[currentProject].title}</h1>
-            </div>
+              {/* ▼ 새로 만든 상세 디자인 컴포넌트 */}
+              <ProjectDetailCard
+                onClose={() => setIsProjectOpen(false)}
+                data={PROJECT_DATA[currentProject]}
+              />
+
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
@@ -1794,7 +1797,7 @@ const IntroSection: React.FC = () => {
                     className="w-full text-left"
                   >
                     <div className="text-center mb-8">
-                      <h2 className="text-[32px] font-bold text-[#131416] font-kanit mb-1 -mt-[70px]">ASSEMBLED CHARACTER</h2>
+                      <h2 className="text-[32px] font-bold text-[#131416] font-kanit mb-1 -mt-[70px]">KIM MINKYEONG</h2>
                       <p className="text-[14px] text-[#777777] font-normal">이 캐릭터는 다음 요소로 구성되어 있습니다.</p>
                     </div>
 
@@ -1988,7 +1991,7 @@ const IntroSection: React.FC = () => {
             : phase >= 23
               ? { left: "92%", top: "20%", x: "-50%", y: "-50%", scale: 1.3 }
               : phase >= 14
-                ? { left: "6vw", top: "50%", x: "0", y: `calc(-50% + 13vh + ${scrollOffset}px)`, scale: 0.28, rotateX: 2, rotateZ: 0, rotateY: 25 }
+                ? { left: "6vw", top: "50%", x: "0", y: `calc(-50% + 15vh + ${scrollOffset}px)`, scale: 0.28, rotateX: 2, rotateZ: 0, rotateY: 25 }
                 : phase >= 9
                   ? { left: "50%", top: "50%", x: "-50%", y: "-50%", scale: 1, rotateZ: 0, rotateY: 0 }
                   : { y: "150vh" }
@@ -2006,7 +2009,7 @@ const IntroSection: React.FC = () => {
             }}
             initial={{ opacity: 0, y: -10 }}
             animate={{
-              top: phase >= 23 ? "0px" : phase >= 21 ? "30px" : "-420px",
+              top: phase >= 23 ? "0px" : phase >= 21 ? "0px" : "-420px",
               opacity: 1,
               scale: phase >= 21 ? 2.3 : 2.5,
               y: phase >= 21 ? 20 : -10,

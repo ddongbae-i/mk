@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState, Suspense } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { useGLTF, Center } from '@react-three/drei';
 import * as THREE from 'three';
@@ -12,7 +12,7 @@ interface ModelProps {
 const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY, fixedRotationX }) => {
     const { scene } = useGLTF(`${import.meta.env.BASE_URL}models/lego_head.glb`);
     const modelRef = useRef<THREE.Group>(null);
-    const [targetRotation, setTargetRotation] = useState({ x: 0, y: 0, z: 0 });
+    const [targetRotation, setTargetRotation] = useState({ x: 0, y: 0, z: 0 });  // ← x 추가!
 
     useEffect(() => {
         if (scene) {
@@ -25,7 +25,7 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY, fixedRot
     useEffect(() => {
         if (!followMouse) {
             setTargetRotation({
-                x: THREE.MathUtils.degToRad(fixedRotationX),
+                x: THREE.MathUtils.degToRad(fixedRotationX),  // ← 순서 정리
                 y: THREE.MathUtils.degToRad(fixedRotationY),
                 z: 0
             });
@@ -79,9 +79,9 @@ export const LegoFace3D: React.FC<{
             }}
         >
             <Canvas
-                dpr={[1, 2]}
+                dpr={1}
                 camera={{ position: [0, 0, 8], fov: 45 }}
-                resize={{ scroll: false, debounce: { scroll: 50, resize: 0 } }}
+                resize={{ scroll: false }}
                 style={{
                     background: 'transparent',
                     overflow: "visible",
@@ -90,7 +90,6 @@ export const LegoFace3D: React.FC<{
                     alpha: true,
                     antialias: true,
                     toneMapping: THREE.NoToneMapping,
-                    powerPreference: "high-performance",
                 }}
                 linear
             >
@@ -99,15 +98,13 @@ export const LegoFace3D: React.FC<{
                 <directionalLight position={[-5, 5, -5]} intensity={1.2} />
                 <hemisphereLight intensity={1.2} groundColor="#ffffff" />
 
-                <Suspense fallback={null}>
-                    <Center>
-                        <LegoModel
-                            followMouse={followMouse}
-                            fixedRotationY={fixedRotationY}
-                            fixedRotationX={fixedRotationX}
-                        />
-                    </Center>
-                </Suspense>
+                <Center>
+                    <LegoModel
+                        followMouse={followMouse}
+                        fixedRotationY={fixedRotationY}
+                        fixedRotationX={fixedRotationX}
+                    />
+                </Center>
             </Canvas>
         </div>
     );

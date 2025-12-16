@@ -1990,15 +1990,11 @@ const IntroSection: React.FC = () => {
           <Suspense fallback={<FaceLoadingPlaceholder />}>
             <LegoFace3D
               className="w-full h-full drop-shadow-2xl"
-              // 1. 마우스 따라가기: 2~12단계만 켜짐 (23단계는 자동으로 꺼짐 -> OK)
+
               followMouse={phase >= 2 && phase <= 12}
 
-              // 2. 좌우 회전 (여기를 수정!)
-              // "23 이상이면 -90도, 그게 아니면 (14~23 사이일 때 15도, 아니면 0도)"
               fixedRotationY={phase >= 26 ? 0 : phase >= 23 ? -40 : (phase >= 14 && phase < 23 ? 15 : 0)}
 
-              // 3. 위아래 회전
-              // 14~23 사이일 때만 살짝 숙이고(3), 나머지는 정면(0) -> 23단계에선 정면 봄
               fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}
             />
           </Suspense>

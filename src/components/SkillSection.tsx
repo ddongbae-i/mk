@@ -187,7 +187,7 @@ const MiniLegoHead = React.memo(({
             <img
                 src={skill.icon}
                 alt={skill.name}
-                className="w-16 h-16 object-contain"
+                className="w-[100px] h-[100px] object-contain"
                 style={{ filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.25))" }}
             />
         </div>
@@ -344,12 +344,12 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                             exit={{ opacity: 0 }}
                         >
                             <h2
-                                className="text-5xl font-black italic drop-shadow-lg mb-2"
+                                className="text-5xl font-black italic mb-2"
                                 style={{ fontFamily: "Kanit, sans-serif" }}
                             >
                                 SHAKE IT!
                             </h2>
-                            <p className="text-lg opacity-90 drop-shadow-md">머리를 마구 흔들어주세요!</p>
+                            <p className="text-lg ">머리를 마구 흔들어주세요!</p>
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -357,13 +357,14 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                 <AnimatePresence>
                     {poppedSkills.length >= SKILLS_DATA.length && (
                         <motion.div
-                            className="absolute top-1/3 left-1/2 -translate-x-1/2 text-center z-[260] pointer-events-auto"
+                            className="absolute top-[10%] left-[40%] text-center z-[260] pointer-events-auto"
                             initial={{ scale: 0, opacity: 0 }}
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ type: "spring", stiffness: 300 }}
                         >
-                            <p className="text-5xl font-black text-white drop-shadow-lg">
-                                ALL SKILLS UNLOCKED!
+                            <p className="text-5xl font-bold text-[#f0f0f0]"
+                                style={{ fontFamily: "Kanit, sans-serif" }}>
+                                THIS MUCH, I CAN DO
                             </p>
                         </motion.div>
                     )}

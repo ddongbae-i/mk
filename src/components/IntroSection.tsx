@@ -8,38 +8,12 @@ import ProjectDetailCard from './ProjectDetailCard';
 
 type FaceExpression = 'sad' | 'neutral' | 'happy' | 'sweat' | 'blank';
 const COLORS = [
-  '#8F1E20', '#F25F09', '#FCBB09', '#8E00BD', '#2B7000', '#B7156C', '#8F1E20'
+  '#8F1E20', '#F25F09', '#ffbe54', '#53359f', '#008556', '#B7156C', '#8F1E20'
 ];
 
 const BG_CREAM = "#FFF2D5";
-const BEAM_COLOR = "#FCBB09";
-const PROJECT_TEXT_COLOR = "#8E00BD";
-
-
-const CheeseWaveTransition = ({ color = "#FCBB09" }: { color?: string }) => (
-  <div className="absolute left-0 w-full overflow-hidden" style={{ height: "150px", top: 0 }}>
-    <svg
-      viewBox="0 0 1200 120"
-      preserveAspectRatio="none"
-      className="w-full h-full"
-      style={{ transform: "rotate(180deg)" }}
-    >
-      <path
-        d="M0,0 
-           C150,80 300,100 450,60 
-           C600,20 750,80 900,100 
-           C1050,120 1150,80 1200,40 
-           L1200,120 L0,120 Z"
-        fill={color}
-      />
-      {/* 치즈 늘어지는 방울들 */}
-      <ellipse cx="200" cy="10" rx="25" ry="35" fill={color} />
-      <ellipse cx="500" cy="20" rx="20" ry="45" fill={color} />
-      <ellipse cx="800" cy="15" rx="22" ry="40" fill={color} />
-      <ellipse cx="1000" cy="25" rx="18" ry="30" fill={color} />
-    </svg>
-  </div>
-);
+const BEAM_COLOR = "#ffbe54";
+const PROJECT_TEXT_COLOR = "#53359f";
 
 
 // 파츠들에 넘길 최종 rotateY
@@ -147,13 +121,6 @@ const RESUME_DATA = [
 
 // CONSTANTS
 const BRICK_LABELS = ["BUILD", "PROJECT", "STACK", "GALLERY", "CONTACT"];
-const BRICK_COLORS = [
-  { main: "#ef4444", side: "#b91c1c", top: "#f87171" },
-  { main: "#f59e0b", side: "#b45309", top: "#fbbf24" },
-  { main: "#10b981", side: "#047857", top: "#34d399" },
-  { main: "#3b82f6", side: "#1d4ed8", top: "#60a5fa" },
-  { main: "#8b5cf6", side: "#6d28d9", top: "#a78bfa" }
-];
 
 const FONT_SIZE_CSS = 'min(14vw, 200px)';
 const FONT_FAMILY = 'Kanit, sans-serif';
@@ -1082,9 +1049,7 @@ const IntroSection: React.FC = () => {
     const handleMouseOut = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (target.closest('button, a, [role="button"], .cursor-pointer')) {
-        // phase 26에서는 현재 레벨에 맞는 표정으로 복귀
         if (phase >= 26) {
-          // SkillSection의 currentLevel에 따라 다르게 해야 하면 별도 state 필요
           setFaceExpression('neutral');
         }
       }
@@ -1357,11 +1322,8 @@ const IntroSection: React.FC = () => {
           animate={{ y: 0 }}        // 제자리로
           transition={{ duration: 1, ease: "easeInOut" }}
         >
-          {/* 치즈 웨이브 */}
-          {/* <CheeseWaveTransition color="#FCBB09" /> */}
 
-          {/* 다음 섹션 내용 */}
-          <div className="absolute w-full bg-[#4A7C23]" style={{ top: "120px", height: "calc(100vh - 120px)" }}>
+          <div className="absolute w-full bg-[#005248]" style={{ height: "100vh" }}>
             {phase >= 26 && (
               <SkillSection
                 isActive={phase === 26}
@@ -1853,8 +1815,8 @@ const IntroSection: React.FC = () => {
                 ) : (
                   <motion.div
                     key="assembled"
-                    initial={{ opacity: 0, scale: 0.85 }}  // 👈 작게 시작
-                    animate={{ opacity: 1, scale: 1 }}     // 👈 원래 크기로
+                    initial={{ opacity: 0, scale: 0.85 }}
+                    animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.6, ease: "easeOut", delay: 0.3 }}
                     className="w-full text-left"
                   >

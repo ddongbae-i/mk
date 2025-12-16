@@ -8,10 +8,10 @@ import ProjectDetailCard from './ProjectDetailCard';
 
 type FaceExpression = 'sad' | 'neutral' | 'happy' | 'sweat' | 'blank';
 const COLORS = [
-  '#8F1E20', '#F25F09', '#ffbe54', '#53359f', '#008556', '#B7156C', '#8F1E20'
+  '#8F1E20', '#F25F09', '#ffbe54', '#53359f', '#a6b551', '#B7156C', '#8F1E20'
 ];
 
-const BG_CREAM = "#FFF2D5";
+const BG_CREAM = "#ffedcb";
 const BEAM_COLOR = "#ffbe54";
 const PROJECT_TEXT_COLOR = "#53359f";
 
@@ -1323,7 +1323,7 @@ const IntroSection: React.FC = () => {
           transition={{ duration: 1, ease: "easeInOut" }}
         >
 
-          <div className="absolute w-full bg-[#005248]" style={{ height: "100vh" }}>
+          <div className="absolute w-full bg-[#a6b551]" style={{ height: "100vh" }}>
             {phase >= 26 && (
               <SkillSection
                 isActive={phase === 26}
@@ -1805,7 +1805,7 @@ const IntroSection: React.FC = () => {
                     key="placeholder"
                     initial={{ scale: 1 }}
                     exit={{ opacity: 0, scale: 1.1 }}  // 👈 나갈 때 살짝 커짐
-                    className="flex flex-col px-6"  // 👈 패딩 줄임
+                    className="flex flex-col px-8"  // 👈 패딩 줄임
                   >
                     <div className="text-[100px] font-normal font-kanit text-[#333333] text-center">?</div>
                     <div className=" text-[20px] font-medium tracking-wider text-[#333333] font-kanit text-center">
@@ -1982,26 +1982,7 @@ const IntroSection: React.FC = () => {
           cursor: phase === 26 ? "grab" : "default",
           touchAction: "none",
         }}
-        onMouseEnter={() => {
-          if (phase >= 26) {
-            setFaceExpression('blank');
-          }
-        }}
-        onMouseLeave={() => {
-          if (phase >= 26) {
-            setFaceExpression('neutral');
-          }
-        }}
-        onClick={() => {
-          if (phase >= 26) {
-            // phase 26에서 클릭하면 sweat
-            setFaceExpression('sweat');
-            window.setTimeout(() => setFaceExpression('neutral'), 500);
-            return;
-          }
-          setIsWinking(true);
-          window.setTimeout(() => setIsWinking(false), 450);
-        }}
+
 
         // --- 드래그 설정 ---
         drag={phase === 26}

@@ -26,7 +26,7 @@ const SKILLS_DATA = [
 
 type Expression = "sad" | "neutral" | "happy" | "sweat" | "blank";
 
-// 💥 팡팡 이펙트 (크고 화려하게)
+// 💥 팡팡 이펙트 (유지)
 const BurstEffect = ({ x, y }: { x: number; y: number }) => {
     const particles = Array.from({ length: 12 }, (_, i) => ({
         id: i,
@@ -81,7 +81,10 @@ const MiniLegoHead = React.memo(({
 }) => {
     const windowHeight = typeof window !== "undefined" ? window.innerHeight : 900;
     const windowWidth = typeof window !== "undefined" ? window.innerWidth : 1600;
-    const floorY = windowHeight - 180;
+
+    // ✅ 수정 1: 바닥 위치를 더 위로 올림 (180 -> 350)
+    // 화면 하단에서 더 높게 위치하여 잘 보이도록 수정
+    const floorY = windowHeight - 200;
 
     const [pos, setPos] = useState({ x: headX, y: headY });
     const [rotation, setRotation] = useState(0);
@@ -111,6 +114,7 @@ const MiniLegoHead = React.memo(({
             x += vx;
             y += vy;
 
+            // 바닥 충돌 처리
             if (y >= floorY) {
                 y = floorY;
                 if (Math.abs(vy) > 2) {
@@ -124,6 +128,7 @@ const MiniLegoHead = React.memo(({
                 vx *= groundFriction;
             }
 
+            // 벽 충돌 처리
             if (x < 40) { x = 40; vx = Math.abs(vx) * bounce; }
             if (x > windowWidth - 40) { x = windowWidth - 40; vx = -Math.abs(vx) * bounce; }
 
@@ -144,6 +149,7 @@ const MiniLegoHead = React.memo(({
         return () => cancelAnimationFrame(raf);
     }, [floorY, windowWidth]);
 
+    // 마우스 상호작용 (유지)
     useEffect(() => {
         const { x, y } = posRef.current;
         const dx = mousePos.x - x;
@@ -198,9 +204,7 @@ interface SkillSectionProps {
     isActive: boolean;
     onSkillsCollected?: () => void;
     onExpressionChange?: (expression: Expression) => void;
-    // ✅ 흔들고 있는 동안 hover/click 막기용(부모에서 쓰면 편함)
     onShakingChange?: (isShaking: boolean) => void;
-
     shakeTrigger: number;
     headRef: React.RefObject<HTMLElement>;
     mousePos?: { x: number; y: number };
@@ -224,12 +228,9 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     const shakeCountRef = useRef(0);
     const prevShakeTrigger = useRef(shakeTrigger);
 
-    // ✅ 표정 우선순위 정리용
-    const baseExpressionRef = useRef<Expression>("neutral");     // 레벨 기반 기본 표정
-    const isShakingRef = useRef(false);                          // 흔들고 있는지
+    const baseExpressionRef = useRef<Expression>("neutral");
+    const isShakingRef = useRef(false);
     const shakeEndTimerRef = useRef<number | null>(null);
-
-    const SHAKE_EXPRESSIONS: ("sad" | "neutral" | "happy")[] = ["sad", "neutral", "happy"];
 
     const getHeadMouth = useCallback(() => {
         const el = headRef?.current;
@@ -241,6 +242,13 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     const poppedIds = poppedSkills.map((p) => p.skill.id);
     const currentLevelSkills = SKILLS_DATA.filter((s) => s.level === currentLevel);
     const remainingSkills = currentLevelSkills.filter((s) => !poppedIds.includes(s.id));
+
+    // 현재 레벨에 맞는 표정 계산 함수
+    const getLevelExpression = useCallback((level: number): Expression => {
+        if (level === 1) return "sad";
+        if (level === 2) return "neutral";
+        return "happy";
+    }, []);
 
     const applyBaseExpression = useCallback(() => {
         onExpressionChange?.(baseExpressionRef.current);
@@ -255,6 +263,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     const popSkill = useCallback(() => {
         if (!isActive) return;
 
+        // 현재 레벨의 스킬을 다 뱉었으면 레벨 업
         if (remainingSkills.length === 0) {
             if (currentLevel < 3) setCurrentLevel((p) => p + 1);
             return;
@@ -272,7 +281,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         setPoppedSkills((prev) => [...prev, { id, skill, originX: x, originY: y }]);
     }, [isActive, remainingSkills, currentLevel, getHeadMouth]);
 
-    // ✅ isActive 꺼지면 정리 + 기본으로 복귀
+    // isActive 꺼질 때 리셋
     useEffect(() => {
         if (isActive) return;
 
@@ -282,24 +291,26 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         onExpressionChange?.("neutral");
     }, [isActive, onExpressionChange, setShaking]);
 
-    // ✅ 레벨 기반 "기본 표정"만 결정 (흔들고 있지 않을 때만 적용)
+    // ✅ 수정 2: 레벨 변경 시 기본 표정 업데이트 (흔들기 종료 후 돌아갈 표정)
     useEffect(() => {
         if (!isActive) return;
 
-        if (currentLevel === 1) baseExpressionRef.current = "sad";
-        else if (currentLevel === 2) baseExpressionRef.current = "neutral";
-        else baseExpressionRef.current = "happy";
+        let newExpression: Expression = getLevelExpression(currentLevel);
 
-        // 다 모았으면 기본도 happy로
+        // 모든 스킬을 다 모았으면 Happy
         if (poppedSkills.length >= SKILLS_DATA.length) {
-            baseExpressionRef.current = "happy";
+            newExpression = "happy";
         }
 
-        // 흔드는 중이 아니면 기본 표정 바로 반영
-        if (!isShakingRef.current) applyBaseExpression();
-    }, [currentLevel, isActive, poppedSkills.length, applyBaseExpression]);
+        baseExpressionRef.current = newExpression;
 
-    // ✅ 흔들 때: 표정은 무조건 3개만 순환 + 끝나면 기본으로 복귀
+        // 흔드는 중이 아닐 때만 표정 즉시 반영 (흔드는 중이면 아래 로직이 제어)
+        if (!isShakingRef.current) {
+            onExpressionChange?.(newExpression);
+        }
+    }, [currentLevel, isActive, poppedSkills.length, getLevelExpression, onExpressionChange]);
+
+    // ✅ 수정 3: 흔들 때 표정 로직 변경 (순환 제거 -> 현재 레벨 고정)
     useEffect(() => {
         if (!isActive) return;
 
@@ -310,23 +321,24 @@ const SkillSection: React.FC<SkillSectionProps> = ({
             // 흔들기 시작
             setShaking(true);
 
-            // 3단계 순환
-            const idx = (shakeCountRef.current - 1) % 3;
-            onExpressionChange?.(SHAKE_EXPRESSIONS[idx]);
+            // 기존: const idx = (shakeCountRef.current - 1) % 3; (삭제됨)
+            // 변경: 현재 레벨에 맞는 표정 강제 적용
+            const targetExpr = getLevelExpression(currentLevel);
+            onExpressionChange?.(targetExpr);
 
-            // 흔들기 끝 감지 (250ms 동안 추가 트리거 없으면 종료)
+            // 흔들기 끝 감지
             if (shakeEndTimerRef.current) window.clearTimeout(shakeEndTimerRef.current);
             shakeEndTimerRef.current = window.setTimeout(() => {
                 setShaking(false);
-                applyBaseExpression(); // ✅ 원래(기본) 표정으로 복귀
+                applyBaseExpression(); // 원래 표정(사실 위와 같음)으로 복귀
             }, 250);
 
-            // ✅ 스킬 발사 (기존 로직 유지: 2번에 1개)
+            // 스킬 발사 (2번에 1개)
             if (shakeCountRef.current % 2 === 0) {
                 popSkill();
             }
         }
-    }, [shakeTrigger, isActive, popSkill, onExpressionChange, applyBaseExpression, setShaking]);
+    }, [shakeTrigger, isActive, popSkill, onExpressionChange, applyBaseExpression, setShaking, currentLevel, getLevelExpression]);
 
     useEffect(() => {
         if (poppedIds.length >= SKILLS_DATA.length) onSkillsCollected?.();
@@ -362,7 +374,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ type: "spring", stiffness: 300 }}
                         >
-                            <p className="text-5xl font-bold text-[#f0f0f0]"
+                            <p className="text-5xl font-bold text-[#ffffff]"
                                 style={{ fontFamily: "Kanit, sans-serif" }}>
                                 THIS MUCH, I CAN DO
                             </p>

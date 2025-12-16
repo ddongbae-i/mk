@@ -1,10 +1,13 @@
 import React, { useRef, useEffect, useState, Suspense } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { useGLTF, Center } from '@react-three/drei';
+import { useGLTF, Center, Html } from '@react-three/drei';
 import * as THREE from 'three';
 
 // 모델 경로 상수
 const MODEL_PATH = `${import.meta.env.BASE_URL}models/lego_head.glb`;
+
+// 전역 로딩 상태 (컴포넌트 리렌더링에 영향 안 받음)
+let isModelLoaded = false;
 
 interface ModelProps {
     followMouse: boolean;
@@ -16,12 +19,16 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY, fixedRot
     const { scene } = useGLTF(MODEL_PATH);
     const modelRef = useRef<THREE.Group>(null);
     const [targetRotation, setTargetRotation] = useState({ x: 0, y: 0, z: 0 });
+    const initializedRef = useRef(false);
 
+    // 모델 로드 완료 시 중앙 정렬 (한 번만 실행)
     useEffect(() => {
-        if (scene) {
+        if (scene && !initializedRef.current) {
             const box = new THREE.Box3().setFromObject(scene);
             const center = box.getCenter(new THREE.Vector3());
             scene.position.sub(center);
+            initializedRef.current = true;
+            isModelLoaded = true;
         }
     }, [scene]);
 
@@ -66,8 +73,20 @@ const LegoModel: React.FC<ModelProps> = ({ followMouse, fixedRotationY, fixedRot
     );
 };
 
-// 로딩 중 빈 컴포넌트 (Canvas 내부용)
-const LoadingFallback = () => null;
+// 로딩 플레이스홀더
+const LoadingFallback = () => (
+    <Html center>
+        <div
+            style={{
+                width: '128px',
+                height: '128px',
+                borderRadius: '50%',
+                backgroundColor: '#FCBB09',
+                animation: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite'
+            }}
+        />
+    </Html>
+);
 
 export const LegoFace3D: React.FC<{
     className?: string;
@@ -75,6 +94,19 @@ export const LegoFace3D: React.FC<{
     fixedRotationY?: number;
     fixedRotationX?: number;
 }> = ({ className, followMouse = true, fixedRotationY = 0, fixedRotationX = 0 }) => {
+    // 마운트 후 강제 리렌더링 (Suspense가 제대로 작동하도록)
+    const [, forceUpdate] = useState(0);
+    const mountedRef = useRef(false);
+
+    useEffect(() => {
+        if (!mountedRef.current) {
+            mountedRef.current = true;
+            // 약간의 딜레이 후 리렌더링해서 Canvas가 제대로 초기화되도록
+            const timer = setTimeout(() => forceUpdate(n => n + 1), 100);
+            return () => clearTimeout(timer);
+        }
+    }, []);
+
     return (
         <div
             className={className}
@@ -98,6 +130,7 @@ export const LegoFace3D: React.FC<{
                     toneMapping: THREE.NoToneMapping,
                 }}
                 linear
+                frameloop="always"
             >
                 <ambientLight intensity={1.8} />
                 <directionalLight position={[5, 5, 5]} intensity={1.8} />

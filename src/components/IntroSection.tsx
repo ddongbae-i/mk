@@ -8,12 +8,12 @@ import ProjectDetailCard from './ProjectDetailCard';
 
 type FaceExpression = 'sad' | 'neutral' | 'happy' | 'sweat' | 'blank';
 const COLORS = [
-  '#8F1E20', '#F25F09', '#ffbe54', '#53359f', '#a6b551', '#B7156C', '#8F1E20'
+  '#8F1E20', '#F25F09', '#ffc147', '#8E00BD', '#a6b551', '#B7156C', '#8F1E20'
 ];
 
 const BG_CREAM = "#ffedcb";
-const BEAM_COLOR = "#ffbe54";
-const PROJECT_TEXT_COLOR = "#53359f";
+const BEAM_COLOR = "#ffc147";
+const PROJECT_TEXT_COLOR = "#8E00BD";
 
 
 // 파츠들에 넘길 최종 rotateY
@@ -159,22 +159,22 @@ const ProjectKitBox = ({
 const PROJECT_DATA = [
   {
     id: 1,
-    title: "BEAUTY OF JOSEON",
-    subtitle: "브랜드 리뉴얼",
-    image: "images/project1.png",
+    title: "wellio",
+    subtitle: "미니앱 프로젝트",
+    image: "images/project2.png",
     color: "#8E00BD",
   },
   {
     id: 2,
     title: "PROJECT TWO",
-    subtitle: "두번째 프로젝트",
-    image: "images/project2.png",
+    subtitle: "브랜드 리뉴얼",
+    image: "images/project1.png",
     color: "#2B7000",
   },
   {
     id: 3,
-    title: "PROJECT THREE",
-    subtitle: "세번째 프로젝트",
+    title: "QooQoo",
+    subtitle: "브랜드 리뉴얼",
     image: "images/project3.png",
     color: "#F25F09",
   },
@@ -245,7 +245,7 @@ const PartTooltip = ({
 
         {/* 카드 */}
         <motion.div
-          className="bg-[#FDD130] border-[3px] border-[#2b2b2b] shadow-[4px_4px_0_0_#2b2b2b]"
+          className="bg-[#f0f0f0] border-[3px] border-[#2b2b2b] shadow-[4px_4px_0_0_#2b2b2b]"
           style={{ width: "280px", padding: "20px 24px" }}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -278,7 +278,7 @@ const PartTooltip = ({
           <div className="mt-4 flex justify-center">
             <button
               onClick={onToggle}
-              className="w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-[#f5f5f5]"
+              className="w-10 h-10 flex items-center justify-center cursor-pointer"
             >
               <svg
                 width="20" height="20" viewBox="0 0 20 20" fill="none"
@@ -621,7 +621,11 @@ const IntroSection: React.FC = () => {
       phase >= 14 ? 0.28 :
         phase >= 9 ? 1 :
           0.8;
-
+  const headScale =
+    phase >= 26 ? 1.2 :
+      phase >= 23 ? 1 :
+        phase >= 14 ? 0.4 :
+          1.2;
 
   const showHat = phase >= 15 && phase < 26;
   const followParts = phase >= 2 && phase <= 12;
@@ -1362,11 +1366,11 @@ const IntroSection: React.FC = () => {
           className="absolute font-black italic"
           style={{
             fontFamily: FONT_FAMILY,
-            fontSize: "clamp(32px, 4vw, 60px)",
+            fontSize: "clamp(32px, 4vw, 50px)",
             color: PROJECT_TEXT_COLOR,
-            top: "20%",
-            left: "50%",
-            transform: "rotate(-50deg) translateX(-50%)",  // 👈 각도 조정
+            top: "14%",
+            left: "68%",
+            transform: "rotate(-39deg) translateX(-50%)",  // 👈 각도 조정
             transformOrigin: "left center",
             whiteSpace: "nowrap"
           }}
@@ -1486,7 +1490,7 @@ const IntroSection: React.FC = () => {
                 ],
               }}
               transition={{
-                duration: 0.55,
+                duration: 0.8,
                 times: [0, 0.12, 0.25, 0.38, 1],
                 ease: "linear",
               }}
@@ -1792,7 +1796,7 @@ const IntroSection: React.FC = () => {
             className="absolute"
             style={{
               left: "140px",
-              top: "1vh",
+              top: "-30vh",
             }}
             initial={{ opacity: 0 }}
             animate={{ opacity: (phase >= 16 && phase < 22) ? 1 : 0 }}
@@ -2028,20 +2032,19 @@ const IntroSection: React.FC = () => {
           phase >= 26
             ? {
               left: "calc(50% - 350px)",
-              top: "calc(50% - 350px)",
+              top: "calc(50% - 300px)",
               x: 0, y: 0, scale: 1.0,
-              rotateY: spinY,
               rotateZ: isShaking ? [-3, 3, -3, 3, 0] : 0,
             }
             : phase >= 23
-              ? { left: "92%", top: "20%", x: "-50%", y: "-50%", scale: 1.3 }
+              ? { left: "97%", top: "20%", x: "-50%", y: "-50%", scale: 1.3 }
               : phase >= 14
                 ? {
                   // 조립 단계: 이미지가 너무 작아지지 않도록 scale 0.9~1.0 유지
                   left: "25vw",
                   top: "50%",
                   x: "-50%",
-                  y: `calc(-50% + ${scrollOffset}px)`,
+                  y: `calc(-30% + ${scrollOffset}px)`,
                   scale: 0.9,
                   rotateX: 0,
                   rotateZ: 0,
@@ -2060,18 +2063,30 @@ const IntroSection: React.FC = () => {
             className="absolute pointer-events-none"
             style={{
               left: "50%",
-              x: "-50%",
+              x: "-40%",
               zIndex: 120,
               transformOrigin: "bottom center"
             }}
             animate={{
-              top: phase >= 21 ? "0px" : "-180px",
+              top: phase >= 21 ? "10%" : "-9%",
               opacity: 1,
               y: phase >= 21 ? 20 : 0,
+              scaleX: phase >= 23 ? -1 : 1,
+              scale: phase >= 23 ? 2.1 : 1,
             }}
             transition={{ duration: 0.6, ease: "backOut" }}
           >
-            <PartPNG src="images/hat.svg" className="w-[280px] h-[280px] object-contain" alt="hat" />
+            <PartPNG src="images/hat.svg" className="w-[260px] h-[260px] object-contain" alt="hat" />
+            <PartTooltip
+              title={PART_DESCRIPTIONS[0].title}
+              description={PART_DESCRIPTIONS[0].description}
+              isVisible={phase === 16}
+              details={PART_DESCRIPTIONS[0].details}
+              isExpanded={expandedTooltip === 0}
+              onToggle={() => setExpandedTooltip(expandedTooltip === 0 ? null : 0)}
+              lineLength={80}
+              leftOffset={-90}
+            />
           </motion.div>
         )}
 
@@ -2079,18 +2094,20 @@ const IntroSection: React.FC = () => {
         <motion.div
           className="absolute pointer-events-auto"
           style={{
-            width: "280px",  // 몸통과 동일한 너비
-            height: "280px",
-            left: "50%",     // 중앙 정렬
+            width: "700px",
+            height: "700px",
+            left: "50%",
             x: "-50%",
-            top: "100px",    // 약간 아래로 배치
+            top: "-8%",
             transformStyle: "preserve-3d",
             zIndex: 100
           }}
+          animate={{ scale: headScale }}
+          transition={{ duration: 0.6, ease: "easeInOut" }}
         >
           <Suspense fallback={<FaceLoadingPlaceholder />}>
             <LegoFace3D
-              className="w-full h-full drop-shadow-2xl"
+              className="w-full h-full drop-shadow-2xl "
               followMouse={phase >= 2 && phase <= 12}
               fixedRotationY={phase >= 26 ? 0 : phase >= 23 ? -40 : (phase >= 14 && phase < 23 ? 15 : 0)}
               fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}
@@ -2100,6 +2117,37 @@ const IntroSection: React.FC = () => {
               onSpinComplete={() => setSpinY(0)}
             />
           </Suspense>
+
+          <div
+            style={{
+              position: "absolute",
+              left: "50%",
+              top: "50%",
+              transform: "translate(-50%, -50%)", // 얼굴 중심 기준
+              zIndex: 200,
+              pointerEvents: "none",
+            }}
+          >
+            {/* ✅ 크기만 여기서 고정 */}
+            <div
+              style={{
+                transform: `scale(${1 / headScale})`,
+                transformOrigin: "0% 50%", // 왼쪽-중앙을 기준으로 확대/축소
+                pointerEvents: "auto",
+              }}
+            >
+              <PartTooltip
+                title={PART_DESCRIPTIONS[1].title}
+                description={PART_DESCRIPTIONS[1].description}
+                isVisible={phase === 17}
+                details={PART_DESCRIPTIONS[1].details}
+                isExpanded={expandedTooltip === 1}
+                onToggle={() => setExpandedTooltip(expandedTooltip === 1 ? null : 1)}
+                lineLength={80}
+                leftOffset={50}  // ✅ 여기부터는 "얼굴 중심 기준"으로 튜닝됨
+              />
+            </div>
+          </div>
         </motion.div>
 
         {/* --- 화살표 & 라벨 (조건 수정: phase >= 14 추가) --- */}
@@ -2109,35 +2157,52 @@ const IntroSection: React.FC = () => {
             <>
               {/* 라벨 1: 머리-몸통 사이 */}
               <motion.div
-                className="absolute pointer-events-none flex items-center gap-4"
-                style={{ left: "80px", top: "330px", zIndex: 150 }}
+                className="absolute pointer-events-none flex items-center gap-[100px]"
+                style={{ left: "34%", top: "20%", zIndex: 150 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
                 <span className="text-[32px] font-normal text-[#2b2b2b]">1</span>
-                <svg width="20" height="50" viewBox="0 0 24 60" className="opacity-80">
+                <svg width="20" height="40" viewBox="0 0 24 60" >
                   <path d="M12,0 L12,50 M6,42 L12,52 L18,42" stroke="#2b2b2b" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </motion.div>
 
               {/* 라벨 2: 몸통-다리 사이 */}
               <motion.div
-                className="absolute pointer-events-none flex items-center gap-4"
-                style={{ left: "100px", top: "620px", zIndex: 150 }}
+                className="absolute pointer-events-none flex items-center gap-[100px]"
+                style={{ left: "34%", top: "53%", zIndex: 150 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
                 <span className="text-[32px] font-normal text-[#2b2b2b]">2</span>
                 <div className="flex gap-6">
-                  <svg width="20" height="50" viewBox="0 0 24 60" className="translate-y-2">
+                  <svg width="20" height="40" viewBox="0 0 24 60" className="translate-y-2">
                     <path d="M12,0 L12,50 M6,42 L12,52 L18,42" stroke="#2b2b2b" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
+                </div>
+              </motion.div>
+
+              <motion.div
+                className="absolute pointer-events-none flex items-center gap-[100px]"
+                style={{ left: "34%", top: "100%", zIndex: 150 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <div className="flex gap-[68px]">
                   <span className="text-[32px] font-normal text-[#2b2b2b] -ml-2">3</span>
-                  <svg width="20" height="50" viewBox="0 0 24 60" className="-translate-y-2">
-                    <path d="M12,0 L12,50 M6,42 L12,52 L18,42" stroke="#2b2b2b" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
+                  <div className="flex gap-[80px]">
+                    <svg width="20" height="40" viewBox="0 0 24 60" className="translate-y-1">
+                      <path d="M12,0 L12,50 M6,42 L12,52 L18,42" stroke="#2b2b2b" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                    <svg width="20" height="40" viewBox="0 0 24 60" className="-translate-y-2">
+                      <path d="M12,0 L12,50 M6,42 L12,52 L18,42" stroke="#2b2b2b" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                    </svg>
+                  </div>
+
                 </div>
               </motion.div>
             </>
@@ -2148,14 +2213,14 @@ const IntroSection: React.FC = () => {
         {(phase >= 14) && (
           <motion.div
             className="absolute"
-            style={{ left: "50%", x: "-50%", zIndex: 90 }}
+            style={{ left: "58%", x: "-50%", zIndex: 90 }}
             animate={{
-              top: phase >= 21 ? "360px" : "550px",
+              top: phase >= 21 ? "34.5%" : "53%",
               opacity: phase >= 23 ? 0 : 1,
             }}
             transition={{ duration: 0.6, ease: "backOut" }}
           >
-            <div className="relative w-[280px] h-[280px]">
+            <div className="relative w-[400px] h-[400px]">
               <PartPNG src="images/lego_body.png" alt="lego body" className="w-full h-full object-contain" />
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 <PartTooltip
@@ -2166,7 +2231,7 @@ const IntroSection: React.FC = () => {
                   isExpanded={expandedTooltip === 2}
                   onToggle={() => setExpandedTooltip(expandedTooltip === 2 ? null : 2)}
                   lineLength={80}
-                  leftOffset={-120}
+                  leftOffset={40}
                 />
               </div>
             </div>
@@ -2177,14 +2242,14 @@ const IntroSection: React.FC = () => {
         {(phase >= 14) && (
           <motion.div
             className="absolute"
-            style={{ left: "50%", x: "-50%", zIndex: 80 }}
+            style={{ left: "54%", x: "-50%", zIndex: 80 }}
             animate={{
-              top: phase >= 21 ? "500px" : "850px",
+              top: phase >= 21 ? "62%" : "101%",
               opacity: phase >= 23 ? 0 : 1,
             }}
             transition={{ duration: 0.6, ease: "backOut" }}
           >
-            <div className="relative w-[280px] h-[280px]">
+            <div className="relative w-[400px] h-[400px]">
               <PartPNG src="images/lego_legs.png" alt="lego legs" className="w-full h-full object-contain" />
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 <PartTooltip
@@ -2195,6 +2260,7 @@ const IntroSection: React.FC = () => {
                   isExpanded={expandedTooltip === 3}
                   onToggle={() => setExpandedTooltip(expandedTooltip === 3 ? null : 3)}
                   lineLength={80}
+                  leftOffset={60}
                 />
               </div>
             </div>

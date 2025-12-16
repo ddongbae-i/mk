@@ -79,8 +79,9 @@ const MiniLegoHead = ({ skill, startPos, onMousePush }: any) => {
     const [hasLanded, setHasLanded] = useState(false);
 
     // 바닥 위치 계산
-    const floorY = typeof window !== 'undefined' ? window.innerHeight - 100 - Math.random() * 60 : 600;
-    const randomX = (Math.random() - 0.5) * 600;
+    const floorY = typeof window !== 'undefined' ? window.innerHeight - 150 - Math.random() * 100 : 600;
+
+    const randomX = (Math.random() - 0.5) * 1000;
     const finalX = startPos.x + randomX;
     const finalRotate = (Math.random() - 0.5) * 40;
 

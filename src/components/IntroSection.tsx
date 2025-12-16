@@ -639,10 +639,10 @@ const IntroSection: React.FC = () => {
   const [isWinking, setIsWinking] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
   const [shakeTrigger, setShakeTrigger] = useState(0);
-  const [headPosition, setHeadPosition] = useState({
-    x: typeof window !== 'undefined' ? window.innerWidth / 2 : 0,
-    y: typeof window !== 'undefined' ? window.innerHeight / 2 : 0
-  });
+  const [headPosition, setHeadPosition] = useState(() => ({
+    x: typeof window !== 'undefined' ? window.innerWidth / 2 : 500,
+    y: typeof window !== 'undefined' ? window.innerHeight * 0.4 : 300,  // 40% 위치
+  }));
   const shakeCountRef = useRef(0); // 흔들림 횟수 카운터
   const lastShakeTimeRef = useRef(0); // 마지막 흔들림 시간 (쿨타임용)
   const [spinY, setSpinY] = useState(0);
@@ -952,10 +952,10 @@ const IntroSection: React.FC = () => {
 
   // 기존 handleDrag 전체를 이걸로 교체
   const handleDrag = (event: any, info: any) => {
-    // 화면 중앙 기준 위치 설정 (스킬이 여기서 튀어나옴)
+    // 머리 위치를 화면 중앙 상단으로 설정
     setHeadPosition({
       x: window.innerWidth / 2,
-      y: window.innerHeight / 2 - 50 // 얼굴 위쪽에서 나오도록
+      y: window.innerHeight * 0.35  // ← 더 위로
     });
 
     // 속도 계산
@@ -1993,11 +1993,11 @@ const IntroSection: React.FC = () => {
           phase >= 26
             ? {
               left: "50%",
-              top: "50%",      // ← 중앙
+              top: "45%",        // ← 50%에서 45%로 (살짝 위로)
               x: "-50%",
-              y: "-50%",       // ← 정확히 중앙
-              scale: 0.8,
-              rotateY: spinY,  // ← 360 대신 spinY 변수 사용
+              y: "-50%",
+              scale: 0.7,        // ← 0.8에서 0.7로 (조금 작게)
+              rotateY: spinY,
               rotateZ: isShaking ? [-3, 3, -3, 3, 0] : 0,
             }
             : phase >= 23

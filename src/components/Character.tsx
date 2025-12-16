@@ -6,7 +6,7 @@ import { useEffect } from "react";
 type Expression = "neutral" | "happy" | "sad" | "sweat" | "blank";
 
 export function Character({ expression = "neutral" }: { expression: Expression }) {
-    const { nodes, materials } = useGLTF("/model/lego_head.glb") as any;
+    const { nodes, materials } = useGLTF("/models/lego_head.glb") as any;
 
     const tex = useTexture({
         neutral: "/tex/face_neutral.png",

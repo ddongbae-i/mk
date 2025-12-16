@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
 const SKILLS_DATA = [
-    // ... 데이터는 기존과 동일 ...
+    // ... 데이터는 동일 ...
     { id: "skill-1", name: "skill_gsap", level: 1, icon: "/images/skill_gsap.png" },
     { id: "skill-2", name: "skill_js", level: 1, icon: "/images/skill_js.png" },
     { id: "skill-3", name: "skill_premiere", level: 1, icon: "/images/skill_premiere.png" },
@@ -25,20 +25,20 @@ const SKILLS_DATA = [
     { id: "skill-18", name: "skill_photoshop", level: 3, icon: "/images/skill_photoshop.png" },
 ];
 
-// 💥 팡팡 이펙트
+// 💥 팡팡 이펙트 (크고 화려하게)
 const BurstEffect = ({ x, y }: { x: number; y: number }) => {
-    const particles = Array.from({ length: 8 }, (_, i) => ({
+    const particles = Array.from({ length: 12 }, (_, i) => ({
         id: i,
-        angle: (i * 45) * (Math.PI / 180),
-        distance: 50 + Math.random() * 30,
-        size: 8 + Math.random() * 8,
+        angle: (i * 30) * (Math.PI / 180),
+        distance: 100 + Math.random() * 80, // 거리 증가
+        size: 12 + Math.random() * 10, // 입자 크기 증가
         color: ["#FFD700", "#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#FFEAA7"][
             Math.floor(Math.random() * 6)
         ],
     }));
 
     return (
-        <div className="absolute pointer-events-none" style={{ left: x, top: y }}>
+        <div className="absolute pointer-events-none z-[350]" style={{ left: x, top: y }}>
             {particles.map((p) => (
                 <motion.div
                     key={p.id}
@@ -49,23 +49,33 @@ const BurstEffect = ({ x, y }: { x: number; y: number }) => {
                     }}
                     initial={{ scale: 0, x: 0, y: 0, opacity: 1 }}
                     animate={{
-                        scale: [0, 1.5, 0],
+                        scale: [0, 2.5, 0], // 더 크게 팡!
                         x: Math.cos(p.angle) * p.distance,
                         y: Math.sin(p.angle) * p.distance,
                         opacity: [1, 1, 0],
                     }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
+                    transition={{ duration: 0.8, ease: "easeOut" }}
                 />
             ))}
         </div>
     );
 };
 
-// 🍬 미니 아이콘 (물리: 좌표 고정 후 바닥으로 추락)
+// 🍬 미니 아이콘 (바닥 올리고, 크기 키움)
 const MiniLegoHead = React.memo(({ skill, headX, headY }: { skill: any; headX: number; headY: number }) => {
-    const floorY = typeof window !== "undefined" ? window.innerHeight - 100 : 800;
-    const randomX = (Math.random() - 0.5) * 400; // 좌우 랜덤 확산
-    const finalRotate = (Math.random() - 0.5) * 180;
+    // 1. 바닥 위치 수정: 화면 하단에서 300px 위 (확 올려서 잘 보이게)
+    // 모바일/데스크탑 대응을 위해 innerHeight의 비율(80%)로 잡아도 좋습니다.
+    const windowHeight = typeof window !== "undefined" ? window.innerHeight : 900;
+    const floorY = windowHeight - 300 + (Math.random() * 50); // 살짝 지그재그로 쌓이게
+
+    // 2. 좌우 확산
+    const randomX = (Math.random() - 0.5) * 1200;
+
+    // 3. 점프 높이 (더 높게)
+    const jumpHeight = 700 + Math.random() * 300;
+
+    // 4. 회전
+    const randomRotate = (Math.random() - 0.5) * 1440;
 
     return (
         <motion.div
@@ -73,26 +83,28 @@ const MiniLegoHead = React.memo(({ skill, headX, headY }: { skill: any; headX: n
             style={{ left: 0, top: 0 }}
             initial={{ x: headX, y: headY, scale: 0, rotate: 0 }}
             animate={{
-                x: [headX, headX + randomX * 0.5, headX + randomX],
-                y: [headY, headY - 150, floorY], // 솟구쳤다 바닥으로
-                scale: [0, 1.2, 1],
-                rotate: finalRotate
+                x: [headX, headX + randomX * 0.2, headX + randomX],
+                y: [headY, headY - jumpHeight, floorY],
+                scale: [0.5, 2.5, 1.5], // 🚀 튀어나올 때 2.5배 -> 바닥에서 1.5배 (크게 유지)
+                rotate: [0, randomRotate * 0.5, randomRotate]
             }}
             transition={{
-                duration: 0.8,
-                times: [0, 0.3, 1],
-                ease: [0.22, 1, 0.36, 1]
+                duration: 1.1,
+                times: [0, 0.35, 1],
+                ease: [0.2, 1, 0.5, 1] // 튕겨나가는 탄성
             }}
         >
+            {/* ✅ 이미지 크기 대폭 확대 (w-28 h-28) */}
             <img
                 src={skill.icon}
                 alt={skill.name}
-                className="w-14 h-14 object-contain"
-                style={{ filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.3))" }}
+                className="w-16 h-16 object-contain"
+                style={{ filter: "drop-shadow(0 15px 30px rgba(0,0,0,0.3))" }}
             />
         </motion.div>
     );
 });
+
 
 interface SkillSectionProps {
     isActive: boolean;
@@ -113,11 +125,9 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     const [bursts, setBursts] = useState<{ id: number; x: number; y: number }[]>([]);
     const [currentLevel, setCurrentLevel] = useState(1);
 
-    // 흔들림 감지용 ref
     const shakeCountRef = useRef(0);
     const prevShakeTrigger = useRef(shakeTrigger);
 
-    // ✅ 머리 좌표 계산
     const getHeadMouth = useCallback(() => {
         const el = headRef?.current;
         if (!el) return { x: window.innerWidth / 2, y: window.innerHeight * 0.3 };
@@ -129,11 +139,9 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     const currentLevelSkills = SKILLS_DATA.filter((s) => s.level === currentLevel);
     const remainingSkills = currentLevelSkills.filter((s) => !poppedIds.includes(s.id));
 
-    // ✅ 스킬 발사 함수
     const popSkill = useCallback(() => {
         if (!isActive) return;
 
-        // 현재 레벨 다 모으면 다음 레벨로 (표정 전환의 핵심)
         if (remainingSkills.length === 0) {
             if (currentLevel < 3) setCurrentLevel((p) => p + 1);
             return;
@@ -143,15 +151,15 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         const id = Date.now();
         const { x, y } = getHeadMouth();
 
-        setPoppedSkills((prev) => [...prev, { id, skill, originX: x, originY: y }]);
         setBursts((prev) => [...prev, { id, x, y }]);
         setTimeout(() => {
             setBursts((prev) => prev.filter((b) => b.id !== id));
-        }, 600);
+        }, 700);
+
+        setPoppedSkills((prev) => [...prev, { id, skill, originX: x, originY: y }]);
+
     }, [isActive, remainingSkills, currentLevel, getHeadMouth]);
 
-
-    // ✅ 흔들림 감지 & 빈도 조절
     useEffect(() => {
         if (!isActive) return;
 
@@ -159,44 +167,29 @@ const SkillSection: React.FC<SkillSectionProps> = ({
             prevShakeTrigger.current = shakeTrigger;
             shakeCountRef.current += 1;
 
-            // 3번 흔들 때마다 1개 발사 (빈도 조절)
+            // 3번 흔들면 1개 발사
             if (shakeCountRef.current % 3 === 0) {
                 popSkill();
             }
         }
     }, [shakeTrigger, isActive, popSkill]);
 
-
-    // ✅ [핵심 수정] 표정 제어 로직
-    // 흔드는 여부(isShaking)와 상관없이, 오직 '현재 레벨'에 따라 표정이 결정됨
+    // 레벨별 표정
     useEffect(() => {
         if (!isActive) return;
+        if (currentLevel === 1) onExpressionChange?.("sad");
+        else if (currentLevel === 2) onExpressionChange?.("neutral");
+        else if (currentLevel === 3) onExpressionChange?.("happy");
 
-        if (currentLevel === 1) {
-            onExpressionChange?.("sad");     // Level 1: 못함 (Sad)
-        } else if (currentLevel === 2) {
-            onExpressionChange?.("neutral"); // Level 2: 보통 (Neutral)
-        } else if (currentLevel === 3) {
-            onExpressionChange?.("happy");   // Level 3: 잘함 (Happy)
-        }
-
-        // (참고) 만약 다 끝났을 때 표정을 바꾸고 싶다면 아래에 추가 가능
-        if (poppedSkills.length >= SKILLS_DATA.length) {
-            onExpressionChange?.("happy");
-        }
-
+        if (poppedSkills.length >= SKILLS_DATA.length) onExpressionChange?.("happy");
     }, [currentLevel, isActive, onExpressionChange, poppedSkills.length]);
 
-
-    // 완료 체크
     useEffect(() => {
         if (poppedIds.length >= SKILLS_DATA.length) onSkillsCollected?.();
     }, [poppedIds.length, onSkillsCollected]);
 
-
     return (
         <div className="absolute inset-0 z-[200] overflow-hidden">
-            {/* UI 레이어 */}
             <div className="absolute inset-0 pointer-events-auto">
                 <AnimatePresence>
                     {isActive && poppedSkills.length < SKILLS_DATA.length && (
@@ -210,8 +203,6 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                                 SHAKE IT!
                             </h2>
                             <p className="text-lg opacity-90 drop-shadow-md">머리를 마구 흔들어주세요!</p>
-                            {/* 현재 레벨 디버깅용 (필요 없으면 삭제) */}
-                            <p className="text-sm opacity-60 mt-2">Level {currentLevel}</p>
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -225,14 +216,13 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                             transition={{ type: "spring", stiffness: 300 }}
                         >
                             <p className="text-5xl font-black text-white drop-shadow-lg">
-                                🎉 ALL SKILLS UNLOCKED! 🎉
+                                ALL SKILLS UNLOCKED!
                             </p>
                         </motion.div>
                     )}
                 </AnimatePresence>
             </div>
 
-            {/* 이펙트 레이어 */}
             <div className="absolute inset-0 pointer-events-none">
                 {bursts.map((burst) => (
                     <BurstEffect key={burst.id} x={burst.x} y={burst.y} />

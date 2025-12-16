@@ -1298,7 +1298,7 @@ const IntroSection: React.FC = () => {
           transition={{ duration: 1, ease: "easeInOut" }}
         >
           {/* 치즈 웨이브 */}
-          <CheeseWaveTransition color="#FCBB09" />
+          {/* <CheeseWaveTransition color="#FCBB09" /> */}
 
           {/* 다음 섹션 내용 */}
           <div className="absolute w-full bg-[#4A7C23]" style={{ top: "120px", height: "calc(100vh - 120px)" }}>
@@ -1950,41 +1950,45 @@ const IntroSection: React.FC = () => {
         ref={headRef}
         className="absolute pointer-events-auto"
         style={{
-          width: "700px",
-          height: "700px",
+          width: "700px",  // 고정 너비
+          height: "700px", // 고정 높이
           perspective: 1000,
           zIndex: 100,
           overflow: "visible",
           cursor: phase === 26 ? "grab" : "default",
-          touchAction: "none", // 모바일 드래그 이슈 방지
+          touchAction: "none",
         }}
         onClick={() => {
-          if (phase >= 26) return;  // ✅ 추가
+          if (phase >= 26) return;
           setIsWinking(true);
           window.setTimeout(() => setIsWinking(false), 450);
         }}
 
         // --- 드래그 설정 ---
         drag={phase === 26}
-        // 상하좌우 이동 범위를 0으로 제한 (중앙에서 못 벗어남)
         dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-        // 0.1: 마우스로 당겨도 아주 조금만 딸려옴 (단단히 고정된 느낌)
-        dragElastic={0.1}
+        dragElastic={0.1} // 탄성
         onDrag={handleDrag}
-        // 잡았을 때 커서 변경 및 살짝 커짐
-        whileDrag={{ cursor: "grabbing", scale: 1.05 }}
+        whileDrag={{ cursor: "grabbing", scale: 1.25 }} // 드래그 시 살짝 더 커짐
 
         initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}
 
-        // --- 위치 및 애니메이션 ---
+        // --- 위치 및 애니메이션 수정됨 ---
         animate={
           phase >= 26
             ? {
-              left: "50%",
-              top: "50%",        // 30% → 25%
-              x: "-50%",
-              y: "-50%",
-              scale: 0.5,        // 0.6 → 0.5 (약간 작게)
+              // ✅ [수정 1] 드래그 충돌 방지를 위한 좌표 계산
+              // 너비(700px)의 절반인 350px를 빼서 정중앙 배치
+              left: "calc(50% - 350px)",
+              top: "calc(50% - 350px)",
+
+              // ✅ [수정 2] x, y 트랜스폼을 0으로 설정 (드래그 시 튐 방지)
+              x: 0,
+              y: 0,
+
+              // ✅ [수정 3] 크기 대폭 확대 (0.5 -> 1.2)
+              scale: 1.0,
+
               rotateY: spinY,
               rotateZ: isShaking ? [-3, 3, -3, 3, 0] : 0,
             }

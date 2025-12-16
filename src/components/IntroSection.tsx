@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { motion, useAnimate, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
 import { LegoFace3D } from './LegoFace3D';
 import { Suspense } from 'react';
+import SkillSection from './SkillSection';
 // import { LegoPart3D } from "./LegoPart3D";
 
 const COLORS = [
@@ -631,6 +632,11 @@ const IntroSection: React.FC = () => {
   const [currentProject, setCurrentProject] = useState(0);
   const [isProjectOpen, setIsProjectOpen] = useState(false);
 
+  const [faceExpression, setFaceExpression] = useState<'sad' | 'neutral' | 'happy'>('neutral');
+  const [isShaking, setIsShaking] = useState(false);
+  const [spinY, setSpinY] = useState(0);
+  const [skillsCollected, setSkillsCollected] = useState(false);
+
   const faceScale =
     phase >= 23 ? 0.5 :
       phase >= 14 ? 0.28 :
@@ -638,7 +644,7 @@ const IntroSection: React.FC = () => {
           0.8;
 
 
-  const showHat = phase >= 15;
+  const showHat = phase >= 15 && phase < 26;
   const followParts = phase >= 2 && phase <= 12;
   const fixedPartsY = phase >= 14 && phase < 23 ? 25 : 0;
   const partsRotateY = followParts ? 0 : fixedPartsY;
@@ -1018,6 +1024,12 @@ const IntroSection: React.FC = () => {
   };
 
   useEffect(() => {
+    if (phase === 26) {
+      setSpinY(360);
+    }
+  }, [phase]);
+
+  useEffect(() => {
     phaseRef.current = phase;
   }, [phase]);
 
@@ -1238,7 +1250,13 @@ const IntroSection: React.FC = () => {
 
           {/* 다음 섹션 내용 */}
           <div className="absolute w-full bg-[#4A7C23]" style={{ top: "120px", height: "calc(100vh - 120px)" }}>
-            {/* 초록색 배경 섹션 내용 */}
+            {phase >= 26 && (
+              <SkillSection
+                isActive={phase === 26}
+                onSkillsCollected={() => setSkillsCollected(true)}
+                onExpressionChange={setFaceExpression}
+              />
+            )}
           </div>
         </motion.div>
       )}
@@ -1990,12 +2008,13 @@ const IntroSection: React.FC = () => {
           <Suspense fallback={<FaceLoadingPlaceholder />}>
             <LegoFace3D
               className="w-full h-full drop-shadow-2xl"
-
               followMouse={phase >= 2 && phase <= 12}
-
               fixedRotationY={phase >= 26 ? 0 : phase >= 23 ? -40 : (phase >= 14 && phase < 23 ? 15 : 0)}
-
               fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}
+              spinY={phase === 26 ? spinY : 0}
+              expression={faceExpression}
+              isShaking={isShaking}
+              onSpinComplete={() => setSpinY(0)}
             />
           </Suspense>
         </motion.div>

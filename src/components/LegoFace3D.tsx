@@ -84,10 +84,11 @@ const LegoModel: React.FC<ModelProps> = ({
                 if (mat.name !== FACE_MAT_NAME) return mat;
 
                 const m = (mat as THREE.MeshStandardMaterial).clone();
-                m.color.setRGB(1, 1, 1);     // 원래 재질 색(노랑 등) 영향 제거
-                m.roughness = 1;             // 반사 줄여서 탁함 감소
-                m.metalness = 0;             // 금속성 제거
-                m.toneMapped = false;        // 톤매핑 영향 제거(표정 색 유지)
+                m.map = t;  // ✅ 텍스처 할당 추가!
+                m.color.setRGB(1, 1, 1);
+                m.roughness = 1;
+                m.metalness = 0;
+                m.toneMapped = false;
                 m.transparent = true;
                 m.alphaTest = 0.01;
                 m.needsUpdate = true;

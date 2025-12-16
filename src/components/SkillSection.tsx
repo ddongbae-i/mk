@@ -193,7 +193,7 @@ const MiniLegoHead = React.memo(({
             <img
                 src={skill.icon}
                 alt={skill.name}
-                className="w-[100px] h-[100px] object-contain"
+                className="w-[140px] h-[140px] object-contain"
                 style={{ filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.25))" }}
             />
         </div>

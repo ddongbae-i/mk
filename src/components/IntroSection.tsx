@@ -2032,7 +2032,7 @@ const IntroSection: React.FC = () => {
           phase >= 26
             ? {
               left: "calc(50% - 350px)",
-              top: "calc(50% - 300px)",
+              top: "calc(50% - 250px)",
               x: 0, y: 0, scale: 1.0,
               rotateZ: isShaking ? [-3, 3, -3, 3, 0] : 0,
             }
@@ -2051,7 +2051,7 @@ const IntroSection: React.FC = () => {
                   rotateY: 0
                 }
                 : phase >= 9
-                  ? { left: "50%", top: "50%", x: "-50%", y: "-50%", scale: 1, rotateZ: 0, rotateY: 0 }
+                  ? { left: "50%", top: "56%", x: "-50%", y: "-50%", scale: 1, rotateZ: 0, rotateY: 0 }
                   : { y: "150vh" }
         }
         transition={{ duration: 1.0, ease: "easeInOut" }}

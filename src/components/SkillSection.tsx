@@ -168,22 +168,33 @@ const SkillSection: React.FC<SkillSectionProps> = ({
             shakeCountRef.current += 1;
 
             // 3번 흔들면 1개 발사
-            if (shakeCountRef.current % 3 === 0) {
+            if (shakeCountRef.current % 2 === 0) {
                 popSkill();
             }
         }
     }, [shakeTrigger, isActive, popSkill]);
 
     // 레벨별 표정
+    // ✅ [수정됨] 흔들림 여부(isShaking)와 상관없이, 오직 '현재 레벨'로만 표정 결정
     useEffect(() => {
         if (!isActive) return;
-        if (currentLevel === 1) onExpressionChange?.("sad");
-        else if (currentLevel === 2) onExpressionChange?.("neutral");
-        else if (currentLevel === 3) onExpressionChange?.("happy");
 
-        if (poppedSkills.length >= SKILLS_DATA.length) onExpressionChange?.("happy");
+        // 흔드는 중(if isShaking) 조건문 삭제됨!
+
+        if (currentLevel === 1) {
+            onExpressionChange?.("sad");     // Level 1: Sad
+        } else if (currentLevel === 2) {
+            onExpressionChange?.("neutral"); // Level 2: Neutral
+        } else if (currentLevel === 3) {
+            onExpressionChange?.("happy");   // Level 3: Happy
+        }
+
+        if (poppedSkills.length >= SKILLS_DATA.length) {
+            onExpressionChange?.("happy");
+        }
+
     }, [currentLevel, isActive, onExpressionChange, poppedSkills.length]);
-
+    // 의존성 배열에서 isShaking 제거
     useEffect(() => {
         if (poppedIds.length >= SKILLS_DATA.length) onSkillsCollected?.();
     }, [poppedIds.length, onSkillsCollected]);

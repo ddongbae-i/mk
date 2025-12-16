@@ -2032,6 +2032,7 @@ const IntroSection: React.FC = () => {
           </motion.div>
         )}
         <motion.div className="w-full h-full pointer-events-auto" style={{ transformStyle: "preserve-3d" }}>
+
           <Suspense fallback={<FaceLoadingPlaceholder />}>
             <LegoFace3D
               className="w-full h-full drop-shadow-2xl"
@@ -2040,7 +2041,9 @@ const IntroSection: React.FC = () => {
               fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}
               spinY={phase === 26 ? spinY : 0}
               expression={finalExpression}
-              isShaking={isShaking}
+
+              isShaking={phase === 26 ? false : isShaking}
+
               onSpinComplete={() => setSpinY(0)}
             />
           </Suspense>

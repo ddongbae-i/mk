@@ -952,35 +952,25 @@ const IntroSection: React.FC = () => {
 
   // 기존 handleDrag 전체를 이걸로 교체
   const handleDrag = (event: any, info: any) => {
-    // 머리 위치를 화면 중앙 상단으로 설정
-    setHeadPosition({
-      x: window.innerWidth / 2,
-      y: window.innerHeight * 0.35  // ← 더 위로
-    });
-
-    // 속도 계산
     const speed = Math.sqrt(info.velocity.x ** 2 + info.velocity.y ** 2);
     const now = Date.now();
 
-    // 빠르게 움직일 때만 흔들림 감지 (쿨타임 100ms)
-    if (speed > 200 && now - lastShakeTimeRef.current > 100) {
+    // ✅ 속도 임계값 낮춤 (150), 쿨타임 짧게 (80ms)
+    if (speed > 150 && now - lastShakeTimeRef.current > 80) {
       lastShakeTimeRef.current = now;
-
-      // 흔들림 시작
       setIsShaking(true);
       shakeCountRef.current += 1;
 
-      // 3번 흔들면 스킬 팝!
-      if (shakeCountRef.current >= 3) {
+      // ✅ 2번 흔들면 바로 스킬 팝!
+      if (shakeCountRef.current >= 2) {
         setShakeTrigger(prev => prev + 1);
         shakeCountRef.current = 0;
       }
 
-      // 흔들림 종료 (200ms 후)
       if (shakeTimerRef.current) clearTimeout(shakeTimerRef.current);
       shakeTimerRef.current = setTimeout(() => {
         setIsShaking(false);
-      }, 200);
+      }, 150);
     }
   };
   const runStepA_StackAndEnter = async () => {
@@ -1214,12 +1204,12 @@ const IntroSection: React.FC = () => {
   const globalY = phase >= 23 ? "-80vh" : "0px";
   const finalExpression: 'sad' | 'neutral' | 'happy' | 'sweat' | 'blank' =
     phase >= 26
-      ? faceExpression
+      ? faceExpression  // 스킬 섹션에서는 레벨 기반 표정만
       : isWinking
         ? 'sweat'
         : isHovering
           ? 'blank'
-          : faceExpression;
+          : 'neutral';
 
   return (
     <div
@@ -1999,10 +1989,10 @@ const IntroSection: React.FC = () => {
           phase >= 26
             ? {
               left: "50%",
-              top: "30%",        // ← 35% → 30% (더 위로)
+              top: "25%",        // 30% → 25%
               x: "-50%",
-              y: "-50%",         // ← -70% → -50% (정확히 중앙 정렬)
-              scale: 0.6,
+              y: "-50%",
+              scale: 0.5,        // 0.6 → 0.5 (약간 작게)
               rotateY: spinY,
               rotateZ: isShaking ? [-3, 3, -3, 3, 0] : 0,
             }

@@ -278,7 +278,7 @@ const PartTooltip = ({
           <div className="mt-4 flex justify-center">
             <button
               onClick={onToggle}
-              className="w-10 h-10 border-[2px] border-[#2b2b2b] bg-white flex items-center justify-center cursor-pointer hover:bg-[#f5f5f5]"
+              className="w-10 h-10 flex items-center justify-center cursor-pointer hover:bg-[#f5f5f5]"
             >
               <svg
                 width="20" height="20" viewBox="0 0 20 20" fill="none"
@@ -813,14 +813,19 @@ const IntroSection: React.FC = () => {
       }
 
     } else {
-      if (currentPhase === 25) {
-        // ✅ 1) 먼저 이전 프로젝트로 이동
+      if (currentPhase === 26) {
+        // 스킬 섹션 -> 프로젝트 섹션으로 복귀
+        isAnimatingRef.current = true;
+        setPhase(25);
+        setTimeout(() => { isAnimatingRef.current = false; }, 1000);
+      }
+      else if (currentPhase === 25) {
+        // ... (기존 25단계 로직 유지) ...
         if (currentProject > 0) {
           isAnimatingRef.current = true;
           setCurrentProject((prev) => prev - 1);
           setTimeout(() => { isAnimatingRef.current = false; }, 900);
         } else {
-          // ✅ 2) 첫 프로젝트면 그때만 이전 섹션으로
           isAnimatingRef.current = true;
           setPhase(24);
           setTimeout(() => { isAnimatingRef.current = false; }, 800);
@@ -1049,9 +1054,8 @@ const IntroSection: React.FC = () => {
     const handleMouseOut = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (target.closest('button, a, [role="button"], .cursor-pointer')) {
-        if (phase >= 26) {
-          setFaceExpression('neutral');
-        }
+        // ✅ 조건(if phase >= 26)을 제거하여 모든 페이즈에서 표정이 돌아오도록 수정
+        setFaceExpression('neutral');
       }
     };
 
@@ -1060,9 +1064,8 @@ const IntroSection: React.FC = () => {
       if (target.closest('button, a, [role="button"], .cursor-pointer')) {
         setFaceExpression('sweat');
         setTimeout(() => {
-          if (phase >= 26) {
-            setFaceExpression('neutral');
-          }
+          // ✅ 여기도 조건 없이 일정 시간 뒤 기본 표정으로 복귀
+          setFaceExpression('neutral');
         }, 400);
       }
     };
@@ -1076,8 +1079,7 @@ const IntroSection: React.FC = () => {
       document.removeEventListener('mouseout', handleMouseOut);
       document.removeEventListener('click', handleClick);
     };
-  }, [phase]);
-
+  }, []);
   useEffect(() => {
     if (phase === 26) {
       setSpinY(360);
@@ -1286,7 +1288,7 @@ const IntroSection: React.FC = () => {
           <div
             className="absolute w-[200vw] bg-[#FFF2D5]"
             style={{
-              height: "300vh",
+              height: "150vh",
               top: "85vh",
               left: "-50vw",
               transform: "skewY(8deg)",
@@ -1319,7 +1321,8 @@ const IntroSection: React.FC = () => {
           className="absolute w-full"
           style={{ zIndex: 90, top: 0, height: "200vh" }}  // 높이 2배로
           initial={{ y: "100vh" }}  // 아래에서 시작
-          animate={{ y: 0 }}        // 제자리로
+          animate={{ y: 0 }}
+          exit={{ y: "100vh" }}
           transition={{ duration: 1, ease: "easeInOut" }}
         >
 
@@ -1548,24 +1551,24 @@ const IntroSection: React.FC = () => {
           {/* 캐릭터 파츠 - 스크롤 적용 */}
           <motion.div
             className="relative"
-            initial={{ x: "-25vw", y: "12vh" }}
-            animate={phase >= 23 ? { x: 0, y: 0 } : { x: "-25vw", y: `calc(12vh + ${scrollOffset}px)` }}
+            initial={{ x: "-22vw", y: "8vh" }}
+            animate={phase >= 23 ? { x: 0, y: 0 } : { x: "-25vw", y: `calc(22vh + ${scrollOffset}px)` }}
             transition={{ duration: 0.8, ease: "easeInOut" }}
             style={{ zIndex: 120 }} // 전체 래퍼 기준
           >
 
             {/* ✅ (1) LABEL BETWEEN HAT ↔ FACE */}
-            <AnimatePresence>
+            {/* <AnimatePresence>
               {phase < 21 && (
                 <motion.div
                   className="absolute pointer-events-none flex items-center gap-[120px]"
                   style={{
-                    left: "20%",
+                    left: "25%",
                     transform: "translateX(-50%)",
                     zIndex: 50, // 라벨은 항상 위
                   }}
                   initial={{ opacity: 1 }}
-                  animate={{ top: "12px", opacity: 1 }}
+                  animate={{ top: "25px", opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.3 }}
                 >
@@ -1582,14 +1585,45 @@ const IntroSection: React.FC = () => {
                   </svg>
                 </motion.div>
               )}
-            </AnimatePresence>
+            </AnimatePresence> */}
 
-            {/* =========================
-      2) FACE SLOT (zIndex: 30)
-     ========================= */}
-            <div
-              className="relative flex flex-col items-center"
-              style={{ width: "240px", height: "240px", zIndex: 30 }}
+
+
+            {/* <div
+              // 1. relative -> absolute로 변경
+              className="absolute flex flex-col items-center"
+              style={{
+                width: "280px",
+                height: "280px",
+                zIndex: 30,
+                left: "50%",
+                transform: "translateX(-50%)", 
+                top: "100px",
+              }}
+            >
+              <PartTooltip
+                title={PART_DESCRIPTIONS[0].title}
+                description={PART_DESCRIPTIONS[0].description}
+                isVisible={phase === 16}
+                details={PART_DESCRIPTIONS[0].details}
+                isExpanded={expandedTooltip === 1}
+                onToggle={() => setExpandedTooltip(expandedTooltip === 1 ? null : 1)}
+                lineLength={80}
+                leftOffset={-100}
+              />
+            </div> */}
+
+
+            {/* <div
+              className="absolute flex flex-col items-center"
+              style={{
+                width: "240px",
+                height: "240px",
+                zIndex: 30,
+                left: "50%",
+                transform: "translateX(-50%)",
+                top: "150px",
+              }}
             >
               <PartTooltip
                 title={PART_DESCRIPTIONS[1].title}
@@ -1601,15 +1635,15 @@ const IntroSection: React.FC = () => {
                 lineLength={80}
                 leftOffset={-100}
               />
-            </div>
+            </div> */}
 
             {/* ✅ (2) LABEL BETWEEN FACE ↔ BODY */}
-            <AnimatePresence>
+            {/* <AnimatePresence>
               {phase < 21 && (
                 <motion.div
                   className="absolute pointer-events-none flex items-center gap-[120px]"
                   style={{
-                    left: "20%",
+                    left: "25%",
                     transform: "translateX(-50%)",
                     zIndex: 50,
                   }}
@@ -1631,12 +1665,12 @@ const IntroSection: React.FC = () => {
                   </svg>
                 </motion.div>
               )}
-            </AnimatePresence>
+            </AnimatePresence> */}
 
             {/* =========================
       3) BODY (zIndex: 20)
      ========================= */}
-            <motion.div
+            {/* <motion.div
               className="absolute"
               style={{
                 left: "59%",
@@ -1669,15 +1703,15 @@ const IntroSection: React.FC = () => {
                   leftOffset={-120}
                 />
               </div>
-            </motion.div>
+            </motion.div> */}
 
             {/* ✅ (3) LABEL BETWEEN BODY ↔ LEGS */}
-            <AnimatePresence>
+            {/* <AnimatePresence>
               {phase < 21 && (
                 <motion.div
-                  className="absolute pointer-events-none flex items-center gap-[120px]"
+                  className="absolute pointer-events-none flex items-center gap-[90px]"
                   style={{
-                    left: "20%",
+                    left: "30%",
                     transform: "translateX(-50%)",
                     zIndex: 50,
                   }}
@@ -1687,7 +1721,7 @@ const IntroSection: React.FC = () => {
                   transition={{ duration: 0.3 }}
                 >
                   <span className="text-[28px] font-normal text-[#2b2b2b]">3</span>
-                  <div className='flex gap-8'>
+                  <div className='flex gap-12'>
                     <svg width="24" height="40" viewBox="0 0 24 40" className="translate-y-1">
                       <path
                         d="M12,0 L12,32 M6,26 L12,34 L18,26"
@@ -1712,12 +1746,12 @@ const IntroSection: React.FC = () => {
 
                 </motion.div>
               )}
-            </AnimatePresence>
+            </AnimatePresence> */}
 
             {/* =========================
       5) LEGS (zIndex: 10)
      ========================= */}
-            <motion.div
+            {/* <motion.div
               className="absolute"
               style={{
                 left: "51%",
@@ -1749,7 +1783,7 @@ const IntroSection: React.FC = () => {
                   lineLength={80}
                 />
               </div>
-            </motion.div>
+            </motion.div> */}
           </motion.div>
 
 
@@ -1758,7 +1792,7 @@ const IntroSection: React.FC = () => {
             className="absolute"
             style={{
               left: "140px",
-              top: "-23vh",
+              top: "1vh",
             }}
             initial={{ opacity: 0 }}
             animate={{ opacity: (phase >= 16 && phase < 22) ? 1 : 0 }}
@@ -1968,91 +2002,92 @@ const IntroSection: React.FC = () => {
         </div>
       </div>
 
-      {/* 얼굴 컨테이너 */}
+      {/* 얼굴 컨테이너 (최종 수정: 화살표 등장 타이밍 phase >= 14 적용) */}
       <motion.div
         id="face-container"
         ref={headRef}
         className="absolute pointer-events-auto"
         style={{
-          width: "700px",  // 고정 너비
-          height: "700px", // 고정 높이
+          width: "700px",
+          height: "700px",
           perspective: 1000,
           zIndex: 100,
           overflow: "visible",
           cursor: phase === 26 ? "grab" : "default",
           touchAction: "none",
         }}
-
-
-        // --- 드래그 설정 ---
         drag={phase === 26}
         dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-        dragElastic={0.1} // 탄성
+        dragElastic={0.1}
         onDrag={handleDrag}
-        whileDrag={{ cursor: "grabbing", scale: 1.25 }} // 드래그 시 살짝 더 커짐
+        whileDrag={{ cursor: "grabbing", scale: 1.25 }}
 
         initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}
 
-        // --- 위치 및 애니메이션 수정됨 ---
         animate={
           phase >= 26
             ? {
-              // ✅ [수정 1] 드래그 충돌 방지를 위한 좌표 계산
-              // 너비(700px)의 절반인 350px를 빼서 정중앙 배치
               left: "calc(50% - 350px)",
               top: "calc(50% - 350px)",
-
-              // ✅ [수정 2] x, y 트랜스폼을 0으로 설정 (드래그 시 튐 방지)
-              x: 0,
-              y: 0,
-
-              // ✅ [수정 3] 크기 대폭 확대 (0.5 -> 1.2)
-              scale: 1.0,
-
+              x: 0, y: 0, scale: 1.0,
               rotateY: spinY,
               rotateZ: isShaking ? [-3, 3, -3, 3, 0] : 0,
             }
             : phase >= 23
               ? { left: "92%", top: "20%", x: "-50%", y: "-50%", scale: 1.3 }
               : phase >= 14
-                ? { left: "6vw", top: "50%", x: "0", y: `calc(-50% + 15vh + ${scrollOffset}px)`, scale: 0.28, rotateX: 2, rotateZ: 0, rotateY: 25 }
+                ? {
+                  // 조립 단계: 이미지가 너무 작아지지 않도록 scale 0.9~1.0 유지
+                  left: "25vw",
+                  top: "50%",
+                  x: "-50%",
+                  y: `calc(-50% + ${scrollOffset}px)`,
+                  scale: 0.9,
+                  rotateX: 0,
+                  rotateZ: 0,
+                  rotateY: 0
+                }
                 : phase >= 9
                   ? { left: "50%", top: "50%", x: "-50%", y: "-50%", scale: 1, rotateZ: 0, rotateY: 0 }
                   : { y: "150vh" }
         }
         transition={{ duration: 1.0, ease: "easeInOut" }}
       >
+
+        {/* 1. HAT (모자) */}
         {showHat && (
           <motion.div
             className="absolute pointer-events-none"
             style={{
-              left: "51%",
-              x: "-30%",
+              left: "50%",
+              x: "-50%",
               zIndex: 120,
-              scale: 1 / faceScale,
+              transformOrigin: "bottom center"
             }}
-            initial={{ opacity: 0, y: -10 }}
             animate={{
-              top: phase >= 23 ? "0px" : phase >= 21 ? "0px" : "-420px",
+              top: phase >= 21 ? "0px" : "-180px",
               opacity: 1,
-              scale: phase >= 21 ? 2.3 : 2.5,
-              y: phase >= 21 ? 20 : -10,
-              x: phase >= 21 ? -100 : -60,
-              scaleX: phase >= 23 ? -1 : 1,  // 👈 반전!
+              y: phase >= 21 ? 20 : 0,
             }}
             transition={{ duration: 0.6, ease: "backOut" }}
           >
-            <div className="relative">
-              <PartPNG
-                src="images/hat.svg"
-                className="w-[280px] h-[280px] object-contain"
-                alt="hat"
-              />
-            </div>
+            <PartPNG src="images/hat.svg" className="w-[280px] h-[280px] object-contain" alt="hat" />
           </motion.div>
         )}
-        <motion.div className="w-full h-full pointer-events-auto" style={{ transformStyle: "preserve-3d" }}>
 
+        {/* 2. HEAD (얼굴) - 크기 제한 및 위치 조정 */}
+        <motion.div
+          className="absolute pointer-events-auto"
+          style={{
+            width: "280px",  // 몸통과 동일한 너비
+            height: "280px",
+            left: "50%",     // 중앙 정렬
+            x: "-50%",
+            top: "100px",    // 약간 아래로 배치
+            transformStyle: "preserve-3d",
+            zIndex: 100
+          }}
+        >
           <Suspense fallback={<FaceLoadingPlaceholder />}>
             <LegoFace3D
               className="w-full h-full drop-shadow-2xl"
@@ -2061,95 +2096,114 @@ const IntroSection: React.FC = () => {
               fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}
               spinY={phase === 26 ? spinY : 0}
               expression={finalExpression}
-
               isShaking={phase === 26 ? false : isShaking}
-
               onSpinComplete={() => setSpinY(0)}
             />
           </Suspense>
         </motion.div>
-      </motion.div>
 
-      {/* 모자 Tooltip - face-container 내부지만 showHat 블록 바깥 */}
-      {
-        phase === 16 && (
-          <div
-            className="absolute pointer-events-auto"
-            style={{
-              left: "27vw",
-              top: "9vh",
-              zIndex: 10000,
-            }}
-          >
-            <motion.div
-              className="flex items-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
+        {/* --- 화살표 & 라벨 (조건 수정: phase >= 14 추가) --- */}
+        <AnimatePresence>
+          {/* ✅ phase >= 14 조건 추가로 초반에는 안 보이게 설정 */}
+          {(phase >= 14 && phase < 21) && (
+            <>
+              {/* 라벨 1: 머리-몸통 사이 */}
               <motion.div
-                className="w-4 h-4 rounded-full bg-[#2b2b2b] flex-shrink-0"
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.2, delay: 0.1 }}
-              />
-              <motion.div
-                className="h-[3px] bg-[#2b2b2b] flex-shrink-0"
-                initial={{ width: 0 }}
-                animate={{ width: 120 }}
-                transition={{ duration: 0.3, delay: 0.15 }}
-              />
-              <motion.div
-                className="bg-[#FDD130] border-[3px] border-[#2b2b2b] shadow-[4px_4px_0_0_#2b2b2b] flex-shrink-0"
-                style={{ width: "280px", padding: "20px 24px" }}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.3, delay: 0.2 }}
+                className="absolute pointer-events-none flex items-center gap-4"
+                style={{ left: "80px", top: "330px", zIndex: 150 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
               >
-                <h3 className="font-bold text-[#2b2b2b] italic text-[20px] mb-2" style={{ fontFamily: 'Kanit, sans-serif' }}>
-                  {PART_DESCRIPTIONS[0].title}
-                </h3>
-                <p className="text-[#333] text-[14px] font-medium leading-[1.5]">
-                  {PART_DESCRIPTIONS[0].description}
-                </p>
+                <span className="text-[32px] font-normal text-[#2b2b2b]">1</span>
+                <svg width="20" height="50" viewBox="0 0 24 60" className="opacity-80">
+                  <path d="M12,0 L12,50 M6,42 L12,52 L18,42" stroke="#2b2b2b" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              </motion.div>
 
-
-                {/* 확장 컨텐츠 - 버튼 위에 */}
-                <AnimatePresence>
-                  {expandedTooltip === 0 && PART_DESCRIPTIONS[0].details && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="pt-4 mt-4 border-t-2 border-[#2b2b2b]/30">
-                        <p className="text-[#555] text-[13px] leading-[1.6]">{PART_DESCRIPTIONS[0].details}</p>
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* + 버튼 - 항상 하단 */}
-                <div className="mt-4 flex justify-center">
-                  <button
-                    onClick={() => setExpandedTooltip(expandedTooltip === 0 ? null : 0)}
-                    className="w-10 h-10 border-[2px] border-[#2b2b2b] bg-white flex items-center justify-center cursor-pointer hover:bg-[#f5f5f5]"
-                  >
-                    <svg
-                      width="20" height="20" viewBox="0 0 20 20" fill="none"
-                      style={{ transform: expandedTooltip === 0 ? "rotate(45deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
-                    >
-                      <path d="M10 4V16M4 10H16" stroke="#2b2b2b" strokeWidth="2.5" strokeLinecap="round" />
-                    </svg>
-                  </button>
+              {/* 라벨 2: 몸통-다리 사이 */}
+              <motion.div
+                className="absolute pointer-events-none flex items-center gap-4"
+                style={{ left: "100px", top: "620px", zIndex: 150 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                <span className="text-[32px] font-normal text-[#2b2b2b]">2</span>
+                <div className="flex gap-6">
+                  <svg width="20" height="50" viewBox="0 0 24 60" className="translate-y-2">
+                    <path d="M12,0 L12,50 M6,42 L12,52 L18,42" stroke="#2b2b2b" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
+                  <span className="text-[32px] font-normal text-[#2b2b2b] -ml-2">3</span>
+                  <svg width="20" height="50" viewBox="0 0 24 60" className="-translate-y-2">
+                    <path d="M12,0 L12,50 M6,42 L12,52 L18,42" stroke="#2b2b2b" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
+                  </svg>
                 </div>
               </motion.div>
-            </motion.div>
-          </div>
-        )
-      }
+            </>
+          )}
+        </AnimatePresence>
+
+        {/* 3. BODY (몸통) */}
+        {(phase >= 14) && (
+          <motion.div
+            className="absolute"
+            style={{ left: "50%", x: "-50%", zIndex: 90 }}
+            animate={{
+              top: phase >= 21 ? "360px" : "550px",
+              opacity: phase >= 23 ? 0 : 1,
+            }}
+            transition={{ duration: 0.6, ease: "backOut" }}
+          >
+            <div className="relative w-[280px] h-[280px]">
+              <PartPNG src="images/lego_body.png" alt="lego body" className="w-full h-full object-contain" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                <PartTooltip
+                  title={PART_DESCRIPTIONS[2].title}
+                  description={PART_DESCRIPTIONS[2].description}
+                  isVisible={phase === 18}
+                  details={PART_DESCRIPTIONS[2].details}
+                  isExpanded={expandedTooltip === 2}
+                  onToggle={() => setExpandedTooltip(expandedTooltip === 2 ? null : 2)}
+                  lineLength={80}
+                  leftOffset={-120}
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* 4. LEGS (다리) */}
+        {(phase >= 14) && (
+          <motion.div
+            className="absolute"
+            style={{ left: "50%", x: "-50%", zIndex: 80 }}
+            animate={{
+              top: phase >= 21 ? "500px" : "850px",
+              opacity: phase >= 23 ? 0 : 1,
+            }}
+            transition={{ duration: 0.6, ease: "backOut" }}
+          >
+            <div className="relative w-[280px] h-[280px]">
+              <PartPNG src="images/lego_legs.png" alt="lego legs" className="w-full h-full object-contain" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+                <PartTooltip
+                  title={PART_DESCRIPTIONS[3].title}
+                  description={PART_DESCRIPTIONS[3].description}
+                  isVisible={phase === 19}
+                  details={PART_DESCRIPTIONS[3].details}
+                  isExpanded={expandedTooltip === 3}
+                  onToggle={() => setExpandedTooltip(expandedTooltip === 3 ? null : 3)}
+                  lineLength={80}
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+      </motion.div>
+
+
 
       {/* 하단 안내 문구 */}
       {phase === 0 && <motion.div className="absolute bottom-10 text-gray-400 font-kanit font-semibold text-sm animate-bounce uppercase tracking-widest">Scroll to Start</motion.div>}

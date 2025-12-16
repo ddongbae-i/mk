@@ -2050,7 +2050,7 @@ const IntroSection: React.FC = () => {
             className="w-14 h-14 flex items-center justify-center pointer-events-auto rounded-full transition-colors duration-500"
             // ✅ phase가 9보다 클 때만 배경과 블러 효과 적용
             animate={{
-              backgroundColor: phase > 9 ? "rgba(143, 30, 32, 0.60)" : "rgba(143, 30, 32, 0)",
+              backgroundColor: phase > 9 ? "rgba(143, 30, 32, 0.60)" : "rgba(255, 255, 255, 0)",
               backdropFilter: phase > 9 ? "blur(8px)" : "blur(0px)",
               boxShadow: phase > 9 ? "0 4px 6px rgba(0,0,0,0.05)" : "none"
             }}
@@ -2161,30 +2161,6 @@ const IntroSection: React.FC = () => {
               ))}
             </div>
           )}
-
-          {/* ✅ 글로벌 메뉴: phase 12 이후 구간에서 햄버거 누르면 바로 뜨게 */}
-          {menuOpen && phase > 12 && (
-            <div className="fixed inset-0 pointer-events-none z-[1200]">
-              {BLOCK_POSITIONS.map((pos, i) => (
-                <div
-                  key={`global-${i}`}
-                  className="pointer-events-auto"
-                  onClick={() => handleMenuClick(i)}
-                  style={{ position: "absolute", ...pos }}  // ✅ pos를 여기서 직접 적용
-                >
-                  <FloatingMenuBlock
-                    index={i}
-                    id={`global-block-${i}`}
-                    shouldFloat={false}
-                    isMenuOpen={true}
-                    hoveredIndex={hoveredBlockIndex}
-                    onHover={setHoveredBlockIndex}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-
 
         </div>
       </div>

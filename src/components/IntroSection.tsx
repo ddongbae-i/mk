@@ -1072,9 +1072,13 @@ const IntroSection: React.FC = () => {
   useEffect(() => {
     if (phase === 26) {
       setSpinY(360);
+      // ✅ 얼굴 위치도 설정
+      setHeadPosition({
+        x: window.innerWidth / 2,
+        y: window.innerHeight * 0.25  // 상단 25% 위치
+      });
     }
   }, [phase]);
-
   useEffect(() => {
     phaseRef.current = phase;
   }, [phase]);
@@ -1978,6 +1982,7 @@ const IntroSection: React.FC = () => {
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
         onClick={() => {
+          if (phase >= 26) return;  // ✅ 추가
           setIsWinking(true);
           window.setTimeout(() => setIsWinking(false), 450);
         }}

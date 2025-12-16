@@ -216,7 +216,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         const expressions: ('sad' | 'neutral' | 'happy')[] = ['sad', 'neutral', 'happy'];
         console.log('Level changed to:', currentLevel, '-> Expression:', expressions[currentLevel - 1]);
         onExpressionChange?.(expressions[currentLevel - 1]);
-    }, [currentLevel, onExpressionChange]);
+    }, [currentLevel]);
 
     // 모든 스킬 수집 완료
     useEffect(() => {

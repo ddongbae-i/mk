@@ -1302,9 +1302,12 @@ const IntroSection: React.FC = () => {
               <SkillSection
                 isActive={phase === 26}
                 onSkillsCollected={() => setSkillsCollected(true)}
-                onExpressionChange={setFaceExpression}
+                onExpressionChange={(expr) => {
+                  console.log('Expression changed to:', expr); // 디버깅용
+                  setFaceExpression(expr);
+                }}
                 shakeTrigger={shakeTrigger}
-                headPosition={headPosition} // 👈 [추가] 머리 위치 전달
+                headPosition={headPosition}
               />
             )}
           </div>
@@ -1990,18 +1993,12 @@ const IntroSection: React.FC = () => {
           phase >= 26
             ? {
               left: "50%",
-              top: "50%",
+              top: "50%",      // ← 중앙
               x: "-50%",
-              y: "-50%",
+              y: "-50%",       // ← 정확히 중앙
               scale: 0.8,
-              rotateY: 360,
-              // 흔들릴 때(isShaking) 제자리에서 좌우로 부들부들 떠는 효과
+              rotateY: spinY,  // ← 360 대신 spinY 변수 사용
               rotateZ: isShaking ? [-3, 3, -3, 3, 0] : 0,
-              transition: {
-                // rotateZ는 0.1초만에 빠르게, 나머지(위치 이동 등)는 1초 동안 부드럽게
-                rotateZ: { duration: 0.1, repeat: isShaking ? Infinity : 0 },
-                default: { duration: 1.0, ease: "easeInOut" }
-              }
             }
             : phase >= 23
               ? { left: "92%", top: "20%", x: "-50%", y: "-50%", scale: 1.3 }

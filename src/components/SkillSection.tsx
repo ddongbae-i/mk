@@ -178,7 +178,6 @@ interface SkillSectionProps {
     onSkillsCollected?: () => void;
     onExpressionChange?: (expression: 'sad' | 'neutral' | 'happy') => void;
     shakeTrigger: number;
-    headPosition: { x: number; y: number };
 }
 
 const SkillSection: React.FC<SkillSectionProps> = ({
@@ -186,7 +185,6 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     onSkillsCollected,
     onExpressionChange,
     shakeTrigger,
-    headPosition,
 }) => {
     const [poppedSkills, setPoppedSkills] = useState<any[]>([]);
     const [bursts, setBursts] = useState<{ id: number; x: number; y: number }[]>([]);
@@ -235,16 +233,16 @@ const SkillSection: React.FC<SkillSectionProps> = ({
             id,
             skill,
             startPos: {
-                x: headPosition.x || window.innerWidth / 2,
-                y: headPosition.y || window.innerHeight / 2 - 100
+                x: window.innerWidth / 2,
+                y: window.innerHeight * 0.3  // 상단 30% 위치 (얼굴 위치)
             },
         }]);
 
         // 팡팡 이펙트 추가
         setBursts(prev => [...prev, {
             id,
-            x: headPosition.x || window.innerWidth / 2,
-            y: (headPosition.y || window.innerHeight / 2) - 100
+            x: window.innerWidth / 2,
+            y: window.innerHeight * 0.3
         }]);
 
         // 이펙트 정리 (0.8초 후)

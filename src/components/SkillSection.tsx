@@ -250,7 +250,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
             setBursts(prev => prev.filter(b => b.id !== id));
         }, 800);
 
-    }, [remainingSkills, headPosition]);
+    }, [remainingSkills]);
 
     return (
         <div className="absolute inset-0 z-[200] pointer-events-none overflow-hidden">

@@ -23,9 +23,16 @@ export function Character({ expression = "neutral" }: { expression: Expression }
         t.colorSpace = THREE.SRGBColorSpace;
 
         const mat = materials.FaceMaterial as THREE.MeshStandardMaterial;
-        mat.map = t;
+
+        mat.map = null;
+        mat.emissive = new THREE.Color(1, 1, 1);
+        mat.emissiveMap = t;
+        mat.emissiveIntensity = 1;
+        mat.toneMapped = false;
+        mat.transparent = true;
+        mat.alphaTest = 0.01;
+
         mat.needsUpdate = true;
     }, [expression, tex, materials]);
-
     return <primitive object={nodes.Scene} />;
 }

@@ -1948,7 +1948,8 @@ const IntroSection: React.FC = () => {
       {/* 얼굴 컨테이너 */}
       <motion.div
         id="face-container"
-        className={`absolute ${phase === 26 ? "pointer-events-auto" : "pointer-events-none"}`}
+        className="absolute pointer-events-auto"
+        drag={phase === 26}
         style={{
           width: "700px",
           height: "700px",
@@ -1957,6 +1958,12 @@ const IntroSection: React.FC = () => {
           overflow: "visible",
           cursor: phase === 26 ? "grab" : "default",
           touchAction: "none", // 모바일 드래그 이슈 방지
+        }}
+        onMouseEnter={() => setIsHovering(true)}
+        onMouseLeave={() => setIsHovering(false)}
+        onClick={() => {
+          setIsWinking(true);
+          window.setTimeout(() => setIsWinking(false), 450);
         }}
 
         // --- 드래그 설정 ---
@@ -2036,7 +2043,7 @@ const IntroSection: React.FC = () => {
               fixedRotationY={phase >= 26 ? 0 : phase >= 23 ? -40 : (phase >= 14 && phase < 23 ? 15 : 0)}
               fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}
               spinY={phase === 26 ? spinY : 0}
-              expression={faceExpression}
+              expression={finalExpression}
               isShaking={isShaking}
               onSpinComplete={() => setSpinY(0)}
             />

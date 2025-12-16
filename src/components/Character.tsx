@@ -3,16 +3,17 @@ import * as THREE from "three";
 import { useGLTF, useTexture } from "@react-three/drei";
 import { useEffect } from "react";
 
-type Expression = "neutral" | "happy" | "sad" | "sweat";
+type Expression = "neutral" | "happy" | "sad" | "sweat" | "blank";
 
 export function Character({ expression = "neutral" }: { expression: Expression }) {
-    const { nodes, materials } = useGLTF("/model/character.glb") as any;
+    const { nodes, materials } = useGLTF("/model/lego_head.glb") as any;
 
     const tex = useTexture({
         neutral: "/tex/face_neutral.png",
         happy: "/tex/face_happy.png",
         sad: "/tex/face_sad.png",
         sweat: "/tex/face_sweat.png",
+        blank: "/tex/face_blank.png",
     });
 
     useEffect(() => {

@@ -623,6 +623,7 @@ const IntroSection: React.FC = () => {
     await animate(selector, keyframes, options);
   };
 
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isNaturalScrolling, setIsNaturalScrolling] = useState(false);
   const [naturalScrollY, setNaturalScrollY] = useState(0);
@@ -634,6 +635,8 @@ const IntroSection: React.FC = () => {
 
   const [faceExpression, setFaceExpression] =
     useState<'sad' | 'neutral' | 'happy' | 'sweat'>('neutral');
+  const [isHovering, setIsHovering] = useState(false);
+  const [isWinking, setIsWinking] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
   const [shakeTrigger, setShakeTrigger] = useState(0);
   const [headPosition, setHeadPosition] = useState({ x: 0, y: 0 }); // 머리 위치 저장
@@ -942,28 +945,36 @@ const IntroSection: React.FC = () => {
     }
   };
 
+  const shakeTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   const handleDrag = (event: any, info: any) => {
+    if (typeof window !== 'undefined') {
+      setHeadPosition({ x: window.innerWidth / 2, y: window.innerHeight / 2 });
+    }
 
-    setHeadPosition({ x: info.point.x, y: info.point.y });
-
+    const moveDistance = Math.sqrt(info.offset.x ** 2 + info.offset.y ** 2);
     const speed = Math.sqrt(info.velocity.x ** 2 + info.velocity.y ** 2);
+
     const now = Date.now();
 
-    if (speed > 500 && now - lastShakeTimeRef.current > 150) {
+    if ((speed > 300 || moveDistance > 10) && now - lastShakeTimeRef.current > 100) {
+
+      if (shakeTimerRef.current) clearTimeout(shakeTimerRef.current);
+
       setIsShaking(true);
       shakeCountRef.current += 1;
       lastShakeTimeRef.current = now;
-
 
       if (shakeCountRef.current >= 3) {
         setShakeTrigger(prev => prev + 1);
         shakeCountRef.current = 0;
       }
 
-      setTimeout(() => setIsShaking(false), 200);
+      shakeTimerRef.current = setTimeout(() => {
+        setIsShaking(false);
+      }, 200);
     }
   };
-
   const runStepA_StackAndEnter = async () => {
     const stackAnims: Promise<any>[] = [];
     const order = [4, 3, 2, 1, 0];
@@ -1190,6 +1201,8 @@ const IntroSection: React.FC = () => {
 
   const scrollOffset = phase >= 16 ? -300 : (isNaturalScrolling ? Math.max(-300, -naturalScrollY) : 0);
   const globalY = phase >= 23 ? "-80vh" : "0px";
+  const finalExpression: 'sad' | 'neutral' | 'happy' | 'sweat' =
+    isWinking ? 'sweat' : isHovering ? 'sad' : faceExpression;
 
   return (
     <div
@@ -1935,9 +1948,7 @@ const IntroSection: React.FC = () => {
       {/* 얼굴 컨테이너 */}
       <motion.div
         id="face-container"
-
         className={`absolute ${phase === 26 ? "pointer-events-auto" : "pointer-events-none"}`}
-
         style={{
           width: "700px",
           height: "700px",
@@ -1945,15 +1956,22 @@ const IntroSection: React.FC = () => {
           zIndex: 100,
           overflow: "visible",
           cursor: phase === 26 ? "grab" : "default",
+          touchAction: "none", // 모바일 드래그 이슈 방지
         }}
 
+        // --- 드래그 설정 ---
         drag={phase === 26}
+        // 상하좌우 이동 범위를 0으로 제한 (중앙에서 못 벗어남)
         dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
-        dragElastic={0.2}
+        // 0.1: 마우스로 당겨도 아주 조금만 딸려옴 (단단히 고정된 느낌)
+        dragElastic={0.1}
         onDrag={handleDrag}
-        whileDrag={{ scale: 1.1, cursor: "grabbing" }}
+        // 잡았을 때 커서 변경 및 살짝 커짐
+        whileDrag={{ cursor: "grabbing", scale: 1.05 }}
 
         initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}
+
+        // --- 위치 및 애니메이션 ---
         animate={
           phase >= 26
             ? {
@@ -1962,49 +1980,22 @@ const IntroSection: React.FC = () => {
               x: "-50%",
               y: "-50%",
               scale: 0.8,
-              rotateY: 360,      // 한 바퀴 돌면서
-              rotateZ: 0,
+              rotateY: 360,
+              // 흔들릴 때(isShaking) 제자리에서 좌우로 부들부들 떠는 효과
+              rotateZ: isShaking ? [-3, 3, -3, 3, 0] : 0,
+              transition: {
+                // rotateZ는 0.1초만에 빠르게, 나머지(위치 이동 등)는 1초 동안 부드럽게
+                rotateZ: { duration: 0.1, repeat: isShaking ? Infinity : 0 },
+                default: { duration: 1.0, ease: "easeInOut" }
+              }
             }
             : phase >= 23
-              ? {
-                left: "92%",
-                top: "20%",
-                x: "-50%",
-                y: "-50%",
-                scale: 1.3,
-              }
-              :
-              phase >= 23
-                ? {
-                  left: "92%",
-                  top: "20%",        // 👈 상단으로
-                  x: "-50%",
-                  y: "-50%",
-                  scale: 1.3,
-                  // 👈 아래를 내려다봄
-                }
-                : phase >= 14
-                  ? {
-                    left: "6vw",
-                    top: "50%",
-                    x: "0",
-                    y: `calc(-50% + 13vh + ${scrollOffset}px)`,
-                    scale: 0.28,
-                    rotateX: 2,
-                    rotateZ: 0,
-                    rotateY: 25,
-                  }
-                  : phase >= 9
-                    ? {
-                      x: "-50%",
-                      y: "-50%",
-                      left: "50%",
-                      top: "50%",
-                      scale: 1,
-                      rotateZ: 0,
-                      rotateY: 0,
-                    }
-                    : { y: "150vh" }
+              ? { left: "92%", top: "20%", x: "-50%", y: "-50%", scale: 1.3 }
+              : phase >= 14
+                ? { left: "6vw", top: "50%", x: "0", y: `calc(-50% + 13vh + ${scrollOffset}px)`, scale: 0.28, rotateX: 2, rotateZ: 0, rotateY: 25 }
+                : phase >= 9
+                  ? { left: "50%", top: "50%", x: "-50%", y: "-50%", scale: 1, rotateZ: 0, rotateY: 0 }
+                  : { y: "150vh" }
         }
         transition={{ duration: 1.0, ease: "easeInOut" }}
       >

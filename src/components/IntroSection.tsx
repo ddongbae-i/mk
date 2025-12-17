@@ -162,7 +162,6 @@ const PROJECT_DATA = [
     title: "WELLIO",
     subtitle: "가족 건강 공유 앱, 웰리오",
     image: "images/project2.png",
-    color: "#8E00BD",
     detailImgSrc: "images/info1.png",
     description: "디자인 페이지 : 병원리스트 / 정보 / 접수 / 결제 / 커뮤니티 메인 / 캘린더 메인\n제작 : 로고 / 아이콘",
     tags: ["UI/UX", "Mobile App", "Mobile App", "Vibe Coding"],
@@ -179,7 +178,6 @@ const PROJECT_DATA = [
     title: "BEAUTY OF JOSEON",
     subtitle: "조선미녀 반응형 웹사이트 리뉴얼",
     image: "images/project1.png",
-    color: "#2B7000",
 
     detailImgSrc: "images/info2.png",
     description: `제작 : 아이콘 / 인트로, 신제품 영상\n디자인 페이지 : SHOP\n 코딩 페이지 : SHOP / 메인(1024-360)반응형 / header&footer / 개발총괄`,
@@ -201,7 +199,6 @@ const PROJECT_DATA = [
     title: "QooQoo",
     subtitle: "쿠우쿠우 반응형 웹사이트 리뉴얼",
     image: "images/project3.png",
-    color: "#F25F09",
 
     detailImgSrc: "images/info3.png",
     description: `함께하는 맛의 행복. 쿠우쿠우 고급화 전략에 맞춰 웹사이트를 리뉴얼한 프로젝트입니다.\n기존 웹사이트에 부족했던 메뉴, 쿠우쿠우 상점, 멤버쉽, 슬로건, 가독성 등을 개선하고 고급스러우면도 친화적인 디자인으로 쿠우쿠우 브랜드 이미지를 상승시킴과 동시에 방문자들의 니즈를 충족할 컨텐츠를 제공합니다`,

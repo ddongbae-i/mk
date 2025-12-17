@@ -109,7 +109,6 @@ const RESUME_DATA = [
         type: "job",
         role: "Founder · namodog",
         tasks: ["제품 기획 · 제작 관리", "상세페이지 제작 · 쇼핑몰 운영"],
-        achievement: "Achievement: 똑딱이 인식표 최초 개발"
       },
       {
         type: "job",

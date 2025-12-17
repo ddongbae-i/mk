@@ -164,7 +164,7 @@ const PROJECT_DATA = [
     image: "images/project2.png",
     color: "#8E00BD",
     detailImgSrc: "images/info1.png",
-    description: "디자인 페이지 : 병원리스트 / 정보 / 접수 / 결제 / 커뮤니티 메인 / 캘린더 메인\n\n제작 : 로고 / 아이콘",
+    description: "디자인 페이지 : 병원리스트 / 정보 / 접수 / 결제 / 커뮤니티 메인 / 캘린더 메인\n제작 : 로고 / 아이콘",
     tags: ["UI/UX", "Mobile App", "Mobile App", "Vibe Coding"],
     specs: { period: "25.08.13 - 25.08.27,", role: "디자인&개발", tech: "Figma,REACT,Typescript,Illustrator" },
 
@@ -182,13 +182,12 @@ const PROJECT_DATA = [
     color: "#2B7000",
 
     detailImgSrc: "images/info2.png",
-    description: `제작 : 아이콘 / 인트로, 신제품 영상\n\n디자인 페이지 : SHOP\n\n 코딩 페이지 : SHOP / 메인(1024-360)반응형 / header&footer / 개발
-                총괄`,
+    description: `제작 : 아이콘 / 인트로, 신제품 영상\n디자인 페이지 : SHOP\n 코딩 페이지 : SHOP / 메인(1024-360)반응형 / header&footer / 개발총괄`,
     tags: ["Dashboard", "Design System", "Admin"],
     specs: {
       period: "25.09.19 - 25.10.24",
       role: "Dashboard UI Design, React Pub",
-      tech: "React, Chart.js, Tailwind"
+      tech: "Figma, html, css, js, Midjourney, Illustrator"
     },
     buttons: [
       {
@@ -205,12 +204,12 @@ const PROJECT_DATA = [
     color: "#F25F09",
 
     detailImgSrc: "images/info3.png",
-    description: `함께하는 맛의 행복. 쿠우쿠우 고급화 전략에 맞춰 웹사이트를 리뉴얼한 프로젝트입니다.\n기존 웹사이트에 부족했던 메뉴,                쿠우쿠우 상점, 멤버쉽, 슬로건, 가독성 등을 개선하고 고급스러우면도 친화적인 디자인으로 쿠우쿠우 브랜드 이미지를 상승시킴과 동시에 방문자들의 니즈를 충족할 컨텐츠를 제공합니다`,
+    description: `함께하는 맛의 행복. 쿠우쿠우 고급화 전략에 맞춰 웹사이트를 리뉴얼한 프로젝트입니다.\n기존 웹사이트에 부족했던 메뉴, 쿠우쿠우 상점, 멤버쉽, 슬로건, 가독성 등을 개선하고 고급스러우면도 친화적인 디자인으로 쿠우쿠우 브랜드 이미지를 상승시킴과 동시에 방문자들의 니즈를 충족할 컨텐츠를 제공합니다`,
     tags: ["Renewal", "Brand Design", "Responsive"],
     specs: {
       period: "8 Weeks (320 hours)",
       role: "Web Design, Publishing",
-      tech: "Figma, HTML/CSS, GSAP"
+      tech: "Figma, HTML/CSS, React"
     },
     buttons: [
       {

@@ -163,9 +163,9 @@ const PROJECT_DATA = [
     subtitle: "가족 건강 공유 앱, 웰리오",
     image: "images/project2.png",
     detailImgSrc: "images/info1.png",
-    description: "디자인 페이지 : 병원리스트 / 정보 / 접수 / 결제 / 커뮤니티 메인 / 캘린더 메인\n제작 : 로고 / 아이콘",
+    description: "가족의 건강을 하나로 연결하는 경험.병원 탐색, 건강 기록, 커뮤니티 기능을 중심으로 한 가족 헬스케어 서비스 웰리오의 UX/ UI를 설계한 프로젝트입니다.분산된 정보 구조를 정리하고 직관적인 사용 흐름을 통해, 누구나 쉽게 건강을 관리할 수 있는 친화적인 경험을 제공합니다.",
     tags: ["UI/UX", "Mobile App", "Mobile App", "Vibe Coding"],
-    specs: { period: "25.08.13 - 25.08.27,", role: "디자인&개발", tech: "Figma,REACT,Typescript,Illustrator" },
+    specs: { period: "25.08.13 - 25.08.27,", role: "병원리스트/정보/접수/결제/병원 후기&찜한병원/캘린더 메인 디자인, 로고/아이콘 제작, AI 앱버전 개발", tech: "Figma,REACT,Typescript,Illustrator" },
 
     buttons: [
       { label: "기획서 보기", url: "https://www.figma.com/proto/YgY5CNo9U0iNRQcw6MiKZ5/3%EC%A1%B0-Ai--Wellio?page-id=10897%3A59342&node-id=10897-59350&viewport=639%2C155%2C0.1&t=uDXy317GRj0LX8Jv-1&scaling=scale-down&content-scaling=fixed", type: "gray" },
@@ -180,11 +180,11 @@ const PROJECT_DATA = [
     image: "images/project1.png",
 
     detailImgSrc: "images/info2.png",
-    description: `제작 : 아이콘 / 인트로, 신제품 영상\n디자인 페이지 : SHOP\n 코딩 페이지 : SHOP / 메인(1024-360)반응형 / header&footer / 개발총괄`,
-    tags: ["Dashboard", "Design System", "Admin"],
+    description: "한국 전통 미학을 현대적으로 재해석한 경험. K-뷰티 브랜드 조선미녀의 글로벌 사용자를 고려해 웹사이트를 리뉴얼한 프로젝트입니다. 브랜드 스토리와 제품 정보를 명확히 정리하고 가독성과 사용성을 개선해, 신뢰감 있는 브랜드 경험을 제공합니다.",
+    tags: ["UX/UI", "Design System", "Renewal"],
     specs: {
       period: "25.09.19 - 25.10.24",
-      role: "Dashboard UI Design, React Pub",
+      role: "Header&Footer/메인(1204-360 개발, SHOP디자인 및 개발, 아이콘 제작, 신제품/인트로 영상",
       tech: "Figma, html, css, js, Midjourney, Illustrator"
     },
     buttons: [
@@ -204,9 +204,9 @@ const PROJECT_DATA = [
     description: `함께하는 맛의 행복. 쿠우쿠우 고급화 전략에 맞춰 웹사이트를 리뉴얼한 프로젝트입니다.\n기존 웹사이트에 부족했던 메뉴, 쿠우쿠우 상점, 멤버쉽, 슬로건, 가독성 등을 개선하고 고급스러우면도 친화적인 디자인으로 쿠우쿠우 브랜드 이미지를 상승시킴과 동시에 방문자들의 니즈를 충족할 컨텐츠를 제공합니다`,
     tags: ["Renewal", "Brand Design", "Responsive"],
     specs: {
-      period: "8 Weeks (320 hours)",
-      role: "Web Design, Publishing",
-      tech: "Figma, HTML/CSS, React"
+      period: "25.07 - 25.09",
+      role: "기획, 반응형 디자인",
+      tech: "Figma, HTML/CSS, React, Firefly, Midjourney, Photoshop "
     },
     buttons: [
       {

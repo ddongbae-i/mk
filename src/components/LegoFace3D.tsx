@@ -221,7 +221,13 @@ export const LegoFace3D: React.FC<{
         return (
             <div
                 className={className}
-                style={{ width: "100%", height: "100%", overflow: "visible" }}
+                style={{
+                    width: "100%",
+                    height: "100%",
+                    overflow: "visible",
+                    minWidth: "700px",  // 추가
+                    minHeight: "700px", // 추가
+                }}
             >
                 <Canvas
                     dpr={[1, 2]}

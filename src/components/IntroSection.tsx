@@ -2242,7 +2242,7 @@ const IntroSection: React.FC = () => {
                   top: "50%",
                   x: "-50%",
                   y: `calc(-30% + ${scrollOffset}px)`,
-                  scale: 0.9,
+                  scale: headScale,
                   rotateX: 0,
                   rotateZ: 0,
                   rotateY: 0
@@ -2299,7 +2299,7 @@ const IntroSection: React.FC = () => {
             transformStyle: "preserve-3d",
             zIndex: 100
           }}
-          animate={{ scale: headScale }}
+          // animate={{ scale: headScale }}
           transition={{ duration: 0.6, ease: "easeInOut" }}
         >
           <Suspense fallback={<FaceLoadingPlaceholder />}>

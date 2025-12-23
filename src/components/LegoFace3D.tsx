@@ -224,7 +224,7 @@ export const LegoFace3D: React.FC<{
                 style={{ width: "100%", height: "100%", overflow: "visible" }}
             >
                 <Canvas
-                    dpr={1}
+                    dpr={[1, 2]}
                     camera={{ position: [0, 0, 8], fov: 45 }}
                     resize={{ scroll: false }}
                     style={{ background: "transparent", overflow: "visible" }}

@@ -150,7 +150,7 @@ const ProjectKitBox = ({
       src={`${import.meta.env.BASE_URL}${project.image}`} // PROJECT_DATA의 image 경로 사용
       alt={`${project.title} kit`}
       draggable={false}
-      className="w-[80vw] max-w-[1000px] aspect-[16/10] object-contain select-none"
+      className="w-[85vw] max-w-[1000px] aspect-[16/10] md:w-[80vw] object-contain select-none"
       style={{ display: "block" }}
     />
   </motion.div>
@@ -734,7 +734,7 @@ const IntroSection: React.FC = () => {
   const headScale =
     phase >= 26 ? 1.2 :
       phase >= 23 ? 1 :
-        phase >= 14 ? 0.4 :
+        phase >= 14 ? 0.4 :  // 0.4에서 0.75로 변경
           1.2;
 
   const showHat = phase >= 15 && phase < 26;
@@ -759,11 +759,11 @@ const IntroSection: React.FC = () => {
   const TEXT_ANCHOR_X = "12vw";
 
   const BLOCK_POSITIONS: React.CSSProperties[] = [
-    { top: "25%", left: "15%" },
-    { top: "20%", right: "15%" },
-    { top: "60%", left: "10%" },
-    { top: "55%", right: "12%" },
-    { top: "80%", left: "55%" }
+    { top: "25%", left: "clamp(5%, 15%, 20%)" },
+    { top: "20%", right: "clamp(5%, 15%, 20%)" },
+    { top: "55%", left: "clamp(3%, 10%, 15%)" },
+    { top: "50%", right: "clamp(5%, 12%, 18%)" },
+    { top: "75%", left: "50%" }
   ];
 
   const getTranslationToAlignCenters = (element: HTMLElement, targetCenter: { x: number, y: number }, container: HTMLElement) => {
@@ -1449,13 +1449,13 @@ const IntroSection: React.FC = () => {
       <motion.div
         className="absolute left-0 w-full h-full pointer-events-none"
         style={{ zIndex: 10 }}
-        initial={{ x: "-120%" }}
+        initial={{ x: "-120%", y: "100vh" }}
         animate={
           phase >= 14
             ? { x: 0, y: `calc(-57vh + ${scrollOffset}px)` }
             : phase >= 13
               ? { x: 0, y: 0 }
-              : { x: "-120%", y: 0 }
+              : { x: "-120%", y: "100vh" }
         }
         transition={{ duration: 0.85, ease: [0.22, 1, 0.36, 1] }}
       >
@@ -1970,14 +1970,14 @@ const IntroSection: React.FC = () => {
           <motion.div
             className="absolute"
             style={{
-              left: "80px",
+              left: "clamp(20px, 5vw, 80px)",
               top: "-30vh",
             }}
             initial={{ opacity: 0 }}
             animate={{ opacity: (phase >= 16 && phase < 22) ? 1 : 0 }}
             transition={{ duration: 0.8 }}
           >
-            <div className="relative w-[540px] h-[600px] flex flex-col items-center justify-center p-6">
+            <div className="relative w-[clamp(300px,40vw,540px)] h-auto min-h-[400px] flex flex-col items-center justify-center p-6">
               <motion.div
                 className="absolute bg-[#2b2b2b]"
                 style={{ top: 0, left: 0, height: 2 }}
@@ -2209,8 +2209,8 @@ const IntroSection: React.FC = () => {
         className="absolute pointer-events-auto"
         data-lego-head="true"
         style={{
-          width: "700px",
-          height: "700px",
+          width: "max(700px, 50vw)",
+          height: "max(700px, 50vw)",
           perspective: 1000,
           zIndex: 100,
           overflow: "visible",
@@ -2238,7 +2238,7 @@ const IntroSection: React.FC = () => {
               : phase >= 14
                 ? {
                   // 조립 단계: 이미지가 너무 작아지지 않도록 scale 0.9~1.0 유지
-                  left: "25vw",
+                  left: "clamp(15vw, 25vw, 30vw)",
                   top: "50%",
                   x: "-50%",
                   y: `calc(-30% + ${scrollOffset}px)`,
@@ -2273,7 +2273,7 @@ const IntroSection: React.FC = () => {
             }}
             transition={{ duration: 0.6, ease: "backOut" }}
           >
-            <PartPNG src="images/hat.svg" className="w-[260px] h-[260px] object-contain" alt="hat" />
+            <PartPNG src="images/hat.svg" className="w-[clamp(150px,25vw,260px)] h-[clamp(150px,25vw,260px)]  object-contain" alt="hat" />
             <PartTooltip
               title={PART_DESCRIPTIONS[0].title}
               description={PART_DESCRIPTIONS[0].description}
@@ -2291,8 +2291,8 @@ const IntroSection: React.FC = () => {
         <motion.div
           className="absolute pointer-events-auto"
           style={{
-            width: "700px",
-            height: "700px",
+            width: "min(700px, 90vw)",
+            height: "min(700px, 90vw)",
             left: "50%",
             x: "-50%",
             top: "-8%",
@@ -2355,12 +2355,12 @@ const IntroSection: React.FC = () => {
               {/* 라벨 1: 머리-몸통 사이 */}
               <motion.div
                 className="absolute pointer-events-none flex items-center gap-[160px]"
-                style={{ left: "26%", top: "20%", zIndex: 150 }}
+                style={{ left: "20%", top: "18%", zIndex: 150 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
-                <span className="text-[32px] font-normal text-[#2b2b2b]">1</span>
+                <span className="text-[clamp(20px,3vw,32px)] font-normal text-[#2b2b2b]">1</span>
                 <svg width="20" height="40" viewBox="0 0 24 60" >
                   <path d="M12,0 L12,50 M6,42 L12,52 L18,42" stroke="#2b2b2b" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
@@ -2417,7 +2417,7 @@ const IntroSection: React.FC = () => {
             }}
             transition={{ duration: 0.6, ease: "backOut" }}
           >
-            <div className="relative w-[400px] h-[400px]">
+            <div className="relative w-[clamp(200px,35vw,400px)] h-[clamp(200px,35vw,400px)]">
               <PartPNG src="images/lego_body.png" alt="lego body" className="w-full h-full object-contain" />
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 <PartTooltip
@@ -2446,7 +2446,7 @@ const IntroSection: React.FC = () => {
             }}
             transition={{ duration: 0.6, ease: "backOut" }}
           >
-            <div className="relative w-[400px] h-[400px]">
+            <div className="relative w-[clamp(200px,35vw,400px)] h-[clamp(200px,35vw,400px)]">
               <PartPNG src="images/lego_legs.png" alt="lego legs" className="w-full h-full object-contain" />
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
                 <PartTooltip

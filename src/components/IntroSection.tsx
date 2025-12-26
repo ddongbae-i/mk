@@ -1230,7 +1230,7 @@ const IntroSection: React.FC = () => {
       const coords = getHamburgerAbsorbPosition(i);
       absorbAnims.push(
         safeAnimate(
-          `#block-${i}`,
+          `#menu-block-${i}`,
           { x: coords.x, y: coords.y, scale: 0.2, opacity: 0 },
           { duration: 0.4, ease: "backIn", delay: (4 - i) * 0.05 }
         )
@@ -2143,7 +2143,7 @@ const IntroSection: React.FC = () => {
             data-hoverable="true"
           >
             {/* 메뉴는 9단계부터 렌더링 */}
-            {(phase >= 9) && (
+            {(phase >= 10) && (
               <HamburgerIcon
                 isOpen={menuOpen}              // ✅ phase >= 12 → menuOpen
                 onClick={handleHamburgerToggle} // ✅ handleHamburgerClick → handleHamburgerToggle

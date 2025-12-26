@@ -734,7 +734,7 @@ const IntroSection: React.FC = () => {
   const headScale =
     phase >= 26 ? 1.2 :
       phase >= 23 ? 1 :
-        phase >= 14 ? 0.4 :  // 0.4에서 0.75로 변경
+        phase >= 14 ? 0.45 :
           1.2;
 
   const showHat = phase >= 15 && phase < 26;
@@ -2287,36 +2287,48 @@ const IntroSection: React.FC = () => {
           </motion.div>
         )}
 
-        {/* 2. HEAD (얼굴) - scale 대신 width/height로 조절 */}
+        {/* 2. HEAD (얼굴) */}
         <motion.div
           className="absolute pointer-events-auto"
           style={{
+            width: "700px",      // ✅ 700px 고정 (위치 기준)
+            height: "700px",
             left: "50%",
             x: "-50%",
-            top: "-8%",
+            top: "-6%",
             transformStyle: "preserve-3d",
-            zIndex: 100
+            zIndex: 100,
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
           }}
-          animate={{
-            width: 700 * headScale,   // scale 대신 실제 크기 조절
-            height: 700 * headScale
-          }}
-          transition={{ duration: 0.6, ease: "easeInOut" }}
         >
-          <Suspense fallback={<FaceLoadingPlaceholder />}>
-            <LegoFace3D
-              className="w-full h-full drop-shadow-2xl"
-              followMouse={phase >= 2 && phase <= 12}
-              fixedRotationY={phase >= 26 ? 0 : phase >= 23 ? -40 : (phase >= 14 && phase < 23 ? 15 : 0)}
-              fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}
-              spinY={phase === 26 ? spinY : 0}
-              expression={finalExpression}
-              isShaking={phase === 26 ? false : isShaking}
-              onSpinComplete={() => setSpinY(0)}
-            />
-          </Suspense>
+          {/* ✅ 내부 wrapper에서 크기 조절 */}
+          <motion.div
+            style={{
+              marginLeft: "70px",  // ✅ 오른쪽으로 이동 (양수 = 오른쪽, 음수 = 왼쪽)
+            }}
+            animate={{
+              width: 700 * headScale,
+              height: 700 * headScale,
+            }}
+            transition={{ duration: 0.6, ease: "easeInOut" }}
+          >
+            <Suspense fallback={<FaceLoadingPlaceholder />}>
+              <LegoFace3D
+                className="w-full h-full drop-shadow-2xl"
+                followMouse={phase >= 2 && phase <= 12}
+                fixedRotationY={phase >= 26 ? 0 : phase >= 23 ? -40 : (phase >= 14 && phase < 23 ? 15 : 0)}
+                fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}
+                spinY={phase === 26 ? spinY : 0}
+                expression={finalExpression}
+                isShaking={phase === 26 ? false : isShaking}
+                onSpinComplete={() => setSpinY(0)}
+              />
+            </Suspense>
+          </motion.div>
 
-          {/* 툴팁 - scale 보정 필요 없어짐 */}
+          {/* 툴팁 */}
           <div
             style={{
               position: "absolute",

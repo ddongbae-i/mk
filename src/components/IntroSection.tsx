@@ -631,6 +631,50 @@ const HamburgerIcon = ({
   </div>
 );
 
+
+// 기존 FloatingMenuBlock 컴포넌트 끝난 후 (약 530줄 근처)에 추가
+
+// ============================================================================
+// 그룹 2: 햄버거 메뉴 전용 블록 (phase 10+)
+// ============================================================================
+const HamburgerMenuBlock: React.FC<{
+  index: number;
+  id?: string;
+  isMenuOpen: boolean;
+  hoveredIndex?: number | null;
+  onClick?: () => void;
+  onHover?: (index: number | null) => void;
+}> = ({ index, id, isMenuOpen, hoveredIndex = null, onHover, onClick }) => {
+  const label = BRICK_LABELS[index % BRICK_LABELS.length];
+  const isHovered = isMenuOpen && hoveredIndex === index;
+  const baseZIndex = isHovered ? 60 : 50 - index;
+
+  return (
+    <motion.div
+      id={id}
+      onClick={onClick}
+      style={{ position: 'absolute', top: 0, left: 0, zIndex: baseZIndex }}
+      data-hoverable="true"
+      initial={false}
+      whileTap={{ scale: 0.95 }}
+      onMouseEnter={() => onHover?.(index)}
+      onMouseLeave={() => onHover?.(null)}
+      className="w-40 h-24 md:w-52 md:h-32 cursor-pointer pointer-events-auto"
+    >
+      <motion.div
+        className="w-full h-full"
+        animate={isMenuOpen ? {
+          y: isHovered ? -10 : 0,
+          scale: isHovered ? 1.05 : 1,
+        } : {}}
+        transition={{ type: "spring", stiffness: 300, damping: 25 }}
+      >
+        <LegoBrick label={label} index={index} />
+      </motion.div>
+    </motion.div>
+  );
+};
+
 // --- MAIN SECTION ---
 
 const IntroSection: React.FC = () => {
@@ -786,9 +830,9 @@ const IntroSection: React.FC = () => {
 
   };
 
-  const getStackPosition = (index: number) => {
+  const getStackPosition = (index: number, prefix: string = 'menu-block') => {
     const hamburgerEl = document.getElementById("hamburger");
-    const el = document.getElementById(`block-${index}`);
+    const el = document.getElementById(`${prefix}-${index}`);
     const container = scope.current as HTMLElement | null;
     if (!hamburgerEl || !el || !container) return { x: 0, y: 0 };
     const hb = hamburgerEl.getBoundingClientRect();
@@ -806,9 +850,9 @@ const IntroSection: React.FC = () => {
     return getTranslationToAlignCenters(el, { x: hbCenterX, y: targetCenterY }, container);
   };
 
-  const getHamburgerAbsorbPosition = (index: number) => {
+  const getHamburgerAbsorbPosition = (index: number, prefix: string = 'menu-block') => {
     const hamburgerEl = document.getElementById("hamburger");
-    const el = document.getElementById(`block-${index}`);
+    const el = document.getElementById(`${prefix}-${index}`);
     const container = scope.current as HTMLElement | null;
     if (!hamburgerEl || !el || !container) return { x: 0, y: 0 };
     const hb = hamburgerEl.getBoundingClientRect();
@@ -1093,7 +1137,7 @@ const IntroSection: React.FC = () => {
       stackAnims.push(
         (async () => {
           await safeAnimate(
-            `#block-${idx}`,
+            `#intro-block-${idx}`,
             {
               x: coords.x,
               y: [coords.y - 100, coords.y + 3, coords.y],
@@ -1119,7 +1163,7 @@ const IntroSection: React.FC = () => {
       const coords = getHamburgerAbsorbPosition(i);
       enterAnims.push(
         safeAnimate(
-          `#block-${i}`,
+          `#menu-block-${i}`,
           { x: coords.x, y: coords.y, scale: 0.2, opacity: 0 },
           { duration: 0.5, ease: "easeInOut", delay: i * 0.05 }
         )
@@ -2182,21 +2226,38 @@ const IntroSection: React.FC = () => {
             )}
           </AnimatePresence>
 
-          {phase >= 9 && (
+          {/* 그룹 1: 인트로 메뉴 (phase 9에서만, 흡수 전까지) */}
+          {phase === 9 && !didIntroMenuAnim && (
             <div className="absolute inset-0 pointer-events-none z-[110]">
               {BLOCK_POSITIONS.map((pos, i) => (
-                <div key={i} className="pointer-events-none">
-                  <FloatingMenuBlock
-                    index={i}
-                    id={`block-${i}`}
-                    shouldFloat={phase === 9 && !didIntroMenuAnim}
-                    isMenuOpen={menuOpen}                    // ✅ phase 말고 menuOpen
-                    hoveredIndex={hoveredBlockIndex}
-                    onHover={setHoveredBlockIndex}
-                    style={pos}
-                    onClick={() => menuOpen && handleMenuClick(i)}
-                  />
-                </div>
+                <FloatingMenuBlock
+                  key={`intro-${i}`}
+                  index={i}
+                  id={`intro-block-${i}`}
+                  shouldFloat={true}
+                  isMenuOpen={false}
+                  hoveredIndex={null}
+                  onHover={() => { }}
+                  style={pos}
+                  onClick={() => { }}
+                />
+              ))}
+            </div>
+          )}
+
+          {/* 그룹 2: 햄버거 메뉴 (phase 10+) */}
+          {phase >= 10 && (
+            <div className="absolute inset-0 pointer-events-none z-[110]">
+              {[0, 1, 2, 3, 4].map((i) => (
+                <HamburgerMenuBlock
+                  key={`menu-${i}`}
+                  index={i}
+                  id={`menu-block-${i}`}
+                  isMenuOpen={menuOpen}
+                  hoveredIndex={hoveredBlockIndex}
+                  onHover={setHoveredBlockIndex}
+                  onClick={() => menuOpen && handleMenuClick(i)}
+                />
               ))}
             </div>
           )}

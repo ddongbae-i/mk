@@ -530,8 +530,6 @@ const FloatingMenuBlock: React.FC<{
   onHover?: (index: number | null) => void;
 }> = ({ index, style, id, shouldFloat, isMenuOpen = false, hoveredIndex = null, onHover, onClick }) => {
   const label = BRICK_LABELS[index % BRICK_LABELS.length];
-
-  // ✅ 메뉴가 열렸거나 한번이라도 흡수 애니메이션을 했으면 float 완전 비활성화
   const isHovered = isMenuOpen && hoveredIndex === index;
   const baseZIndex = isHovered ? 60 : 50 - index;
 
@@ -542,40 +540,28 @@ const FloatingMenuBlock: React.FC<{
       style={{
         ...style,
         zIndex: baseZIndex,
-        position: 'absolute', // ✅ 항상 absolute 유지
+        position: 'absolute',
       } as React.CSSProperties}
       data-hoverable="true"
-      // ✅ shouldFloat일 때만 초기 등장 + 떠다니는 애니메이션
       initial={{ opacity: 0, scale: 0.8 }}
-      animate={
-        shouldFloat
-          ? {
-            opacity: 1,
-            scale: 1,
-            y: [0, -15, 0],
-            x: [0, 8, 0],
-            rotate: [0, index % 2 === 0 ? 5 : -5, 0],
-          }
-          : {
-            opacity: 1,
-            scale: 1,
-            y: 0,      // ✅ 명시적으로 0 설정
-            x: 0,      // ✅ 명시적으로 0 설정
-            rotate: 0, // ✅ 명시적으로 0 설정
-          }
-      }
-      transition={
-        shouldFloat
-          ? {
-            opacity: { duration: 0.8, delay: 0.4 + index * 0.2 },
-            scale: { duration: 0.8, delay: 0.4 + index * 0.2 },
-            y: { duration: 4 + (index % 2), repeat: Infinity, ease: "easeInOut", delay: 0.9 + index * 0.2 },
-            x: { duration: 5 + (index % 3), repeat: Infinity, ease: "easeInOut", delay: 0.9 + index * 0.2 },
-            rotate: { duration: 6 + (index % 4), repeat: Infinity, ease: "easeInOut", delay: 0.9 + index * 0.2 },
-          }
-          : { duration: 0.3 }
-      }
-      whileHover={!isMenuOpen ? {
+      // ✅ shouldFloat가 true일 때만 animate 적용, 아니면 완전히 비움
+      {...(shouldFloat && {
+        animate: {
+          opacity: 1,
+          scale: 1,
+          y: [0, -15, 0],
+          x: [0, 8, 0],
+          rotate: [0, index % 2 === 0 ? 5 : -5, 0],
+        },
+        transition: {
+          opacity: { duration: 0.8, delay: 0.4 + index * 0.2 },
+          scale: { duration: 0.8, delay: 0.4 + index * 0.2 },
+          y: { duration: 4 + (index % 2), repeat: Infinity, ease: "easeInOut", delay: 0.9 + index * 0.2 },
+          x: { duration: 5 + (index % 3), repeat: Infinity, ease: "easeInOut", delay: 0.9 + index * 0.2 },
+          rotate: { duration: 6 + (index % 4), repeat: Infinity, ease: "easeInOut", delay: 0.9 + index * 0.2 },
+        }
+      })}
+      whileHover={!isMenuOpen && shouldFloat ? {
         scale: 1.15,
         rotate: 0,
         y: -30,
@@ -586,7 +572,6 @@ const FloatingMenuBlock: React.FC<{
       onMouseLeave={() => isMenuOpen && onHover?.(null)}
       className="absolute w-40 h-24 md:w-52 md:h-32 cursor-pointer pointer-events-auto"
     >
-      {/* ✅ 내부 div는 메뉴 열렸을 때 호버 효과만 담당 */}
       <motion.div
         className="w-full h-full"
         animate={isMenuOpen ? {
@@ -1480,31 +1465,66 @@ const IntroSection: React.FC = () => {
         ? faceExpression
         : (isWinking ? 'sweat' : 'neutral');
   const getFacePosition = () => {
-    const base = {
+    // ✅ 모든 속성을 항상 포함
+    if (phase >= 26) {
+      return {
+        left: "calc(50% - 350px)",
+        top: "calc(50% - 250px)",
+        x: 0,
+        y: 0,
+        scale: 1.0,
+        rotateX: 0,
+        rotateY: 0,
+        rotateZ: 0,
+      };
+    }
+    if (phase >= 23) {
+      return {
+        left: "97%",
+        top: "20%",
+        x: "-50%",
+        y: "-50%",
+        scale: 1.3,
+        rotateX: 0,
+        rotateY: 0,
+        rotateZ: 0,
+      };
+    }
+    if (phase >= 14) {
+      return {
+        left: "25vw",
+        top: "50%",
+        x: "-50%",
+        y: `calc(-30% + ${scrollOffset}px)`,
+        scale: 0.9,
+        rotateX: 0,
+        rotateY: 0,
+        rotateZ: 0,
+      };
+    }
+    if (phase >= 9) {
+      return {
+        left: "47%",
+        top: "56%",
+        x: "-50%",
+        y: "-50%",
+        scale: 1,
+        rotateX: 0,
+        rotateY: 0,
+        rotateZ: 0,
+      };
+    }
+    // phase < 9 (초기 상태)
+    return {
       left: "50%",
       top: "50%",
       x: "-50%",
-      y: "-50%",
-      scale: 1,
-      rotateX: 0,
+      y: "150vh",
+      scale: 0.8,
+      rotateZ: -45,
+      rotateX: 30,
       rotateY: 0,
-      rotateZ: 0,
     };
-
-    if (phase >= 26) {
-      return { ...base, left: "calc(50% - 350px)", top: "calc(50% - 250px)", x: 0, y: 0 };
-    }
-    if (phase >= 23) {
-      return { ...base, left: "97%", top: "20%", scale: 1.3 };
-    }
-    if (phase >= 14) {
-      // ✅ top: "50%" 명시 추가
-      return { ...base, left: "25vw", top: "50%", x: "-50%", y: `calc(-30% + ${scrollOffset}px)`, scale: 0.9 };
-    }
-    if (phase >= 9) {
-      return { ...base, left: "47%", top: "56%" };
-    }
-    return { ...base, y: "150vh", scale: 0.8, rotateZ: -45, rotateX: 30 };
   };
 
   return (
@@ -2054,7 +2074,10 @@ const IntroSection: React.FC = () => {
                     onHover={setHoveredBlockIndex}
                     style={pos}
                     onClick={() => {
-                      if (menuOpen) handleMenuClick(i);
+                      // ✅ 둥둥 떠다닐 때도 클릭 가능하게
+                      if (menuOpen || (phase === 9 && !didIntroMenuAnim)) {
+                        handleMenuClick(i);
+                      }
                     }}
                   />
                 </div>
@@ -2086,8 +2109,16 @@ const IntroSection: React.FC = () => {
         onDrag={handleDrag}
         // whileDrag={{ cursor: "grabbing", scale: 1.25 }}
 
-        initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}
-
+        initial={{
+          left: "50%",
+          top: "50%",
+          x: "-50%",
+          y: "150vh",
+          scale: 0.8,
+          rotateZ: -45,
+          rotateX: 30,
+          rotateY: 0,
+        }}
         animate={getFacePosition()}
         transition={{ duration: 1.0, ease: "easeInOut" }}
       >

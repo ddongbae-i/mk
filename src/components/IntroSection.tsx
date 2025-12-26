@@ -5,7 +5,7 @@ import SkillSection from './SkillSection';
 import ProjectDetailCard from './ProjectDetailCard';
 import { CustomCursor } from './CustomCursor';
 // import { LegoPart3D } from "./LegoPart3D";
-
+console.log('IntroSection render', Date.now());
 
 type FaceExpression = 'sad' | 'neutral' | 'happy' | 'sweat' | 'blank';
 const COLORS = [

@@ -525,11 +525,29 @@ const FloatingMenuBlock: React.FC<{
   id?: string;
   shouldFloat: boolean;
   isMenuOpen?: boolean;
+
   hoveredIndex?: number | null;
   onClick?: () => void;
   onHover?: (index: number | null) => void;
 }> = ({ index, style, id, shouldFloat, isMenuOpen = false, hoveredIndex = null, onHover, onClick }) => {
   const label = BRICK_LABELS[index % BRICK_LABELS.length];
+  const randomDelay = 0.4 + index * 0.2;
+
+  const floatAnim = {
+    opacity: 1,
+    scale: 1,
+    y: [0, -15, 0],
+    x: [0, 8, 0],
+    rotate: [0, index % 2 === 0 ? 5 : -5, 0],
+  };
+
+  const getHoverOffset = () => {
+    if (!isMenuOpen || hoveredIndex === null) return 0;
+    if (index === hoveredIndex) return 0;
+    if (index < hoveredIndex) return -20;
+    return 20;
+  };
+
   const isHovered = isMenuOpen && hoveredIndex === index;
   const baseZIndex = isHovered ? 60 : 50 - index;
 
@@ -537,39 +555,20 @@ const FloatingMenuBlock: React.FC<{
     <motion.div
       id={id}
       onClick={onClick}
-      style={{
-        ...style,
-        zIndex: baseZIndex,
-        position: 'absolute',
-      } as React.CSSProperties}
+      style={{ ...style, zIndex: baseZIndex } as React.CSSProperties}
       data-hoverable="true"
       initial={{ opacity: 0, scale: 0.8 }}
-      animate={
-        shouldFloat
-          ? {
-            opacity: 1,
-            scale: 1,
-            y: [0, -15, 0],
-            x: [0, 8, 0],
-            rotate: [0, index % 2 === 0 ? 5 : -5, 0],
-          }
-          : {
-            // shouldFloat가 false면 useAnimate가 제어하므로 여기선 아무것도 안 함
-            // 하지만 초기 등장을 위해 opacity: 1은 필요
-          }
-      }
-      transition={
-        shouldFloat
-          ? {
-            opacity: { duration: 0.8, delay: 0.4 + index * 0.2 },
-            scale: { duration: 0.8, delay: 0.4 + index * 0.2 },
-            y: { duration: 4 + (index % 2), repeat: Infinity, ease: "easeInOut", delay: 0.9 + index * 0.2 },
-            x: { duration: 5 + (index % 3), repeat: Infinity, ease: "easeInOut", delay: 0.9 + index * 0.2 },
-            rotate: { duration: 6 + (index % 4), repeat: Infinity, ease: "easeInOut", delay: 0.9 + index * 0.2 },
-          }
-          : undefined
-      }
-      whileHover={!isMenuOpen && shouldFloat ? {
+      animate={shouldFloat ? floatAnim : { opacity: 1, scale: 1 }}
+      transition={{
+        opacity: { duration: 0.8, delay: randomDelay },
+        scale: { duration: 0.8, delay: randomDelay },
+        ...(shouldFloat && {
+          y: { duration: 4 + (index % 2), repeat: Infinity, ease: "easeInOut", delay: randomDelay + 0.5 },
+          x: { duration: 5 + (index % 3), repeat: Infinity, ease: "easeInOut", delay: randomDelay + 0.5 },
+          rotate: { duration: 6 + (index % 4), repeat: Infinity, ease: "easeInOut", delay: randomDelay + 0.5 },
+        }),
+      }}
+      whileHover={!isMenuOpen ? {
         scale: 1.15,
         rotate: 0,
         y: -30,
@@ -583,7 +582,7 @@ const FloatingMenuBlock: React.FC<{
       <motion.div
         className="w-full h-full"
         animate={isMenuOpen ? {
-          y: isHovered ? -10 : 0,
+          y: getHoverOffset(),
           scale: isHovered ? 1.05 : 1,
         } : {}}
         transition={{ type: "spring", stiffness: 300, damping: 25 }}
@@ -647,7 +646,6 @@ const IntroSection: React.FC = () => {
 
   const handleMenuClick = async (index: number) => {
     const label = BRICK_LABELS[index];
-    console.log('Menu clicked:', label);
 
     const targetByLabel: Record<string, number | null> = {
       BUILD: 14,
@@ -660,64 +658,32 @@ const IntroSection: React.FC = () => {
     const target = targetByLabel[label];
     if (target == null) return;
 
-    // ✅ 이미 애니메이션 중이면 리턴하지만, 메뉴가 열려있으면 진행
-    if (isAnimatingRef.current && !menuOpen) return;
-
+    // ✅ 애니메이션 잠금
+    if (isAnimatingRef.current) return;
     isAnimatingRef.current = true;
 
-    try {
-      // 1. 메뉴 닫기 (closeMenu 내부의 isAnimatingRef 설정 무시)
-      if (menuOpen) {
-        // ✅ closeMenu 대신 직접 애니메이션 실행
-        const absorbAnims = [];
-        for (let i = 0; i < 5; i++) {
-          const coords = getHamburgerAbsorbPosition(i);
-          absorbAnims.push(
-            safeAnimate(
-              `#block-${i}`,
-              { x: coords.x, y: coords.y, scale: 0.2, opacity: 0 },
-              { duration: 0.3, ease: "backIn", delay: (4 - i) * 0.03 }
-            )
-          );
-        }
-        await Promise.all(absorbAnims);
-        setMenuOpen(false);
-      }
+    // ✅ 메뉴가 열려있으면 "흡수"로 닫아주고
+    if (menuOpen) await closeMenu();
 
-      // 2. 블록 위치 완전 초기화
-      await resetMenuBlocksToOriginal();
+    // ✅ 블럭 좌표/투명도 상태 초기화(중요)
+    await resetMenuBlocks();
 
-      // 3. 스크롤/표정 상태 초기화
-      setIsNaturalScrolling(false);
-      setNaturalScrollY(0);
-      if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
-      setExpandedTooltip(null);
-      setIsProjectOpen(false);
+    // ✅ 네비 점프 전에 스크롤 오버레이/상태 정리 (2번 문제도 같이 해결)
+    setIsNaturalScrolling(false);
+    setNaturalScrollY(0);
+    if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
 
-      // 4. phase 이동
-      setPhase(target);
+    setExpandedTooltip(null);
+    setIsProjectOpen(false);
 
-    } finally {
-      setTimeout(() => {
-        isAnimatingRef.current = false;
-      }, 800); // ✅ 시간 늘림
-    }
+    // ✅ 이동
+    setPhase(target);
+
+    window.setTimeout(() => {
+      isAnimatingRef.current = false;
+    }, 400);
   };
 
-  // ✅ 새 함수 추가: 블록을 원래 CSS 위치로 완전 리셋
-  const resetMenuBlocksToOriginal = async () => {
-    const jobs: Promise<any>[] = [];
-    for (let i = 0; i < 5; i++) {
-      jobs.push(
-        safeAnimate(
-          `#block-${i}`,
-          { x: 0, y: 0, rotate: 0, scale: 1, opacity: 1 },
-          { duration: 0.01 }
-        )
-      );
-    }
-    await Promise.all(jobs);
-  };
 
   const resetMenuBlocks = async () => {
     // framer/useAnimate로 박혀있는 x/y/scale/opacity를 원점으로 정리
@@ -1238,48 +1204,6 @@ const IntroSection: React.FC = () => {
     else await closeMenu();
   };
 
-  // 새로운 useEffect 추가 (약 1000줄 근처)
-  useEffect(() => {
-    if (phase >= 26) {
-      animate("#face-container", {
-        left: "calc(50% - 350px)",
-        top: "calc(50% - 250px)",
-        x: 0,
-        y: 0,
-        scale: 1.0,
-        rotateX: 0,
-        rotateY: 0,
-        rotateZ: 0,
-      }, { duration: 1.0, ease: "easeInOut" });
-    } else if (phase >= 23) {
-      animate("#face-container", {
-        left: "97%",
-        top: "20%",
-        x: "-50%",
-        y: "-50%",
-        scale: 1.3,
-        rotateX: 0,
-        rotateY: 0,
-        rotateZ: 0,
-      }, { duration: 1.0, ease: "easeInOut" });
-    } else if (phase >= 14) {
-      animate("#face-container", {
-        left: "25vw",
-        top: "50%",
-        x: "-50%",
-        y: `calc(-30% + ${scrollOffset}px)`,
-        scale: 0.9,
-      }, { duration: 1.0, ease: "easeInOut" });
-    } else if (phase >= 9) {
-      animate("#face-container", {
-        left: "47%",
-        top: "56%",
-        x: "-50%",
-        y: "-50%",
-        scale: 1,
-      }, { duration: 1.0, ease: "easeInOut" });
-    }
-  }, [phase, scrollOffset, animate]);
 
   useEffect(() => {
     // phase가 바뀌면 자연스크롤은 무조건 끄기 (특히 메뉴 점프 대비)
@@ -1367,8 +1291,6 @@ const IntroSection: React.FC = () => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
-    let lastScrollTop = container.scrollTop;
-
     const handleNaturalScroll = () => {
       const scrollTop = container.scrollTop;
       setNaturalScrollY(scrollTop);
@@ -1377,24 +1299,10 @@ const IntroSection: React.FC = () => {
         setIsNaturalScrolling(false);
         setPhase(16);
       }
-
-    };
-
-    const handleWheel = (e: WheelEvent) => {
-      if (container.scrollTop === 0 && e.deltaY < 0) {
-        e.preventDefault();
-        setIsNaturalScrolling(false);
-        setPhase(14);
-      }
     };
 
     container.addEventListener('scroll', handleNaturalScroll);
-    container.addEventListener('wheel', handleWheel, { passive: false });
-
-    return () => {
-      container.removeEventListener('scroll', handleNaturalScroll);
-      container.removeEventListener('wheel', handleWheel);
-    };
+    return () => container.removeEventListener('scroll', handleNaturalScroll);
   }, [isNaturalScrolling, phase]);
 
   useEffect(() => {
@@ -1514,7 +1422,6 @@ const IntroSection: React.FC = () => {
       : (faceExpression === 'blank' || faceExpression === 'sweat')
         ? faceExpression
         : (isWinking ? 'sweat' : 'neutral');
-
   return (
     <div
       ref={scope}
@@ -1831,6 +1738,233 @@ const IntroSection: React.FC = () => {
             style={{ zIndex: 120 }} // 전체 래퍼 기준
           >
 
+            {/* ✅ (1) LABEL BETWEEN HAT ↔ FACE */}
+            {/* <AnimatePresence>
+              {phase < 21 && (
+                <motion.div
+                  className="absolute pointer-events-none flex items-center gap-[120px]"
+                  style={{
+                    left: "25%",
+                    transform: "translateX(-50%)",
+                    zIndex: 50, // 라벨은 항상 위
+                  }}
+                  initial={{ opacity: 1 }}
+                  animate={{ top: "25px", opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <span className="text-[28px] font-normal text-[#2b2b2b]">1</span>
+                  <svg width="24" height="40" viewBox="0 0 24 40">
+                    <path
+                      d="M12,0 L12,32 M6,26 L12,34 L18,26"
+                      stroke="#2b2b2b"
+                      strokeWidth="3"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </motion.div>
+              )}
+            </AnimatePresence> */}
+
+
+
+            {/* <div
+              // 1. relative -> absolute로 변경
+              className="absolute flex flex-col items-center"
+              style={{
+                width: "280px",
+                height: "280px",
+                zIndex: 30,
+                left: "50%",
+                transform: "translateX(-50%)", 
+                top: "100px",
+              }}
+            >
+              <PartTooltip
+                title={PART_DESCRIPTIONS[0].title}
+                description={PART_DESCRIPTIONS[0].description}
+                isVisible={phase === 16}
+                details={PART_DESCRIPTIONS[0].details}
+                isExpanded={expandedTooltip === 1}
+                onToggle={() => setExpandedTooltip(expandedTooltip === 1 ? null : 1)}
+                lineLength={80}
+                leftOffset={-100}
+              />
+            </div> */}
+
+
+            {/* <div
+              className="absolute flex flex-col items-center"
+              style={{
+                width: "240px",
+                height: "240px",
+                zIndex: 30,
+                left: "50%",
+                transform: "translateX(-50%)",
+                top: "150px",
+              }}
+            >
+              <PartTooltip
+                title={PART_DESCRIPTIONS[1].title}
+                description={PART_DESCRIPTIONS[1].description}
+                isVisible={phase === 17}
+                details={PART_DESCRIPTIONS[1].details}
+                isExpanded={expandedTooltip === 1}
+                onToggle={() => setExpandedTooltip(expandedTooltip === 1 ? null : 1)}
+                lineLength={80}
+                leftOffset={-100}
+              />
+            </div> */}
+
+            {/* ✅ (2) LABEL BETWEEN FACE ↔ BODY */}
+            {/* <AnimatePresence>
+              {phase < 21 && (
+                <motion.div
+                  className="absolute pointer-events-none flex items-center gap-[120px]"
+                  style={{
+                    left: "25%",
+                    transform: "translateX(-50%)",
+                    zIndex: 50,
+                  }}
+                  initial={{ opacity: 1 }}
+                  animate={{ top: "208px", opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <span className="text-[28px] font-normal text-[#2b2b2b]">2</span>
+                  <svg width="24" height="40" viewBox="0 0 24 40">
+                    <path
+                      d="M12,0 L12,32 M6,26 L12,34 L18,26"
+                      stroke="#2b2b2b"
+                      strokeWidth="3"
+                      fill="none"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </motion.div>
+              )}
+            </AnimatePresence> */}
+
+            {/* =========================
+      3) BODY (zIndex: 20)
+     ========================= */}
+            {/* <motion.div
+              className="absolute"
+              style={{
+                left: "59%",
+                transform: "translateX(-50%)",
+                zIndex: 20,
+              }}
+              animate={{
+                top: phase >= 21 ? "110px" : "210px",
+                opacity: phase >= 23 ? 0 : 1,
+              }}
+              transition={{ duration: 0.6, ease: "backOut" }}
+            >
+              <div className="relative flex flex-col items-center pointer-events-auto">
+                <div className="relative" style={{ width: "280px", height: "280px" }}>
+                  <PartPNG
+                    src="images/lego_body.png"
+                    alt="lego body"
+                    className="absolute inset-0 w-full h-full object-contain"
+                  />
+                </div>
+
+                <PartTooltip
+                  title={PART_DESCRIPTIONS[2].title}
+                  description={PART_DESCRIPTIONS[2].description}
+                  isVisible={phase === 18}
+                  details={PART_DESCRIPTIONS[2].details}
+                  isExpanded={expandedTooltip === 2}
+                  onToggle={() => setExpandedTooltip(expandedTooltip === 2 ? null : 2)}
+                  lineLength={80}
+                  leftOffset={-120}
+                />
+              </div>
+            </motion.div> */}
+
+            {/* ✅ (3) LABEL BETWEEN BODY ↔ LEGS */}
+            {/* <AnimatePresence>
+              {phase < 21 && (
+                <motion.div
+                  className="absolute pointer-events-none flex items-center gap-[90px]"
+                  style={{
+                    left: "30%",
+                    transform: "translateX(-50%)",
+                    zIndex: 50,
+                  }}
+                  initial={{ opacity: 1 }}
+                  animate={{ top: "440px", opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <span className="text-[28px] font-normal text-[#2b2b2b]">3</span>
+                  <div className='flex gap-12'>
+                    <svg width="24" height="40" viewBox="0 0 24 40" className="translate-y-1">
+                      <path
+                        d="M12,0 L12,32 M6,26 L12,34 L18,26"
+                        stroke="#2b2b2b"
+                        strokeWidth="3"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                    <svg width="24" height="40" viewBox="0 0 24 40" className="-translate-y-2">
+                      <path
+                        d="M12,0 L12,32 M6,26 L12,34 L18,26"
+                        stroke="#2b2b2b"
+                        strokeWidth="3"
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+                  </div>
+
+                </motion.div>
+              )}
+            </AnimatePresence> */}
+
+            {/* =========================
+      5) LEGS (zIndex: 10)
+     ========================= */}
+            {/* <motion.div
+              className="absolute"
+              style={{
+                left: "51%",
+                transform: "translateX(-50%)",
+                zIndex: 10,
+              }}
+              animate={{
+                top: phase >= 21 ? "240px" : "460px",
+                opacity: phase >= 23 ? 0 : 1,
+              }}
+              transition={{ duration: 0.6, ease: "backOut" }}
+            >
+              <div className="relative flex flex-col items-center pointer-events-auto">
+                <div className="relative" style={{ width: "280px", height: "280px" }}>
+                  <PartPNG
+                    src="images/lego_legs.png"
+                    alt="lego legs"
+                    className="absolute inset-0 w-full h-full object-contain"
+                  />
+                </div>
+
+                <PartTooltip
+                  title={PART_DESCRIPTIONS[3].title}
+                  description={PART_DESCRIPTIONS[3].description}
+                  isVisible={phase === 19}
+                  details={PART_DESCRIPTIONS[3].details}
+                  isExpanded={expandedTooltip === 3}
+                  onToggle={() => setExpandedTooltip(expandedTooltip === 3 ? null : 3)}
+                  lineLength={80}
+                />
+              </div>
+            </motion.div> */}
           </motion.div>
 
 
@@ -2051,22 +2185,16 @@ const IntroSection: React.FC = () => {
           {phase >= 9 && (
             <div className="absolute inset-0 pointer-events-none z-[110]">
               {BLOCK_POSITIONS.map((pos, i) => (
-                <div key={i} className="pointer-events-auto">
+                <div key={i} className="pointer-events-none">
                   <FloatingMenuBlock
                     index={i}
                     id={`block-${i}`}
-                    // ✅ 조건 더 명확하게: phase 9이고, 아직 intro 애니메이션 안 했고, 메뉴 안 열렸을 때만
-                    shouldFloat={phase === 9 && !didIntroMenuAnim && !menuOpen}
-                    isMenuOpen={menuOpen}
+                    shouldFloat={phase === 9 && !didIntroMenuAnim}
+                    isMenuOpen={menuOpen}                    // ✅ phase 말고 menuOpen
                     hoveredIndex={hoveredBlockIndex}
                     onHover={setHoveredBlockIndex}
                     style={pos}
-                    onClick={() => {
-                      // ✅ 둥둥 떠다닐 때도 클릭 가능하게
-                      if (menuOpen || (phase === 9 && !didIntroMenuAnim)) {
-                        handleMenuClick(i);
-                      }
-                    }}
+                    onClick={() => menuOpen && handleMenuClick(i)}
                   />
                 </div>
               ))}
@@ -2090,11 +2218,6 @@ const IntroSection: React.FC = () => {
           overflow: "visible",
           cursor: phase === 26 ? "grab" : "default",
           touchAction: "none",
-          // ✅ CSS로 기본 위치 설정
-          position: "absolute",
-          left: "50%",
-          top: "50%",
-          transform: "translate(-50%, -50%)",
         }}
         drag={phase === 26}
         dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
@@ -2102,8 +2225,34 @@ const IntroSection: React.FC = () => {
         onDrag={handleDrag}
         // whileDrag={{ cursor: "grabbing", scale: 1.25 }}
 
-        // initial={false}
-        // animate={getFacePosition()}
+        initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}
+
+        animate={
+          phase >= 26
+            ? {
+              left: "calc(50% - 350px)",
+              top: "calc(50% - 250px)",
+              x: 0, y: 0, scale: 1.0,
+              rotateZ: 0,
+            }
+            : phase >= 23
+              ? { left: "97%", top: "20%", x: "-50%", y: "-50%", scale: 1.3 }
+              : phase >= 14
+                ? {
+                  // 조립 단계: 이미지가 너무 작아지지 않도록 scale 0.9~1.0 유지
+                  left: "25vw",
+                  top: "50%",
+                  x: "-50%",
+                  y: `calc(-30% + ${scrollOffset}px)`,
+                  scale: 0.9,
+                  rotateX: 0,
+                  rotateZ: 0,
+                  rotateY: 0
+                }
+                : phase >= 9
+                  ? { left: "47%", top: "56%", x: "-50%", y: "-50%", scale: 1, rotateZ: 0, rotateY: 0 }
+                  : { y: "150vh" }
+        }
         transition={{ duration: 1.0, ease: "easeInOut" }}
       >
 
@@ -2178,6 +2327,28 @@ const IntroSection: React.FC = () => {
             </Suspense>
           </motion.div>
 
+          {/* ✅ 툴팁 - 700px 기준, 스케일 영향 없음 */}
+          {/* <div
+            style={{
+              position: "absolute",
+              left: "calc(50% + 35px)",  // 얼굴 중심 + marginLeft 보정
+              top: "50%",
+              transform: "translateY(-50%)",
+              zIndex: 200,
+              pointerEvents: "auto",
+            }}
+          >
+            <PartTooltip
+              title={PART_DESCRIPTIONS[1].title}
+              description={PART_DESCRIPTIONS[1].description}
+              isVisible={phase === 17}
+              details={PART_DESCRIPTIONS[1].details}
+              isExpanded={expandedTooltip === 1}
+              onToggle={() => setExpandedTooltip(expandedTooltip === 1 ? null : 1)}
+              lineLength={80}
+              leftOffset={70}  // 얼굴 크기(315px/2 ≈ 157px) 고려해서 조정
+            />
+          </div> */}
         </motion.div>
 
         {/* --- 화살표 & 라벨 (조건 수정: phase >= 14 추가) --- */}
@@ -2324,7 +2495,7 @@ const IntroSection: React.FC = () => {
                 isExpanded={expandedTooltip === 1}
                 onToggle={() => setExpandedTooltip(expandedTooltip === 1 ? null : 1)}
                 lineLength={80}
-                leftOffset={50}
+                leftOffset={60}
               />
             </div>
           </motion.div>

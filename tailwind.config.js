@@ -12,4 +12,22 @@ export default {
     },
   },
   plugins: [],
+
+}
+
+module.exports = {
+  theme: {
+    extend: {
+      keyframes: {
+        shake: {
+          '0%, 100%': { transform: 'rotate(0deg)' },
+          '25%': { transform: 'rotate(-3deg)' },
+          '75%': { transform: 'rotate(3deg)' },
+        }
+      },
+      animation: {
+        shake: 'shake 0.15s ease-in-out',
+      }
+    }
+  }
 }

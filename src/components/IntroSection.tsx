@@ -716,7 +716,7 @@ const IntroSection: React.FC = () => {
     useState<FaceExpression>('neutral');
 
   const [isWinking, setIsWinking] = useState(false);
-  const [isShaking, setIsShaking] = useState(false);
+  const isShakingRef = useRef(false);
   const [shakeTrigger, setShakeTrigger] = useState(0);
   const [headPosition, setHeadPosition] = useState(() => ({
     x: typeof window !== 'undefined' ? window.innerWidth / 2 : 500,
@@ -1055,26 +1055,25 @@ const IntroSection: React.FC = () => {
     const dx = info.delta?.x ?? 0;
     const now = performance.now();
 
-    // 노이즈 컷
     if (Math.abs(dx) < 6) return;
 
     const dir: "L" | "R" = dx > 0 ? "R" : "L";
 
-    // 방향 전환 = 흔들 1회
     if (lastDirRef.current && dir !== lastDirRef.current) {
       shakeCountRef.current += 1;
 
-      // 2~3번마다 (2로 고정하면 더 경쾌 / 랜덤 원하면 아래 주석 참고)
       const threshold = 2;
-      // const threshold = (now % 2 < 1) ? 2 : 3; // 대충 랜덤 느낌 원하면 이런식도 가능
 
-      // 너무 연속 발사 방지
       if (shakeCountRef.current >= threshold && now - lastEmitRef.current > 120) {
         lastEmitRef.current = now;
         shakeCountRef.current = 0;
         setShakeTrigger((p) => p + 1);
-        setIsShaking(true);
-        window.setTimeout(() => setIsShaking(false), 150);
+
+        // ✅ ref로 변경 - 리렌더링 없음
+        isShakingRef.current = true;
+        window.setTimeout(() => {
+          isShakingRef.current = false;
+        }, 150);
       }
     }
 
@@ -2206,7 +2205,7 @@ const IntroSection: React.FC = () => {
       <motion.div
         id="face-container"
         ref={headRef}
-        className="absolute pointer-events-auto"
+        className={`absolute pointer-events-auto ${shakeTrigger > 0 && phase === 26 ? 'animate-shake' : ''}`}
         data-lego-head="true"
         style={{
           width: "700px",
@@ -2231,7 +2230,7 @@ const IntroSection: React.FC = () => {
               left: "calc(50% - 350px)",
               top: "calc(50% - 250px)",
               x: 0, y: 0, scale: 1.0,
-              rotateZ: isShaking ? [-3, 3, -3, 3, 0] : 0,
+              rotateZ: 0,
             }
             : phase >= 23
               ? { left: "97%", top: "20%", x: "-50%", y: "-50%", scale: 1.3 }
@@ -2291,7 +2290,7 @@ const IntroSection: React.FC = () => {
         <motion.div
           className="absolute pointer-events-auto"
           style={{
-            width: "700px",      // ✅ 700px 고정 (위치 기준)
+            width: "700px",
             height: "700px",
             left: "50%",
             x: "-50%",
@@ -2303,11 +2302,9 @@ const IntroSection: React.FC = () => {
             alignItems: "center",
           }}
         >
-          {/* ✅ 내부 wrapper에서 크기 조절 */}
+          {/* 내부 wrapper - 얼굴만, 크기 조절 */}
           <motion.div
-            style={{
-              marginLeft: "70px",  // ✅ 오른쪽으로 이동 (양수 = 오른쪽, 음수 = 왼쪽)
-            }}
+            style={{ marginLeft: "70px" }}
             animate={{
               width: 700 * headScale,
               height: 700 * headScale,
@@ -2322,36 +2319,34 @@ const IntroSection: React.FC = () => {
                 fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}
                 spinY={phase === 26 ? spinY : 0}
                 expression={finalExpression}
-                isShaking={phase === 26 ? false : isShaking}
+                isShaking={false}  // ✅ 항상 false (useFrame 내부에서 처리 안 함)
                 onSpinComplete={() => setSpinY(0)}
               />
             </Suspense>
           </motion.div>
 
-          {/* 툴팁 */}
-          <div
+          {/* ✅ 툴팁 - 700px 기준, 스케일 영향 없음 */}
+          {/* <div
             style={{
               position: "absolute",
-              left: "50%",
+              left: "calc(50% + 35px)",  // 얼굴 중심 + marginLeft 보정
               top: "50%",
-              transform: "translate(-50%, -50%)",
+              transform: "translateY(-50%)",
               zIndex: 200,
-              pointerEvents: "none",
+              pointerEvents: "auto",
             }}
           >
-            <div style={{ pointerEvents: "auto" }}>
-              <PartTooltip
-                title={PART_DESCRIPTIONS[1].title}
-                description={PART_DESCRIPTIONS[1].description}
-                isVisible={phase === 17}
-                details={PART_DESCRIPTIONS[1].details}
-                isExpanded={expandedTooltip === 1}
-                onToggle={() => setExpandedTooltip(expandedTooltip === 1 ? null : 1)}
-                lineLength={80}
-                leftOffset={50}
-              />
-            </div>
-          </div>
+            <PartTooltip
+              title={PART_DESCRIPTIONS[1].title}
+              description={PART_DESCRIPTIONS[1].description}
+              isVisible={phase === 17}
+              details={PART_DESCRIPTIONS[1].details}
+              isExpanded={expandedTooltip === 1}
+              onToggle={() => setExpandedTooltip(expandedTooltip === 1 ? null : 1)}
+              lineLength={80}
+              leftOffset={70}  // 얼굴 크기(315px/2 ≈ 157px) 고려해서 조정
+            />
+          </div> */}
         </motion.div>
 
         {/* --- 화살표 & 라벨 (조건 수정: phase >= 14 추가) --- */}
@@ -2472,7 +2467,38 @@ const IntroSection: React.FC = () => {
         )}
 
       </motion.div>
-
+      <AnimatePresence>
+        {phase === 17 && (
+          <motion.div
+            style={{
+              position: "absolute",
+              left: "25vw",
+              top: "50%",
+              transform: `translate(-50%, calc(-30% + ${scrollOffset}px))`,
+              zIndex: 200,
+              pointerEvents: "auto",
+            }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            {/* 얼굴 중심에서 툴팁 위치 조정 */}
+            <div style={{ position: "relative", left: "80px", top: "0px" }}>
+              <PartTooltip
+                title={PART_DESCRIPTIONS[1].title}
+                description={PART_DESCRIPTIONS[1].description}
+                isVisible={true}
+                details={PART_DESCRIPTIONS[1].details}
+                isExpanded={expandedTooltip === 1}
+                onToggle={() => setExpandedTooltip(expandedTooltip === 1 ? null : 1)}
+                lineLength={80}
+                leftOffset={50}
+              />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
 
       {/* 하단 안내 문구 */}

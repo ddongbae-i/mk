@@ -159,7 +159,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     // ✅ 단일 물리 루프 - 모든 객체를 한 번에 처리 (핵심 최적화!)
     useEffect(() => {
         if (!isActive) return;
-
+        console.log('🔴 Physics loop STARTED');
         const windowHeight = window.innerHeight;
         const windowWidth = window.innerWidth;
         const floorY = windowHeight - 150;
@@ -242,6 +242,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         rafRef.current = requestAnimationFrame(updatePhysics);
 
         return () => {
+            console.log('🟢 Physics loop STOPPED');
             if (rafRef.current) {
                 cancelAnimationFrame(rafRef.current);
                 rafRef.current = null;

@@ -154,7 +154,7 @@ const LegoModel: React.FC<ModelProps> = ({
     );
 };
 
-export const LegoFace3D: React.FC<{
+export const LegoFace3D = React.memo<{
     className?: string;
     followMouse?: boolean;
     fixedRotationY?: number;
@@ -163,7 +163,7 @@ export const LegoFace3D: React.FC<{
     expression?: Expression;
     isShaking?: boolean;
     onSpinComplete?: () => void;
-}> = ({
+}>(({
     className,
     followMouse = true,
     fixedRotationY = 0,
@@ -173,92 +173,92 @@ export const LegoFace3D: React.FC<{
     isShaking = false,
     onSpinComplete,
 }) => {
-        const [internalSpinY, setInternalSpinY] = useState(0);
-        const [isSpinning, setIsSpinning] = useState(false);
-        const spinStartTime = useRef<number | null>(null);
+    const [internalSpinY, setInternalSpinY] = useState(0);
+    const [isSpinning, setIsSpinning] = useState(false);
+    const spinStartTime = useRef<number | null>(null);
 
-        useEffect(() => {
-            if (spinY === 360 && !isSpinning) {
-                setIsSpinning(true);
-                spinStartTime.current = Date.now();
+    useEffect(() => {
+        if (spinY === 360 && !isSpinning) {
+            setIsSpinning(true);
+            spinStartTime.current = Date.now();
+        }
+    }, [spinY, isSpinning]);
+
+    useEffect(() => {
+        if (!isSpinning) return;
+
+        const duration = 1500;
+        let raf = 0;
+
+        const animate = () => {
+            if (spinStartTime.current == null) return;
+
+            const elapsed = Date.now() - spinStartTime.current;
+            const progress = Math.min(elapsed / duration, 1);
+
+            const eased =
+                progress < 0.5
+                    ? 4 * progress * progress * progress
+                    : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+
+            setInternalSpinY(eased * 360);
+
+            if (progress < 1) {
+                raf = requestAnimationFrame(animate);
+            } else {
+                setIsSpinning(false);
+                setInternalSpinY(0);
+                onSpinComplete?.();
             }
-        }, [spinY, isSpinning]);
+        };
 
-        useEffect(() => {
-            if (!isSpinning) return;
+        raf = requestAnimationFrame(animate);
+        return () => cancelAnimationFrame(raf);
+    }, [isSpinning, onSpinComplete]);
 
-            const duration = 1500;
-            let raf = 0;
+    const effectiveSpinY = isSpinning ? internalSpinY : spinY;
 
-            const animate = () => {
-                if (spinStartTime.current == null) return;
-
-                const elapsed = Date.now() - spinStartTime.current;
-                const progress = Math.min(elapsed / duration, 1);
-
-                const eased =
-                    progress < 0.5
-                        ? 4 * progress * progress * progress
-                        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
-
-                setInternalSpinY(eased * 360);
-
-                if (progress < 1) {
-                    raf = requestAnimationFrame(animate);
-                } else {
-                    setIsSpinning(false);
-                    setInternalSpinY(0);
-                    onSpinComplete?.();
-                }
-            };
-
-            raf = requestAnimationFrame(animate);
-            return () => cancelAnimationFrame(raf);
-        }, [isSpinning, onSpinComplete]);
-
-        const effectiveSpinY = isSpinning ? internalSpinY : spinY;
-
-        return (
-            <div
-                className={className}
-                style={{
-                    width: "100%",
-                    height: "100%",
-                    overflow: "visible",
+    return (
+        <div
+            className={className}
+            style={{
+                width: "100%",
+                height: "100%",
+                overflow: "visible",
+            }}
+        >
+            <Canvas
+                dpr={[1, 2]}
+                camera={{ position: [0, 0, 8], fov: 45 }}
+                resize={{ scroll: false }}
+                style={{ background: "transparent", overflow: "visible" }}
+                gl={{
+                    alpha: true,
+                    antialias: true,
+                    toneMapping: THREE.NoToneMapping,
+                    outputColorSpace: THREE.SRGBColorSpace, // ✅ 색감 고정
                 }}
             >
-                <Canvas
-                    dpr={[1, 2]}
-                    camera={{ position: [0, 0, 8], fov: 45 }}
-                    resize={{ scroll: false }}
-                    style={{ background: "transparent", overflow: "visible" }}
-                    gl={{
-                        alpha: true,
-                        antialias: true,
-                        toneMapping: THREE.NoToneMapping,
-                        outputColorSpace: THREE.SRGBColorSpace, // ✅ 색감 고정
-                    }}
-                >
-                    {/* ✅ 색감 안정: 과한 라이트 줄이고, 표정은 emissive로 보정했음 */}
-                    <ambientLight intensity={2.0} />
-                    <directionalLight position={[0, 0, 9]} intensity={1.0} />
-                    <directionalLight position={[-5, 5, -5]} intensity={0.5} />
-                    <hemisphereLight intensity={0.35} groundColor="#ffffff" />
-                    <pointLight position={[0, 1, 6]} intensity={1.2} distance={30} />
+                {/* ✅ 색감 안정: 과한 라이트 줄이고, 표정은 emissive로 보정했음 */}
+                <ambientLight intensity={2.0} />
+                <directionalLight position={[0, 0, 9]} intensity={1.0} />
+                <directionalLight position={[-5, 5, -5]} intensity={0.5} />
+                <hemisphereLight intensity={0.35} groundColor="#ffffff" />
+                <pointLight position={[0, 1, 6]} intensity={1.2} distance={30} />
 
-                    <Suspense fallback={null}>
-                        <LegoModel
-                            followMouse={followMouse}
-                            fixedRotationY={fixedRotationY}
-                            fixedRotationX={fixedRotationX}
-                            spinY={effectiveSpinY}
-                            expression={expression}
-                            isShaking={isShaking}
-                        />
-                    </Suspense>
-                </Canvas>
-            </div>
-        );
-    };
+                <Suspense fallback={null}>
+                    <LegoModel
+                        followMouse={followMouse}
+                        fixedRotationY={fixedRotationY}
+                        fixedRotationX={fixedRotationX}
+                        spinY={effectiveSpinY}
+                        expression={expression}
+                        isShaking={isShaking}
+                    />
+                </Suspense>
+            </Canvas>
+        </div>
+    );
+});
 
 useGLTF.preload(MODEL_PATH);

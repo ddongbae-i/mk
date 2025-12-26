@@ -735,7 +735,7 @@ const IntroSection: React.FC = () => {
     for (let i = 0; i < 5; i++) {
       jobs.push(
         safeAnimate(
-          `#block-${i}`,
+          `#menu-block-${i}`,
           { x: 0, y: 0, rotate: 0, scale: 1, opacity: 1 },
           { duration: 0.01 }
         )
@@ -1132,7 +1132,7 @@ const IntroSection: React.FC = () => {
 
     for (let i = 0; i < order.length; i++) {
       const idx = order[i];
-      const coords = getStackPosition(idx);
+      const coords = getStackPosition(idx, 'intro-block');
 
       stackAnims.push(
         (async () => {
@@ -1160,10 +1160,10 @@ const IntroSection: React.FC = () => {
 
     const enterAnims: Promise<any>[] = [];
     for (let i = 0; i < 5; i++) {
-      const coords = getHamburgerAbsorbPosition(i);
+      const coords = getHamburgerAbsorbPosition(i, 'intro-block');
       enterAnims.push(
         safeAnimate(
-          `#menu-block-${i}`,
+          `#intro-block-${i}`,
           { x: coords.x, y: coords.y, scale: 0.2, opacity: 0 },
           { duration: 0.5, ease: "easeInOut", delay: i * 0.05 }
         )
@@ -1185,7 +1185,7 @@ const IntroSection: React.FC = () => {
       for (let i = 0; i < 5; i++) {
         const coords = getHamburgerAbsorbPosition(i);
         absorbAnims.push(
-          safeAnimate(`#block-${i}`,
+          safeAnimate(`#menu-block-${i}`,
             { x: coords.x, y: coords.y, scale: 0.2, opacity: 0 },
             { duration: 0.4, ease: "backIn", delay: (4 - i) * 0.05 }
           )
@@ -1203,7 +1203,7 @@ const IntroSection: React.FC = () => {
       const coords = getStackPosition(i);
       const delay = (4 - i) * 0.15;
       pourAnims.push(
-        safeAnimate(`#block-${i}`,
+        safeAnimate(`#menu-block-${i}`,
           { x: coords.x, y: coords.y, scale: 1, opacity: 1 },
           { delay: delay, duration: 0.5, ease: "backOut" }
         )
@@ -2236,10 +2236,10 @@ const IntroSection: React.FC = () => {
                   id={`intro-block-${i}`}
                   shouldFloat={true}
                   isMenuOpen={false}
-                  hoveredIndex={null}
-                  onHover={() => { }}
+                  hoveredIndex={hoveredBlockIndex}
+                  onHover={setHoveredBlockIndex}
                   style={pos}
-                  onClick={() => { }}
+                  onClick={() => handleMenuClick(i)}  // ✅ 클릭 핸들러 연결
                 />
               ))}
             </div>

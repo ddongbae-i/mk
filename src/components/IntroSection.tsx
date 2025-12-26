@@ -543,7 +543,7 @@ const FloatingMenuBlock: React.FC<{
         position: 'absolute',
       } as React.CSSProperties}
       data-hoverable="true"
-      initial={shouldFloat ? { opacity: 0, scale: 0.8 } : false}
+      initial={{ opacity: 0, scale: 0.8 }}
       animate={
         shouldFloat
           ? {
@@ -553,7 +553,10 @@ const FloatingMenuBlock: React.FC<{
             x: [0, 8, 0],
             rotate: [0, index % 2 === 0 ? 5 : -5, 0],
           }
-          : undefined
+          : {
+            // shouldFloat가 false면 useAnimate가 제어하므로 여기선 아무것도 안 함
+            // 하지만 초기 등장을 위해 opacity: 1은 필요
+          }
       }
       transition={
         shouldFloat
@@ -1235,6 +1238,48 @@ const IntroSection: React.FC = () => {
     else await closeMenu();
   };
 
+  // 새로운 useEffect 추가 (약 1000줄 근처)
+  useEffect(() => {
+    if (phase >= 26) {
+      animate("#face-container", {
+        left: "calc(50% - 350px)",
+        top: "calc(50% - 250px)",
+        x: 0,
+        y: 0,
+        scale: 1.0,
+        rotateX: 0,
+        rotateY: 0,
+        rotateZ: 0,
+      }, { duration: 1.0, ease: "easeInOut" });
+    } else if (phase >= 23) {
+      animate("#face-container", {
+        left: "97%",
+        top: "20%",
+        x: "-50%",
+        y: "-50%",
+        scale: 1.3,
+        rotateX: 0,
+        rotateY: 0,
+        rotateZ: 0,
+      }, { duration: 1.0, ease: "easeInOut" });
+    } else if (phase >= 14) {
+      animate("#face-container", {
+        left: "25vw",
+        top: "50%",
+        x: "-50%",
+        y: `calc(-30% + ${scrollOffset}px)`,
+        scale: 0.9,
+      }, { duration: 1.0, ease: "easeInOut" });
+    } else if (phase >= 9) {
+      animate("#face-container", {
+        left: "47%",
+        top: "56%",
+        x: "-50%",
+        y: "-50%",
+        scale: 1,
+      }, { duration: 1.0, ease: "easeInOut" });
+    }
+  }, [phase, scrollOffset, animate]);
 
   useEffect(() => {
     // phase가 바뀌면 자연스크롤은 무조건 끄기 (특히 메뉴 점프 대비)
@@ -1469,68 +1514,6 @@ const IntroSection: React.FC = () => {
       : (faceExpression === 'blank' || faceExpression === 'sweat')
         ? faceExpression
         : (isWinking ? 'sweat' : 'neutral');
-  const getFacePosition = () => {
-    // ✅ 모든 속성을 항상 포함
-    if (phase >= 26) {
-      return {
-        left: "calc(50% - 350px)",
-        top: "calc(50% - 250px)",
-        x: 0,
-        y: 0,
-        scale: 1.0,
-        rotateX: 0,
-        rotateY: 0,
-        rotateZ: 0,
-      };
-    }
-    if (phase >= 23) {
-      return {
-        left: "97%",
-        top: "20%",
-        x: "-50%",
-        y: "-50%",
-        scale: 1.3,
-        rotateX: 0,
-        rotateY: 0,
-        rotateZ: 0,
-      };
-    }
-    if (phase >= 14) {
-      return {
-        left: "25vw",
-        top: "50%",
-        x: "-50%",
-        y: `calc(-30% + ${scrollOffset}px)`,
-        scale: 0.9,
-        rotateX: 0,
-        rotateY: 0,
-        rotateZ: 0,
-      };
-    }
-    if (phase >= 9) {
-      return {
-        left: "47%",
-        top: "56%",
-        x: "-50%",
-        y: "-50%",
-        scale: 1,
-        rotateX: 0,
-        rotateY: 0,
-        rotateZ: 0,
-      };
-    }
-    // phase < 9 (초기 상태)
-    return {
-      left: "50%",
-      top: "50%",
-      x: "-50%",
-      y: "150vh",
-      scale: 0.8,
-      rotateZ: -45,
-      rotateX: 30,
-      rotateY: 0,
-    };
-  };
 
   return (
     <div
@@ -2068,7 +2051,7 @@ const IntroSection: React.FC = () => {
           {phase >= 9 && (
             <div className="absolute inset-0 pointer-events-none z-[110]">
               {BLOCK_POSITIONS.map((pos, i) => (
-                <div key={i} className="pointer-events-none">
+                <div key={i} className="pointer-events-auto">
                   <FloatingMenuBlock
                     index={i}
                     id={`block-${i}`}
@@ -2107,6 +2090,11 @@ const IntroSection: React.FC = () => {
           overflow: "visible",
           cursor: phase === 26 ? "grab" : "default",
           touchAction: "none",
+          // ✅ CSS로 기본 위치 설정
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          transform: "translate(-50%, -50%)",
         }}
         drag={phase === 26}
         dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
@@ -2114,8 +2102,8 @@ const IntroSection: React.FC = () => {
         onDrag={handleDrag}
         // whileDrag={{ cursor: "grabbing", scale: 1.25 }}
 
-        initial={false}
-        animate={getFacePosition()}
+        // initial={false}
+        // animate={getFacePosition()}
         transition={{ duration: 1.0, ease: "easeInOut" }}
       >
 

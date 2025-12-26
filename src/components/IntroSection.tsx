@@ -2220,7 +2220,7 @@ const IntroSection: React.FC = () => {
         dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
         dragElastic={0.1}
         onDrag={handleDrag}
-        whileDrag={{ cursor: "grabbing", scale: 1.25 }}
+        // whileDrag={{ cursor: "grabbing", scale: 1.25 }}
 
         initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}
 

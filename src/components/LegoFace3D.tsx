@@ -225,12 +225,14 @@ export const LegoFace3D: React.FC<{
                     width: "100%",
                     height: "100%",
                     overflow: "visible",
+                    minWidth: "700px",  // 추가
+                    minHeight: "700px", // 추가
                 }}
             >
                 <Canvas
                     dpr={[1, 2]}
                     camera={{ position: [0, 0, 8], fov: 45 }}
-                    // resize={{ scroll: false, debounce: { scroll: 0, resize: 0 } }}
+                    resize={{ scroll: false }}
                     style={{ background: "transparent", overflow: "visible" }}
                     gl={{
                         alpha: true,

@@ -559,7 +559,9 @@ const FloatingMenuBlock: React.FC<{
           : {
             opacity: 1,
             scale: 1,
-            // ✅ float 끝나면 y, x, rotate는 useAnimate가 제어
+            y: 0,      // ✅ 명시적으로 0 설정
+            x: 0,      // ✅ 명시적으로 0 설정
+            rotate: 0, // ✅ 명시적으로 0 설정
           }
       }
       transition={
@@ -665,16 +667,31 @@ const IntroSection: React.FC = () => {
     const target = targetByLabel[label];
     if (target == null) return;
 
-    if (isAnimatingRef.current) return;
+    // ✅ 이미 애니메이션 중이면 리턴하지만, 메뉴가 열려있으면 진행
+    if (isAnimatingRef.current && !menuOpen) return;
+
     isAnimatingRef.current = true;
 
     try {
-      // 1. 메뉴 닫기
+      // 1. 메뉴 닫기 (closeMenu 내부의 isAnimatingRef 설정 무시)
       if (menuOpen) {
-        await closeMenu();
+        // ✅ closeMenu 대신 직접 애니메이션 실행
+        const absorbAnims = [];
+        for (let i = 0; i < 5; i++) {
+          const coords = getHamburgerAbsorbPosition(i);
+          absorbAnims.push(
+            safeAnimate(
+              `#block-${i}`,
+              { x: coords.x, y: coords.y, scale: 0.2, opacity: 0 },
+              { duration: 0.3, ease: "backIn", delay: (4 - i) * 0.03 }
+            )
+          );
+        }
+        await Promise.all(absorbAnims);
+        setMenuOpen(false);
       }
 
-      // 2. 블록 위치 완전 초기화 (BLOCK_POSITIONS로 되돌리기)
+      // 2. 블록 위치 완전 초기화
       await resetMenuBlocksToOriginal();
 
       // 3. 스크롤/표정 상태 초기화
@@ -690,7 +707,7 @@ const IntroSection: React.FC = () => {
     } finally {
       setTimeout(() => {
         isAnimatingRef.current = false;
-      }, 600); // 트랜지션 완료 후 해제
+      }, 800); // ✅ 시간 늘림
     }
   };
 
@@ -1481,7 +1498,8 @@ const IntroSection: React.FC = () => {
       return { ...base, left: "97%", top: "20%", scale: 1.3 };
     }
     if (phase >= 14) {
-      return { ...base, left: "25vw", y: `calc(-30% + ${scrollOffset}px)`, scale: 0.9 };
+      // ✅ top: "50%" 명시 추가
+      return { ...base, left: "25vw", top: "50%", x: "-50%", y: `calc(-30% + ${scrollOffset}px)`, scale: 0.9 };
     }
     if (phase >= 9) {
       return { ...base, left: "47%", top: "56%" };

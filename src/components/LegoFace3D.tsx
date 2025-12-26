@@ -230,7 +230,7 @@ export const LegoFace3D: React.FC<{
                 <Canvas
                     dpr={[1, 2]}
                     camera={{ position: [0, 0, 8], fov: 45 }}
-                    resize={{ scroll: false, debounce: { scroll: 0, resize: 0 } }}
+                    // resize={{ scroll: false, debounce: { scroll: 0, resize: 0 } }}
                     style={{ background: "transparent", overflow: "visible" }}
                     gl={{
                         alpha: true,

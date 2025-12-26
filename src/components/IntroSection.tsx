@@ -2299,7 +2299,7 @@ const IntroSection: React.FC = () => {
             transformStyle: "preserve-3d",
             zIndex: 100
           }}
-          // animate={{ scale: headScale }}
+          animate={{ scale: headScale }}
           transition={{ duration: 0.6, ease: "easeInOut" }}
         >
           <Suspense fallback={<FaceLoadingPlaceholder />}>

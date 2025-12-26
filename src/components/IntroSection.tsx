@@ -543,24 +543,29 @@ const FloatingMenuBlock: React.FC<{
         position: 'absolute',
       } as React.CSSProperties}
       data-hoverable="true"
-      initial={{ opacity: 0, scale: 0.8 }}
-      // ✅ shouldFloat가 true일 때만 animate 적용, 아니면 완전히 비움
-      {...(shouldFloat && {
-        animate: {
-          opacity: 1,
-          scale: 1,
-          y: [0, -15, 0],
-          x: [0, 8, 0],
-          rotate: [0, index % 2 === 0 ? 5 : -5, 0],
-        },
-        transition: {
-          opacity: { duration: 0.8, delay: 0.4 + index * 0.2 },
-          scale: { duration: 0.8, delay: 0.4 + index * 0.2 },
-          y: { duration: 4 + (index % 2), repeat: Infinity, ease: "easeInOut", delay: 0.9 + index * 0.2 },
-          x: { duration: 5 + (index % 3), repeat: Infinity, ease: "easeInOut", delay: 0.9 + index * 0.2 },
-          rotate: { duration: 6 + (index % 4), repeat: Infinity, ease: "easeInOut", delay: 0.9 + index * 0.2 },
-        }
-      })}
+      initial={shouldFloat ? { opacity: 0, scale: 0.8 } : false}
+      animate={
+        shouldFloat
+          ? {
+            opacity: 1,
+            scale: 1,
+            y: [0, -15, 0],
+            x: [0, 8, 0],
+            rotate: [0, index % 2 === 0 ? 5 : -5, 0],
+          }
+          : undefined
+      }
+      transition={
+        shouldFloat
+          ? {
+            opacity: { duration: 0.8, delay: 0.4 + index * 0.2 },
+            scale: { duration: 0.8, delay: 0.4 + index * 0.2 },
+            y: { duration: 4 + (index % 2), repeat: Infinity, ease: "easeInOut", delay: 0.9 + index * 0.2 },
+            x: { duration: 5 + (index % 3), repeat: Infinity, ease: "easeInOut", delay: 0.9 + index * 0.2 },
+            rotate: { duration: 6 + (index % 4), repeat: Infinity, ease: "easeInOut", delay: 0.9 + index * 0.2 },
+          }
+          : undefined
+      }
       whileHover={!isMenuOpen && shouldFloat ? {
         scale: 1.15,
         rotate: 0,
@@ -2109,16 +2114,7 @@ const IntroSection: React.FC = () => {
         onDrag={handleDrag}
         // whileDrag={{ cursor: "grabbing", scale: 1.25 }}
 
-        initial={{
-          left: "50%",
-          top: "50%",
-          x: "-50%",
-          y: "150vh",
-          scale: 0.8,
-          rotateZ: -45,
-          rotateX: 30,
-          rotateY: 0,
-        }}
+        initial={false}
         animate={getFacePosition()}
         transition={{ duration: 1.0, ease: "easeInOut" }}
       >

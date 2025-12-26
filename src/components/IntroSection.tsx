@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, Suspense } from "react";
+import React, { useEffect, useState, useRef, Suspense, useCallback } from "react";
 import { motion, useAnimate, useMotionValue, useTransform, AnimatePresence } from 'framer-motion';
 import { LegoFace3D } from './LegoFace3D';
 import SkillSection from './SkillSection';
@@ -555,7 +555,7 @@ const FloatingMenuBlock: React.FC<{
     <motion.div
       id={id}
       onClick={onClick}
-      style={{ ...style, zIndex: baseZIndex } as React.CSSProperties}
+      style={{ ...style, zIndex: baseZIndex, position: isMenuOpen ? 'fixed' : 'absolute', } as React.CSSProperties}
       data-hoverable="true"
       initial={{ opacity: 0, scale: 0.8 }}
       animate={shouldFloat ? floatAnim : { opacity: 1, scale: 1 }}
@@ -646,6 +646,7 @@ const IntroSection: React.FC = () => {
 
   const handleMenuClick = async (index: number) => {
     const label = BRICK_LABELS[index];
+    console.log('Menu clicked:', label, 'isAnimating:', isAnimatingRef.current); // 디버깅용
 
     const targetByLabel: Record<string, number | null> = {
       BUILD: 14,
@@ -658,30 +659,36 @@ const IntroSection: React.FC = () => {
     const target = targetByLabel[label];
     if (target == null) return;
 
-    // ✅ 애니메이션 잠금
-    if (isAnimatingRef.current) return;
+    // ✅ 애니메이션 잠금 체크를 좀 더 유연하게
+    if (isAnimatingRef.current) {
+      console.log('Blocked by animation lock');
+      return;
+    }
     isAnimatingRef.current = true;
 
-    // ✅ 메뉴가 열려있으면 "흡수"로 닫아주고
-    if (menuOpen) await closeMenu();
+    try {
+      // 메뉴 닫기
+      if (menuOpen) await closeMenu();
 
-    // ✅ 블럭 좌표/투명도 상태 초기화(중요)
-    await resetMenuBlocks();
+      // 블럭 좌표/투명도 상태 초기화
+      await resetMenuBlocks();
 
-    // ✅ 네비 점프 전에 스크롤 오버레이/상태 정리 (2번 문제도 같이 해결)
-    setIsNaturalScrolling(false);
-    setNaturalScrollY(0);
-    if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
+      // 스크롤 상태 정리
+      setIsNaturalScrolling(false);
+      setNaturalScrollY(0);
+      if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
 
-    setExpandedTooltip(null);
-    setIsProjectOpen(false);
+      setExpandedTooltip(null);
+      setIsProjectOpen(false);
 
-    // ✅ 이동
-    setPhase(target);
-
-    window.setTimeout(() => {
-      isAnimatingRef.current = false;
-    }, 400);
+      // 이동
+      setPhase(target);
+    } finally {
+      // ✅ 항상 잠금 해제
+      window.setTimeout(() => {
+        isAnimatingRef.current = false;
+      }, 400);
+    }
   };
 
 
@@ -724,6 +731,9 @@ const IntroSection: React.FC = () => {
   }));
   const lastShakeTimeRef = useRef(0); // 마지막 흔들림 시간 (쿨타임용)
   const [spinY, setSpinY] = useState(0);
+  const handleSpinComplete = useCallback(() => {
+    setSpinY(0);
+  }, []);
   const [skillsCollected, setSkillsCollected] = useState(false);
 
   const faceScale =
@@ -1288,6 +1298,8 @@ const IntroSection: React.FC = () => {
     const container = scrollContainerRef.current;
     if (!container) return;
 
+    let lastScrollTop = container.scrollTop;
+
     const handleNaturalScroll = () => {
       const scrollTop = container.scrollTop;
       setNaturalScrollY(scrollTop);
@@ -1296,10 +1308,24 @@ const IntroSection: React.FC = () => {
         setIsNaturalScrolling(false);
         setPhase(16);
       }
+
+    };
+
+    const handleWheel = (e: WheelEvent) => {
+      if (container.scrollTop === 0 && e.deltaY < 0) {
+        e.preventDefault();
+        setIsNaturalScrolling(false);
+        setPhase(14);
+      }
     };
 
     container.addEventListener('scroll', handleNaturalScroll);
-    return () => container.removeEventListener('scroll', handleNaturalScroll);
+    container.addEventListener('wheel', handleWheel, { passive: false });
+
+    return () => {
+      container.removeEventListener('scroll', handleNaturalScroll);
+      container.removeEventListener('wheel', handleWheel);
+    };
   }, [isNaturalScrolling, phase]);
 
   useEffect(() => {
@@ -2187,11 +2213,14 @@ const IntroSection: React.FC = () => {
                     index={i}
                     id={`block-${i}`}
                     shouldFloat={phase === 9 && !didIntroMenuAnim}
-                    isMenuOpen={menuOpen}                    // ✅ phase 말고 menuOpen
+                    isMenuOpen={menuOpen}
                     hoveredIndex={hoveredBlockIndex}
                     onHover={setHoveredBlockIndex}
                     style={pos}
-                    onClick={() => menuOpen && handleMenuClick(i)}
+                    onClick={() => {
+                      console.log('Block clicked, menuOpen:', menuOpen); // 디버깅용
+                      if (menuOpen) handleMenuClick(i);
+                    }}
                   />
                 </div>
               ))}
@@ -2304,7 +2333,6 @@ const IntroSection: React.FC = () => {
         >
           {/* 내부 wrapper - 얼굴만, 크기 조절 */}
           <motion.div
-            style={{ marginLeft: "70px" }}
             animate={{
               width: 700 * headScale,
               height: 700 * headScale,
@@ -2319,8 +2347,8 @@ const IntroSection: React.FC = () => {
                 fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}
                 spinY={phase === 26 ? spinY : 0}
                 expression={finalExpression}
-                isShaking={false}  // ✅ 항상 false (useFrame 내부에서 처리 안 함)
-                onSpinComplete={() => setSpinY(0)}
+                isShaking={false}
+                onSpinComplete={handleSpinComplete}  // ← 여기!
               />
             </Suspense>
           </motion.div>
@@ -2484,7 +2512,7 @@ const IntroSection: React.FC = () => {
             transition={{ duration: 0.3 }}
           >
             {/* 얼굴 중심에서 툴팁 위치 조정 */}
-            <div style={{ position: "relative", left: "80px", top: "0px" }}>
+            <div style={{ position: "relative", left: "0px", top: "50px" }}>
               <PartTooltip
                 title={PART_DESCRIPTIONS[1].title}
                 description={PART_DESCRIPTIONS[1].description}

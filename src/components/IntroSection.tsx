@@ -2287,24 +2287,25 @@ const IntroSection: React.FC = () => {
           </motion.div>
         )}
 
-        {/* 2. HEAD (얼굴) - 크기 제한 및 위치 조정 */}
+        {/* 2. HEAD (얼굴) - scale 대신 width/height로 조절 */}
         <motion.div
           className="absolute pointer-events-auto"
           style={{
-            width: "700px",
-            height: "700px",
             left: "50%",
             x: "-50%",
             top: "-8%",
             transformStyle: "preserve-3d",
             zIndex: 100
           }}
-          animate={{ scale: headScale }}
+          animate={{
+            width: 700 * headScale,   // scale 대신 실제 크기 조절
+            height: 700 * headScale
+          }}
           transition={{ duration: 0.6, ease: "easeInOut" }}
         >
           <Suspense fallback={<FaceLoadingPlaceholder />}>
             <LegoFace3D
-              className="w-full h-full drop-shadow-2xl "
+              className="w-full h-full drop-shadow-2xl"
               followMouse={phase >= 2 && phase <= 12}
               fixedRotationY={phase >= 26 ? 0 : phase >= 23 ? -40 : (phase >= 14 && phase < 23 ? 15 : 0)}
               fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}
@@ -2315,24 +2316,18 @@ const IntroSection: React.FC = () => {
             />
           </Suspense>
 
+          {/* 툴팁 - scale 보정 필요 없어짐 */}
           <div
             style={{
               position: "absolute",
               left: "50%",
               top: "50%",
-              transform: "translate(-50%, -50%)", // 얼굴 중심 기준
+              transform: "translate(-50%, -50%)",
               zIndex: 200,
               pointerEvents: "none",
             }}
           >
-            {/* ✅ 크기만 여기서 고정 */}
-            <div
-              style={{
-                transform: `scale(${1 / headScale})`,
-                transformOrigin: "0% 50%", // 왼쪽-중앙을 기준으로 확대/축소
-                pointerEvents: "auto",
-              }}
-            >
+            <div style={{ pointerEvents: "auto" }}>
               <PartTooltip
                 title={PART_DESCRIPTIONS[1].title}
                 description={PART_DESCRIPTIONS[1].description}
@@ -2341,7 +2336,7 @@ const IntroSection: React.FC = () => {
                 isExpanded={expandedTooltip === 1}
                 onToggle={() => setExpandedTooltip(expandedTooltip === 1 ? null : 1)}
                 lineLength={80}
-                leftOffset={50}  // ✅ 여기부터는 "얼굴 중심 기준"으로 튜닝됨
+                leftOffset={50}
               />
             </div>
           </div>

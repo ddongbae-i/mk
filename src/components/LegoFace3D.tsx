@@ -225,8 +225,6 @@ export const LegoFace3D: React.FC<{
                     width: "100%",
                     height: "100%",
                     overflow: "visible",
-                    minWidth: "700px",  // 추가
-                    minHeight: "700px", // 추가
                 }}
             >
                 <Canvas

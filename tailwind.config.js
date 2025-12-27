@@ -9,15 +9,6 @@ export default {
       fontFamily: {
         kanit: ['Kanit', '"Chiron Hei HK"', 'sans-serif'],
       },
-    },
-  },
-  plugins: [],
-
-}
-
-module.exports = {
-  theme: {
-    extend: {
       keyframes: {
         shake: {
           '0%, 100%': { transform: 'rotate(0deg)' },
@@ -28,6 +19,7 @@ module.exports = {
       animation: {
         shake: 'shake 0.15s ease-in-out',
       }
-    }
-  }
+    },
+  },
+  plugins: [],
 }

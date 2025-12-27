@@ -974,13 +974,14 @@ const IntroSection: React.FC = () => {
         setPhase(23);
         setTimeout(() => { isAnimatingRef.current = false; }, 1000);
       } else if (currentPhase === 23) {
+        // 빔 + 프로젝트 동시 등장 (Phase 24 스킵)
         isAnimatingRef.current = true;
         setPhase(24);
-        setTimeout(() => { isAnimatingRef.current = false; }, 1000);
-      } else if (currentPhase === 24) {
-        isAnimatingRef.current = true;
-        setPhase(25);
-        setTimeout(() => { isAnimatingRef.current = false; }, 800);
+        // 빔 애니메이션 후 바로 프로젝트 표시
+        setTimeout(() => {
+          setPhase(25);
+          isAnimatingRef.current = false;
+        }, 600);  // 빔 등장 시간
       } else if (currentPhase === 25) {
         if (currentProject < 2) {
           isAnimatingRef.current = true;
@@ -1021,14 +1022,12 @@ const IntroSection: React.FC = () => {
           setTimeout(() => { isAnimatingRef.current = false; }, 900);
         } else {
           isAnimatingRef.current = true;
-          setPhase(24);
+          setPhase(24);  // ← 이걸
+          setPhase(23);  // ← 이걸로 변경
           setTimeout(() => { isAnimatingRef.current = false; }, 800);
         }
-      } else if (currentPhase === 24) {
-        isAnimatingRef.current = true;
-        setPhase(23);
-        setTimeout(() => { isAnimatingRef.current = false; }, 1000);
-      } else if (currentPhase === 23) {
+      }
+      else if (currentPhase === 23) {
         isAnimatingRef.current = true;
         setPhase(22);
         setTimeout(() => { isAnimatingRef.current = false; }, 1000);
@@ -1662,7 +1661,7 @@ const IntroSection: React.FC = () => {
           zIndex: 85,
         }}
         initial={{ opacity: 0 }}
-        animate={phase >= 24 && phase < 26 ? { opacity: 1 } : { opacity: 0 }}
+        animate={phase >= 25 && phase < 26 ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
         {/* ✅ key 추가해서 프로젝트 바뀔 때마다 애니메이션 재실행 */}
@@ -2341,17 +2340,17 @@ const IntroSection: React.FC = () => {
           phase >= 27
             ? isGalleryEntering
               ? {
-                // ✅ Phase 26과 동일한 좌표계로 시작
-                left: "calc(50% - 350px)",  // Phase 26과 동일!
+                left: "18%",  // START 위치와 맞춤
                 top: "calc(100vh - 85px)",
-                x: 0,                        // Phase 26과 동일!
+                x: "-50%",    // 중앙 정렬
                 y: "-50%",
                 scale: 0.12,
                 rotateZ: 0,
               }
+
               : {
                 // 스크롤 중: 여기서 왼쪽으로 이동
-                left: `calc(20% - 42px + ${galleryProgress * 60}vw)`,  // 42px = 700px * 0.12 / 2
+                left: `calc(18% + ${galleryProgress * 62}vw)`,
                 top: galleryProgress >= 0.98
                   ? "calc(100vh + 300px)"
                   : "calc(100vh - 85px)",
@@ -2383,7 +2382,7 @@ const IntroSection: React.FC = () => {
                     rotateY: 0
                   }
                   : phase >= 9
-                    ? { left: "50%", top: "48%", x: "-50%", y: "-50%", scale: 0.9, rotateZ: 0, rotateY: 0 }
+                    ? { left: "50%", top: "45%", x: "-50%", y: "-50%", scale: 0.8, rotateZ: 0, rotateY: 0 }
                     : { y: "150vh" }
         }
         transition={{

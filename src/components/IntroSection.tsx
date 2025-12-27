@@ -758,6 +758,7 @@ const IntroSection: React.FC = () => {
   const [isNaturalScrolling, setIsNaturalScrolling] = useState(false);
   const [naturalScrollY, setNaturalScrollY] = useState(0);
   const [galleryFaceRotation, setGalleryFaceRotation] = useState(0);
+  const [galleryProgress, setGalleryProgress] = useState(0);
   const [phase, setPhase] = useState(0);
   const [expandedTooltip, setExpandedTooltip] = useState<number | null>(null);
   const [currentProject, setCurrentProject] = useState(0);

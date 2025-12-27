@@ -990,9 +990,21 @@ const IntroSection: React.FC = () => {
           setTimeout(() => { isAnimatingRef.current = false; }, 800);
         }
       }
+      else if (currentPhase === 26) {
+        // 스킬 섹션 → 갤러리 섹션
+        isAnimatingRef.current = true;
+        setPhase(27);
+        setTimeout(() => { isAnimatingRef.current = false; }, 800);
+      }
 
     } else {
-      if (currentPhase === 26) {
+
+      if (currentPhase === 27) {
+        // 갤러리 → 스킬 섹션으로 복귀
+        isAnimatingRef.current = true;
+        setPhase(26);
+        setTimeout(() => { isAnimatingRef.current = false; }, 800);
+      } else if (currentPhase === 26) {
         // 스킬 섹션 -> 프로젝트 섹션으로 복귀
         isAnimatingRef.current = true;
         setPhase(25);

@@ -759,6 +759,7 @@ const IntroSection: React.FC = () => {
   const [naturalScrollY, setNaturalScrollY] = useState(0);
   const [galleryFaceRotation, setGalleryFaceRotation] = useState(0);
   const [galleryProgress, setGalleryProgress] = useState(0);
+  const [isGalleryEntering, setIsGalleryEntering] = useState(true);
   const [phase, setPhase] = useState(0);
   const [expandedTooltip, setExpandedTooltip] = useState<number | null>(null);
   const [currentProject, setCurrentProject] = useState(0);
@@ -1286,6 +1287,18 @@ const IntroSection: React.FC = () => {
     if (!menuOpen) await openMenu();
     else await closeMenu();
   };
+
+  useEffect(() => {
+    if (phase === 27) {
+      setIsGalleryEntering(true);
+      setGalleryProgress(0);
+      // 1초 후 진입 완료
+      setTimeout(() => {
+        setIsGalleryEntering(false);
+      }, 1000);
+    }
+  }, [phase]);
+
 
 
   useEffect(() => {
@@ -2319,17 +2332,26 @@ const IntroSection: React.FC = () => {
 
         animate={
           phase >= 27
-            ? {
-              left: `calc(20% + ${galleryProgress * 60}vw)`,
-              top: "calc(100vh - 120px)",
-              x: "-50%",
-              y: "-50%",
-              scale: 0.12,
-              // 화려한 진입: 3바퀴(1080도) 회전하면서 내려옴 + 스크롤 시 추가 회전
-              rotateZ: 1080 + galleryProgress * 720,
-              rotateY: 360,
-
-            }
+            ? isGalleryEntering
+              ? {
+                // 진입 중: phase 26 위치 → 프로그레스바 시작점으로 이동
+                left: "20%",
+                top: "calc(100vh - 120px)",
+                x: 0,
+                y: "-50%",
+                scale: 0.12,
+                rotateZ: 1080,
+                rotateY: 360,
+              }
+              : {
+                // 진입 완료: galleryProgress에 따라 이동
+                left: `calc(20% + ${galleryProgress * 60}vw)`,
+                top: "calc(100vh - 120px)",
+                x: 0,
+                y: "-50%",
+                scale: 0.12,
+                rotateZ: 1080 + galleryProgress * 720,
+              }
             :
             phase >= 26
               ? {

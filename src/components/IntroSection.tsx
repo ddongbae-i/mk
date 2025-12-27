@@ -866,6 +866,12 @@ const IntroSection: React.FC = () => {
     if (isAnimatingRef.current) return;
     if (isNaturalScrolling) return;
 
+    if (menuOpen) {
+      await closeMenu();
+      return; // 첫 스크롤은 메뉴 닫기만
+    }
+
+
     const currentPhase = phaseRef.current;
 
     if (direction > 0) {
@@ -2145,8 +2151,9 @@ const IntroSection: React.FC = () => {
             {/* 메뉴는 9단계부터 렌더링 */}
             {(phase >= 10) && (
               <HamburgerIcon
-                isOpen={menuOpen}              // ✅ phase >= 12 → menuOpen
-                onClick={handleHamburgerToggle} // ✅ handleHamburgerClick → handleHamburgerToggle
+                isOpen={menuOpen}
+                onClick={handleHamburgerToggle}
+                invert={phase >= 23}  // ✅ 추가: 보라/노란 배경에서 색상 반전
               />
             )}
           </motion.div>
@@ -2227,7 +2234,7 @@ const IntroSection: React.FC = () => {
           </AnimatePresence>
 
           {/* 그룹 1: 인트로 메뉴 (phase 9에서만, 흡수 전까지) */}
-          {phase === 9 && !didIntroMenuAnim && (
+          {(phase === 9 || phase === 10) && !didIntroMenuAnim && (
             <div className="absolute inset-0 pointer-events-none z-[110]">
               {BLOCK_POSITIONS.map((pos, i) => (
                 <FloatingMenuBlock
@@ -2247,7 +2254,7 @@ const IntroSection: React.FC = () => {
 
           {/* 그룹 2: 햄버거 메뉴 (phase 10+) */}
           {phase >= 10 && (
-            <div className="absolute inset-0 pointer-events-none z-[110]">
+            <div className="absolute inset-0 pointer-events-none z-[200]">
               {[0, 1, 2, 3, 4].map((i) => (
                 <HamburgerMenuBlock
                   key={`menu-${i}`}
@@ -2283,7 +2290,7 @@ const IntroSection: React.FC = () => {
         drag={phase === 26}
         dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
         dragElastic={0.1}
-        onDrag={handleDrag}
+        onDrag={phase >= 26 ? handleDrag : undefined}
         // whileDrag={{ cursor: "grabbing", scale: 1.25 }}
 
         initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}

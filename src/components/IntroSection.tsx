@@ -780,7 +780,7 @@ const IntroSection: React.FC = () => {
   const [skillsCollected, setSkillsCollected] = useState(false);
 
   const headScale =
-    phase >= 26 ? 1.2 :
+    phase >= 26 ? 1 :
       phase >= 23 ? 0.95 :
         phase >= 14 ? 0.45 :
           1.2;
@@ -807,10 +807,10 @@ const IntroSection: React.FC = () => {
   const TEXT_ANCHOR_X = "12vw";
 
   const BLOCK_POSITIONS: React.CSSProperties[] = [
-    { top: "25%", left: "clamp(5%, 15%, 20%)" },
-    { top: "20%", right: "clamp(5%, 15%, 20%)" },
-    { top: "55%", left: "clamp(3%, 10%, 15%)" },
-    { top: "50%", right: "clamp(5%, 12%, 18%)" },
+    { top: "25%", left: "clamp(2%, 5%, 20%)" },
+    { top: "20%", right: "clamp(5%, 5%, 20%)" },
+    { top: "55%", left: "clamp(3%, 7%, 15%)" },
+    { top: "50%", right: "clamp(5%, 5%, 18%)" },
     { top: "75%", left: "50%" }
   ];
 
@@ -1613,6 +1613,27 @@ const IntroSection: React.FC = () => {
         animate={phase >= 24 && phase < 26 ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
+
+        <motion.div
+          key={`beam-${currentProject}`}
+          className="absolute"
+          style={{
+            width: "98vw",
+            height: "110vh",
+            background: BEAM_COLOR,
+            transform: "rotate(-30deg)",
+            transformOrigin: "top right",
+            top: "0vh",
+            right: "20vw",
+          }}
+          initial={{ opacity: 1 }}
+          animate={{ opacity: [1, 0.3, 0.1, 0.4, 1] }}
+          transition={{
+            duration: 0.6,
+            times: [0, 0.15, 0.3, 0.5, 1],
+            ease: "easeInOut",
+          }}
+        />
         {/* ✅ 사각형을 회전시켜서 빔 효과 */}
         <div
           className="absolute"
@@ -1711,46 +1732,6 @@ const IntroSection: React.FC = () => {
         />
       </motion.div>
 
-
-      {/* 프로젝트 전환 오버레이 (암전 + 빔 깜빡) */}
-      <AnimatePresence>
-        {phase >= 25 && (
-          <motion.div
-            key={`projfx-${currentProject}`}
-            className="absolute pointer-events-none overflow-hidden"
-            style={{
-              top: 0,
-              left: 0,
-              width: "100vw",
-              height: "100vh",
-              zIndex: 86,
-            }}
-            initial={{ opacity: 1 }}
-            animate={{
-              opacity: [1, 0.3, 0.1, 0.4, 1],  // ✅ 빔이 어두워졌다 밝아지는 효과
-            }}
-            transition={{
-              duration: 0.6,
-              times: [0, 0.15, 0.3, 0.5, 1],
-              ease: "easeInOut",
-            }}
-          >
-            {/* 노란 빔 사각형 */}
-            <div
-              className="absolute"
-              style={{
-                width: "98vw",
-                height: "110vh",
-                background: BEAM_COLOR,
-                transform: "rotate(-30deg)",
-                transformOrigin: "top right",
-                top: "0vh",
-                right: "20vw",
-              }}
-            />
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <AnimatePresence>
         {isProjectOpen && (
@@ -2414,7 +2395,7 @@ const IntroSection: React.FC = () => {
               <LegoFace3D
                 className="w-full h-full drop-shadow-2xl"
                 followMouse={phase >= 2 && phase <= 12}
-                fixedRotationY={phase >= 26 ? 0 : phase >= 23 ? -40 : (phase >= 14 && phase < 23 ? 15 : 0)}
+                fixedRotationY={phase >= 26 ? 0 : phase >= 23 ? -40 : (phase >= 14 && phase < 23 ? 25 : 0)}
                 fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}
                 spinY={phase === 26 ? spinY : 0}
                 expression={finalExpression}

@@ -4,6 +4,7 @@ import { LegoFace3D } from './LegoFace3D';
 import SkillSection from './SkillSection';
 import ProjectDetailCard from './ProjectDetailCard';
 import { CustomCursor } from './CustomCursor';
+import GallerySection from './GallerySection';
 // import { LegoPart3D } from "./LegoPart3D";
 console.log('IntroSection render', Date.now());
 
@@ -756,7 +757,7 @@ const IntroSection: React.FC = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isNaturalScrolling, setIsNaturalScrolling] = useState(false);
   const [naturalScrollY, setNaturalScrollY] = useState(0);
-
+  const [galleryFaceRotation, setGalleryFaceRotation] = useState(0);
   const [phase, setPhase] = useState(0);
   const [expandedTooltip, setExpandedTooltip] = useState<number | null>(null);
   const [currentProject, setCurrentProject] = useState(0);
@@ -1596,6 +1597,23 @@ const IntroSection: React.FC = () => {
               />
             )}
           </div>
+        </motion.div>
+      )}
+
+      {phase >= 27 && (
+        <motion.div
+          className="absolute w-full"
+          style={{ zIndex: 95, top: 0, height: "100vh" }}
+          initial={{ y: "100vh" }}
+          animate={{ y: 0 }}
+          exit={{ y: "100vh" }}
+          transition={{ duration: 1, ease: "easeInOut" }}
+        >
+          <GallerySection
+            isActive={phase === 27}
+            headRef={headRef}
+            onFaceRotation={setGalleryFaceRotation}
+          />
         </motion.div>
       )}
 

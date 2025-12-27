@@ -2346,21 +2346,22 @@ const IntroSection: React.FC = () => {
           phase >= 27
             ? isGalleryEntering
               ? {
-                // ✅ START 위치에서 시작 (22% - 얼굴 반너비)
-                left: "calc(22% - 42px)",
+                // ✅ START = 20% (프로그레스바 시작점)
+                // 얼굴 중심 맞추기: 700px * 0.12 / 2 = 42px
+                left: "20%",
                 top: "calc(100vh - 85px)",
-                x: 0,
+                x: "-42px",  // 얼굴 중심 오프셋
                 y: "-50%",
                 scale: 0.12,
                 rotateZ: 0,
               }
               : {
-                // ✅ START(22%) → END(80%) 이동
-                left: `calc(22% - 42px + ${galleryProgress * 58}vw)`,
+                // ✅ START(20%) → END(80%) = 60% 이동
+                left: `calc(20% + ${galleryProgress * 60}%)`,
                 top: galleryProgress >= 0.98
                   ? "calc(100vh + 300px)"
                   : "calc(100vh - 85px)",
-                x: 0,
+                x: "-42px",
                 y: "-50%",
                 scale: 0.12,
                 rotateZ: galleryProgress * 720,

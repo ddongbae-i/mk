@@ -525,6 +525,7 @@ const FloatingMenuBlock: React.FC<{
   id?: string;
   shouldFloat: boolean;
   isMenuOpen?: boolean;
+
   hoveredIndex?: number | null;
   onClick?: () => void;
   onHover?: (index: number | null) => void;
@@ -548,16 +549,13 @@ const FloatingMenuBlock: React.FC<{
   };
 
   const isHovered = isMenuOpen && hoveredIndex === index;
-  const defaultZIndex = isHovered ? 60 : 50 - index;
-
-  // ✅ style에서 전달된 zIndex가 있으면 우선 사용
-  const finalZIndex = style?.zIndex ?? defaultZIndex;
+  const baseZIndex = isHovered ? 60 : 50 - index;
 
   return (
     <motion.div
       id={id}
       onClick={onClick}
-      style={{ ...style, zIndex: finalZIndex } as React.CSSProperties}
+      style={{ ...style, zIndex: baseZIndex } as React.CSSProperties}
       data-hoverable="true"
       initial={{ opacity: 0, scale: 0.8 }}
       animate={shouldFloat ? floatAnim : { opacity: 1, scale: 1 }}
@@ -809,11 +807,11 @@ const IntroSection: React.FC = () => {
   const TEXT_ANCHOR_X = "12vw";
 
   const BLOCK_POSITIONS: React.CSSProperties[] = [
-    { top: "25%", left: "clamp(2%, 5%, 20%)" },
-    { top: "20%", right: "clamp(5%, 5%, 20%)" },
-    { top: "55%", left: "clamp(3%, 7%, 15%)" },
-    { top: "50%", right: "clamp(5%, 5%, 18%)" },
-    { top: "80%", left: "50%" }
+    { top: "25%", left: "clamp(2%, 10%, 20%)" },
+    { top: "28%", right: "clamp(5%, 10%, 20%)" },
+    { top: "55%", left: "clamp(3%, 12%, 15%)" },
+    { top: "58%", right: "clamp(5%, 10%, 18%)" },
+    { top: "80%", left: "50%", zIndex: 150 }
   ];
 
   const getTranslationToAlignCenters = (element: HTMLElement, targetCenter: { x: number, y: number }, container: HTMLElement) => {
@@ -2257,39 +2255,21 @@ const IntroSection: React.FC = () => {
 
           {/* 그룹 1: 인트로 메뉴 (phase 9에서만, 흡수 전까지) */}
           {(phase === 9 || phase === 10) && !didIntroMenuAnim && (
-            <>
-              {/* 일반 블록들 (index 0~3) */}
-              <div className="absolute inset-0 pointer-events-none z-[110]">
-                {BLOCK_POSITIONS.slice(0, 4).map((pos, i) => (
-                  <FloatingMenuBlock
-                    key={`intro-${i}`}
-                    index={i}
-                    id={`intro-block-${i}`}
-                    shouldFloat={true}
-                    isMenuOpen={false}
-                    hoveredIndex={hoveredBlockIndex}
-                    onHover={setHoveredBlockIndex}
-                    style={pos}
-                    onClick={() => handleMenuClick(i)}
-                  />
-                ))}
-              </div>
-
-              {/* ✅ CONTACT 블록만 별도 레이어 (z-index 200) */}
-              <div className="absolute inset-0 pointer-events-none z-[200]">
+            <div className="absolute inset-0 pointer-events-none z-[110]">
+              {BLOCK_POSITIONS.map((pos, i) => (
                 <FloatingMenuBlock
-                  key="intro-4"
-                  index={4}
-                  id="intro-block-4"
+                  key={`intro-${i}`}
+                  index={i}
+                  id={`intro-block-${i}`}
                   shouldFloat={true}
                   isMenuOpen={false}
                   hoveredIndex={hoveredBlockIndex}
                   onHover={setHoveredBlockIndex}
-                  style={BLOCK_POSITIONS[4]}
-                  onClick={() => handleMenuClick(4)}
+                  style={pos}
+                  onClick={() => handleMenuClick(i)}  // ✅ 클릭 핸들러 연결
                 />
-              </div>
-            </>
+              ))}
+            </div>
           )}
 
         </div>
@@ -2400,7 +2380,6 @@ const IntroSection: React.FC = () => {
           {/* 내부 wrapper - absolute 제거 */}
           <motion.div
             style={{
-              backgroundColor: "red",
               display: "flex",
               justifyContent: "center",
               alignItems: "center",

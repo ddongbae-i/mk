@@ -1295,12 +1295,11 @@ const IntroSection: React.FC = () => {
   useEffect(() => {
     if (phase === 27) {
       setIsGalleryEntering(true);
-      setGalleryProgress(0);
+      setGalleryProgress(0);  // ✅ 여기서 0으로 설정
 
-      // 진입 애니메이션 완료 후
       setTimeout(() => {
-        setIsGalleryEntering(false);
-      }, 1200);  // 진입 애니메이션 시간
+        setIsGalleryEntering(false);  // 1.2초 후 false
+      }, 1200);
     }
   }, [phase]);
 
@@ -2346,17 +2345,16 @@ const IntroSection: React.FC = () => {
           phase >= 27
             ? isGalleryEntering
               ? {
-                // ✅ START = 20% (프로그레스바 시작점)
-                // 얼굴 중심 맞추기: 700px * 0.12 / 2 = 42px
+                // ✅ 진입 중에는 galleryProgress 무시하고 고정 위치 사용
                 left: "20%",
                 top: "calc(100vh - 85px)",
-                x: "-42px",  // 얼굴 중심 오프셋
+                x: "-42px",
                 y: "-50%",
                 scale: 0.12,
                 rotateZ: 0,
               }
               : {
-                // ✅ START(20%) → END(80%) = 60% 이동
+                // ✅ 진입 완료 후에만 galleryProgress 적용
                 left: `calc(20% + ${galleryProgress * 60}%)`,
                 top: galleryProgress >= 0.98
                   ? "calc(100vh + 300px)"

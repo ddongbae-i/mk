@@ -1606,20 +1606,33 @@ const IntroSection: React.FC = () => {
 
       {/* Project Kits Beam (Yellow) */}
       <motion.div
-        className="absolute pointer-events-none"
+        className="absolute pointer-events-none overflow-hidden"
         style={{
           top: 0,
           left: 0,
           width: "100vw",
           height: "100vh",
-          background: BEAM_COLOR,
-          clipPath: "polygon(78% 0%, 100% 100%, 10% 100%)",
           zIndex: 85,
         }}
         initial={{ opacity: 0 }}
         animate={phase >= 24 && phase < 26 ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
+        {/* ✅ 사각형을 회전시켜서 빔 효과 */}
+        <div
+          className="absolute"
+          style={{
+            width: "200vw",
+            height: "200vh",
+            background: BEAM_COLOR,
+            transform: "rotate(-39deg)",
+            transformOrigin: "top right",
+            top: "-50vh",
+            right: "-20vw",
+          }}
+        />
+
+        {/* 텍스트 */}
         <div
           className="absolute font-black italic"
           style={{
@@ -1628,7 +1641,7 @@ const IntroSection: React.FC = () => {
             color: PROJECT_TEXT_COLOR,
             top: "14%",
             left: "68%",
-            transform: "rotate(-39deg) translateX(-50%)",  // 👈 각도 조정
+            transform: "rotate(-39deg) translateX(-50%)",
             transformOrigin: "left center",
             whiteSpace: "nowrap"
           }}
@@ -1707,57 +1720,42 @@ const IntroSection: React.FC = () => {
       {/* 프로젝트 전환 오버레이 (암전 + 빔 깜빡) */}
       <AnimatePresence>
         {phase >= 25 && (
-          <React.Fragment key={`projfx-${currentProject}`}>
-            {/* 1) 전체 화면 디밍 (암전 느낌) */}
-            <motion.div
-              className="absolute inset-0 pointer-events-none"
-              style={{ zIndex: 86, background: "rgba(0,0,0,0.65)" }}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: [0, 0.85, 0.35, 0] }}
-              transition={{
-                duration: 0.7,
-                times: [0, 0.18, 0.45, 1],
-                ease: "linear",
-              }}
-            />
-
-            {/* 2) 빔 영역만 “팍 죽었다 켜지는” 느낌 */}
-            <motion.div
-              className="absolute pointer-events-none"
+          <motion.div
+            key={`projfx-${currentProject}`}
+            className="absolute pointer-events-none overflow-hidden"
+            style={{
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              zIndex: 86,
+            }}
+            initial={{ opacity: 1 }}
+            animate={{
+              opacity: [1, 0.3, 0.1, 0.4, 1],  // ✅ 빔이 어두워졌다 밝아지는 효과
+            }}
+            transition={{
+              duration: 0.6,
+              times: [0, 0.15, 0.3, 0.5, 1],
+              ease: "easeInOut",
+            }}
+          >
+            {/* 노란 빔 사각형 */}
+            <div
+              className="absolute"
               style={{
-                zIndex: 87,
-                top: 0,
-                left: 0,
-                width: "100vw",
-                height: "100vh",
-                clipPath: "polygon(78% 0%, 100% 100%, 10% 100%)", // ✅ 빔과 동일
-                background:
-                  "linear-gradient(to bottom left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.25) 45%, transparent 70%)",
-                mixBlendMode: "multiply",
-              }}
-              initial={{ opacity: 0 }}
-              animate={{
-                // ✅ '꺼짐→켜짐' 체감이 나게 중간에 확 죽였다가 확 켜기
-                opacity: [0, 1, 0.2, 1, 0],
-                filter: [
-                  "brightness(0.6)",
-                  "brightness(0.9)",
-                  "brightness(0.55)",
-                  "brightness(1.15)",
-                  "brightness(0.6)",
-                ],
-              }}
-              transition={{
-                duration: 0.8,
-                times: [0, 0.12, 0.25, 0.38, 1],
-                ease: "linear",
+                width: "200vw",
+                height: "200vh",
+                background: BEAM_COLOR,
+                transform: "rotate(-39deg)",
+                transformOrigin: "top right",
+                top: "-50vh",
+                right: "-20vw",
               }}
             />
-          </React.Fragment>
+          </motion.div>
         )}
       </AnimatePresence>
-
-
 
       <AnimatePresence>
         {isProjectOpen && (
@@ -2181,7 +2179,6 @@ const IntroSection: React.FC = () => {
               <HamburgerIcon
                 isOpen={menuOpen}
                 onClick={handleHamburgerToggle}
-                invert={phase >= 23}  // ✅ 추가: 보라/노란 배경에서 색상 반전
               />
             )}
           </motion.div>

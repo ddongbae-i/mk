@@ -811,7 +811,7 @@ const IntroSection: React.FC = () => {
     { top: "20%", right: "clamp(5%, 5%, 20%)" },
     { top: "55%", left: "clamp(3%, 7%, 15%)" },
     { top: "50%", right: "clamp(5%, 5%, 18%)" },
-    { top: "75%", left: "50%" }
+    { top: "75%", left: "50%", zIndex: 150 }
   ];
 
   const getTranslationToAlignCenters = (element: HTMLElement, targetCenter: { x: number, y: number }, container: HTMLElement) => {
@@ -2302,7 +2302,7 @@ const IntroSection: React.FC = () => {
           phase >= 26
             ? {
               left: "calc(50% - 350px)",
-              top: "calc(50% - 250px)",
+              top: "calc(50% - 350px)",
               x: 0, y: 0, scale: 1.0,
               rotateZ: 0,
             }

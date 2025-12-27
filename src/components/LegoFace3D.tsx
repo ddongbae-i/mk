@@ -247,8 +247,8 @@ export const LegoFace3D = React.memo<{
                     overflow: "visible",
                     width: "700px",
                     height: "700px",
-                    maxWidth: "100%",
-                    maxHeight: "100%",
+                    // maxWidth: "100%",
+                    // maxHeight: "100%",
                 }}
                 gl={{
                     alpha: true,

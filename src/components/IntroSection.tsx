@@ -2384,10 +2384,10 @@ const IntroSection: React.FC = () => {
               }
               : {
                 // ✅ 진입 완료 후에만 galleryProgress 적용
-                left: `calc(20% + ${galleryProgress * 60}%)`,
-                top: galleryProgress >= 0.98
+                left: `calc(4% + ${galleryProgress * 60}%)`,
+                top: galleryProgress >= 0.94
                   ? "calc(100vh + 300px)"
-                  : "calc(100vh - 85px)",
+                  : "calc(100vh - 100px)",
                 x: "-42px",
                 y: "-50%",
                 scale: 0.12,

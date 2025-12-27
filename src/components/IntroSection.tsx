@@ -1622,13 +1622,13 @@ const IntroSection: React.FC = () => {
         <div
           className="absolute"
           style={{
-            width: "200vw",
-            height: "200vh",
+            width: "98vw",
+            height: "110vh",
             background: BEAM_COLOR,
-            transform: "rotate(-39deg)",
+            transform: "rotate(-30deg)",
             transformOrigin: "top right",
-            top: "-50vh",
-            right: "-10vw",
+            top: "0vh",
+            right: "20vw",
           }}
         />
 
@@ -1640,8 +1640,8 @@ const IntroSection: React.FC = () => {
             fontSize: "clamp(32px, 4vw, 50px)",
             color: PROJECT_TEXT_COLOR,
             top: "14%",
-            left: "68%",
-            transform: "rotate(-39deg) translateX(-50%)",
+            left: "66%",
+            transform: "rotate(-30deg) translateX(-50%)",
             transformOrigin: "left center",
             whiteSpace: "nowrap"
           }}
@@ -2168,8 +2168,7 @@ const IntroSection: React.FC = () => {
             className="w-14 h-14 flex items-center justify-center pointer-events-auto rounded-full transition-colors duration-500"
             // ✅ phase가 9보다 클 때만 배경과 블러 효과 적용
             animate={{
-              backgroundColor: phase > 9 ? "rgba(143, 30, 32, 0.60)" : "rgba(255, 255, 255, 0)",
-              backdropFilter: phase > 9 ? "blur(8px)" : "blur(0px)",
+              backgroundColor: phase > 9 ? "#8F1E20" : "rgba(255, 255, 255, 0)",
               boxShadow: phase > 9 ? "0 4px 6px rgba(0,0,0,0.05)" : "none"
             }}
             data-hoverable="true"
@@ -2332,7 +2331,7 @@ const IntroSection: React.FC = () => {
               rotateZ: 0,
             }
             : phase >= 23
-              ? { left: "85%", top: "30%", x: "-50%", y: "-50%", scale: 1.0 }
+              ? { left: "95%", top: "20%", x: "-50%", y: "-50%", scale: 1.2 }
               : phase >= 14
                 ? {
                   // 조립 단계: 이미지가 너무 작아지지 않도록 scale 0.9~1.0 유지

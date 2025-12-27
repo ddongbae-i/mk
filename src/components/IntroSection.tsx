@@ -2380,6 +2380,7 @@ const IntroSection: React.FC = () => {
         )}
 
         {/* 2. HEAD (얼굴) */}
+        {/* 2. HEAD (얼굴) */}
         <motion.div
           className="absolute pointer-events-auto"
           style={{
@@ -2390,18 +2391,23 @@ const IntroSection: React.FC = () => {
             top: "-6%",
             transformStyle: "preserve-3d",
             zIndex: 100,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
+            display: "flex",           // ✅ flex로 변경
+            justifyContent: "center",  // ✅ 추가
+            alignItems: "center",      // ✅ 추가
           }}
         >
-          {/* 내부 wrapper - 얼굴만, 크기 조절 */}
+          {/* 내부 wrapper - absolute 제거 */}
           <motion.div
+            style={{
+              backgroundColor: "red",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
             animate={{
               width: 700 * headScale,
               height: 700 * headScale,
             }}
-            transition={{ duration: 0.6, ease: "easeInOut" }}
           >
             <Suspense fallback={<FaceLoadingPlaceholder />}>
               <LegoFace3D
@@ -2417,28 +2423,6 @@ const IntroSection: React.FC = () => {
             </Suspense>
           </motion.div>
 
-          {/* ✅ 툴팁 - 700px 기준, 스케일 영향 없음 */}
-          {/* <div
-            style={{
-              position: "absolute",
-              left: "calc(50% + 35px)",  // 얼굴 중심 + marginLeft 보정
-              top: "50%",
-              transform: "translateY(-50%)",
-              zIndex: 200,
-              pointerEvents: "auto",
-            }}
-          >
-            <PartTooltip
-              title={PART_DESCRIPTIONS[1].title}
-              description={PART_DESCRIPTIONS[1].description}
-              isVisible={phase === 17}
-              details={PART_DESCRIPTIONS[1].details}
-              isExpanded={expandedTooltip === 1}
-              onToggle={() => setExpandedTooltip(expandedTooltip === 1 ? null : 1)}
-              lineLength={80}
-              leftOffset={70}  // 얼굴 크기(315px/2 ≈ 157px) 고려해서 조정
-            />
-          </div> */}
         </motion.div>
 
         {/* --- 화살표 & 라벨 (조건 수정: phase >= 14 추가) --- */}

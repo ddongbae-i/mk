@@ -1624,6 +1624,7 @@ const IntroSection: React.FC = () => {
           <GallerySection
             isActive={phase === 27}
             headRef={headRef}
+            onProgressChange={setGalleryProgress}  // ← progress 전달받기
             onFaceRotation={setGalleryFaceRotation}
           />
         </motion.div>
@@ -2329,30 +2330,40 @@ const IntroSection: React.FC = () => {
         initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}
 
         animate={
-          phase >= 26
+          phase >= 27
             ? {
-              left: "calc(50% - 350px)",
-              top: "calc(50% - 350px)",
-              x: 0, y: 0, scale: 1.0,
-              rotateZ: 0,
-            }
-            : phase >= 23
-              ? { left: "95%", top: "20%", x: "-50%", y: "-50%", scale: 1.2 }
-              : phase >= 14
-                ? {
-                  // 조립 단계: 이미지가 너무 작아지지 않도록 scale 0.9~1.0 유지
-                  left: "25vw",
-                  top: "50%",
-                  x: "-50%",
-                  y: `calc(-30% + ${scrollOffset}px)`,
-                  scale: 0.9,
-                  rotateX: 0,
-                  rotateZ: 0,
-                  rotateY: 0
-                }
-                : phase >= 9
-                  ? { left: "50%", top: "50%", x: "-50%", y: "-50%", scale: 0.9, rotateZ: 0, rotateY: 0 }
-                  : { y: "150vh" }
+              // 프로그레스바 위치로 이동 (하단 중앙)
+              left: `calc(20% + ${galleryProgress * 60}%)`,  // 프로그레스바 너비의 60%만큼 이동
+              top: "calc(100vh - 140px)",  // 하단에서 140px 위
+              x: "-50%",
+              y: "-50%",
+              scale: 0.15,  // 작게 축소
+              rotateZ: galleryProgress * 720,  // 2바퀴 회전
+            } :
+            phase >= 26
+              ? {
+                left: "calc(50% - 350px)",
+                top: "calc(50% - 350px)",
+                x: 0, y: 0, scale: 1.0,
+                rotateZ: 0,
+              }
+              : phase >= 23
+                ? { left: "95%", top: "20%", x: "-50%", y: "-50%", scale: 1.2 }
+                : phase >= 14
+                  ? {
+                    // 조립 단계: 이미지가 너무 작아지지 않도록 scale 0.9~1.0 유지
+                    left: "25vw",
+                    top: "50%",
+                    x: "-50%",
+                    y: `calc(-30% + ${scrollOffset}px)`,
+                    scale: 0.9,
+                    rotateX: 0,
+                    rotateZ: 0,
+                    rotateY: 0
+                  }
+                  : phase >= 9
+                    ? { left: "50%", top: "50%", x: "-50%", y: "-50%", scale: 0.9, rotateZ: 0, rotateY: 0 }
+                    : { y: "150vh" }
         }
         transition={{ duration: 1.0, ease: "easeInOut" }}
       >

@@ -2392,17 +2392,13 @@ const IntroSection: React.FC = () => {
             height: "700px",
             left: "50%",
             x: "-50%",
-            // top: "-6%",
+            top: "-6%",
             transformStyle: "preserve-3d",
             zIndex: 100,
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
           }}
-          animate={{
-            top: phase >= 21 ? "-10%" : "-6%",  // ✅ 모자와 맞춰서 이동
-          }}
-          transition={{ duration: 0.6, ease: "backOut" }}
         >
           {/* 내부 wrapper - 얼굴만, 크기 조절 */}
           <motion.div

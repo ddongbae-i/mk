@@ -46,6 +46,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
     const progressBarWidth = typeof window !== 'undefined' ? window.innerWidth * 0.6 : 800;
 
     useEffect(() => {
+        console.log('📊 GallerySection progress:', progress);
         progressRef.current = progress;
         onProgressChange?.(progress);
         onFaceRotation?.(faceRotation);

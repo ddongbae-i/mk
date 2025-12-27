@@ -1293,6 +1293,31 @@ const IntroSection: React.FC = () => {
   };
 
   useEffect(() => {
+    if (phase >= 27) {
+      const faceEl = document.getElementById('face-container');
+      if (faceEl) {
+        const computed = window.getComputedStyle(faceEl);
+        console.log('🔍 Face Element ACTUAL Styles:', {
+          left: computed.left,
+          top: computed.top,
+          transform: computed.transform,
+        });
+      }
+    }
+  }, [phase, isGalleryEntering, galleryProgress]);
+
+  useEffect(() => {
+    if (phase >= 27) {
+      console.log('🎯 Gallery Debug:', {
+        phase,
+        isGalleryEntering,
+        galleryProgress,
+        calculatedLeft: isGalleryEntering ? "20%" : `calc(20% + ${galleryProgress * 60}%)`
+      });
+    }
+  }, [phase, isGalleryEntering, galleryProgress]);
+
+  useEffect(() => {
     if (phase === 27) {
       setIsGalleryEntering(true);
       setGalleryProgress(0);  // ✅ 여기서 0으로 설정
@@ -1648,7 +1673,12 @@ const IntroSection: React.FC = () => {
           <GallerySection
             isActive={phase === 27}
             headRef={headRef}
-            onProgressChange={setGalleryProgress}  // ← progress 전달받기
+            onProgressChange={(p) => {
+              // ✅ 진입 중에는 progress 업데이트 무시
+              if (!isGalleryEntering) {
+                setGalleryProgress(p);
+              }
+            }}
             onFaceRotation={setGalleryFaceRotation}
           />
         </motion.div>
@@ -2345,8 +2375,7 @@ const IntroSection: React.FC = () => {
           phase >= 27
             ? isGalleryEntering
               ? {
-                // ✅ 진입 중에는 galleryProgress 무시하고 고정 위치 사용
-                left: "20%",
+                left: `${window.innerWidth * 0.2}px`,  // 20%를 px로 변환
                 top: "calc(100vh - 85px)",
                 x: "-350px",
                 y: "-50%",

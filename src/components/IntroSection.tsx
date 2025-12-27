@@ -655,7 +655,7 @@ const HamburgerMenuBlock: React.FC<{
       onClick={onClick}
       style={{ position: 'absolute', top: 0, left: 0, zIndex: baseZIndex }}
       data-hoverable="true"
-      initial={{ opacity: 0, scale: 0.2 }}
+      initial={false}
       whileTap={{ scale: 0.95 }}
       onMouseEnter={() => onHover?.(index)}
       onMouseLeave={() => onHover?.(null)}
@@ -730,20 +730,19 @@ const IntroSection: React.FC = () => {
 
 
   const resetMenuBlocks = async () => {
-    // framer/useAnimate로 박혀있는 x/y/scale/opacity를 원점으로 정리
     const jobs: Promise<any>[] = [];
     for (let i = 0; i < 5; i++) {
+      const coords = getHamburgerAbsorbPosition(i);
       jobs.push(
         safeAnimate(
           `#menu-block-${i}`,
-          { x: 0, y: 0, rotate: 0, scale: 1, opacity: 1 },
+          { x: coords.x, y: coords.y, rotate: 0, scale: 0.2, opacity: 0 },
           { duration: 0.01 }
         )
       );
     }
     await Promise.all(jobs);
   };
-
 
 
   const headRef = useRef<HTMLDivElement>(null);
@@ -1254,6 +1253,13 @@ const IntroSection: React.FC = () => {
     else await closeMenu();
   };
 
+
+  useEffect(() => {
+    // phase 10+ 진입 시 메뉴 블록들을 햄버거바 위치로 초기화
+    if (phase >= 10 && didIntroMenuAnim) {
+      resetMenuBlocks();
+    }
+  }, [phase, didIntroMenuAnim]);
 
   useEffect(() => {
     // phase가 바뀌면 자연스크롤은 무조건 끄기 (특히 메뉴 점프 대비)

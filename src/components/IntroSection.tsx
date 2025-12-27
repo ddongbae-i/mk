@@ -655,7 +655,7 @@ const HamburgerMenuBlock: React.FC<{
       onClick={onClick}
       style={{ position: 'absolute', top: 0, left: 0, zIndex: baseZIndex }}
       data-hoverable="true"
-      initial={false}
+      initial={{ opacity: 0, scale: 0.2 }}
       whileTap={{ scale: 0.95 }}
       onMouseEnter={() => onHover?.(index)}
       onMouseLeave={() => onHover?.(null)}
@@ -1267,7 +1267,7 @@ const IntroSection: React.FC = () => {
 
   useEffect(() => {
     // ✅ 11/12에서는 menuOpen을 유지, 그 외 구간 이동 시 닫기
-    if (phase !== 11 && phase !== 12) setMenuOpen(false);
+    if (phase < 10) setMenuOpen(false);
   }, [phase]);
 
   // 다른 useEffect들 근처에 추가

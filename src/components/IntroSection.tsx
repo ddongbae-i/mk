@@ -2334,13 +2334,14 @@ const IntroSection: React.FC = () => {
           phase >= 27
             ? {
               // 프로그레스바 위치로 이동 (하단 중앙)
-              left: `calc(20% + ${galleryProgress * 60}%)`,  // 프로그레스바 너비의 60%만큼 이동
-              top: "calc(100vh - 140px)",  // 하단에서 140px 위
-              x: "-50%",
+              left: `calc(50% - 350px + ${galleryProgress * 30}vw)`,  // 중앙에서 시작해서 오른쪽으로
+              top: "calc(100vh - 120px)",  // 하단 프로그레스바 위
+              x: 0,
               y: "-50%",
-              scale: 0.15,  // 작게 축소
-              rotateZ: galleryProgress * 720,  // 2바퀴 회전
-            } :
+              scale: 0.12,
+              rotateZ: galleryProgress * 720,
+            }
+            :
             phase >= 26
               ? {
                 left: "calc(50% - 350px)",

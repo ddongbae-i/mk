@@ -1628,7 +1628,7 @@ const IntroSection: React.FC = () => {
             transform: "rotate(-39deg)",
             transformOrigin: "top right",
             top: "-50vh",
-            right: "-20vw",
+            right: "-10vw",
           }}
         />
 
@@ -2332,7 +2332,7 @@ const IntroSection: React.FC = () => {
               rotateZ: 0,
             }
             : phase >= 23
-              ? { left: "97%", top: "20%", x: "-50%", y: "-50%", scale: 1.3 }
+              ? { left: "85%", top: "30%", x: "-50%", y: "-50%", scale: 1.0 }
               : phase >= 14
                 ? {
                   // 조립 단계: 이미지가 너무 작아지지 않도록 scale 0.9~1.0 유지

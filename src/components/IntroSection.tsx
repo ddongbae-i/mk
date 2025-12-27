@@ -779,14 +779,9 @@ const IntroSection: React.FC = () => {
   }, []);
   const [skillsCollected, setSkillsCollected] = useState(false);
 
-  const faceScale =
-    phase >= 23 ? 0.5 :
-      phase >= 14 ? 0.28 :
-        phase >= 9 ? 1 :
-          0.8;
   const headScale =
     phase >= 26 ? 1.2 :
-      phase >= 23 ? 1 :
+      phase >= 23 ? 0.95 :
         phase >= 14 ? 0.45 :
           1.2;
 

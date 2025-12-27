@@ -525,7 +525,6 @@ const FloatingMenuBlock: React.FC<{
   id?: string;
   shouldFloat: boolean;
   isMenuOpen?: boolean;
-
   hoveredIndex?: number | null;
   onClick?: () => void;
   onHover?: (index: number | null) => void;
@@ -549,13 +548,16 @@ const FloatingMenuBlock: React.FC<{
   };
 
   const isHovered = isMenuOpen && hoveredIndex === index;
-  const baseZIndex = isHovered ? 60 : 50 - index;
+  const defaultZIndex = isHovered ? 60 : 50 - index;
+
+  // ✅ style에서 전달된 zIndex가 있으면 우선 사용
+  const finalZIndex = style?.zIndex ?? defaultZIndex;
 
   return (
     <motion.div
       id={id}
       onClick={onClick}
-      style={{ ...style, zIndex: baseZIndex } as React.CSSProperties}
+      style={{ ...style, zIndex: finalZIndex } as React.CSSProperties}
       data-hoverable="true"
       initial={{ opacity: 0, scale: 0.8 }}
       animate={shouldFloat ? floatAnim : { opacity: 1, scale: 1 }}
@@ -2255,21 +2257,39 @@ const IntroSection: React.FC = () => {
 
           {/* 그룹 1: 인트로 메뉴 (phase 9에서만, 흡수 전까지) */}
           {(phase === 9 || phase === 10) && !didIntroMenuAnim && (
-            <div className="absolute inset-0 pointer-events-none z-[110]">
-              {BLOCK_POSITIONS.map((pos, i) => (
+            <>
+              {/* 일반 블록들 (index 0~3) */}
+              <div className="absolute inset-0 pointer-events-none z-[110]">
+                {BLOCK_POSITIONS.slice(0, 4).map((pos, i) => (
+                  <FloatingMenuBlock
+                    key={`intro-${i}`}
+                    index={i}
+                    id={`intro-block-${i}`}
+                    shouldFloat={true}
+                    isMenuOpen={false}
+                    hoveredIndex={hoveredBlockIndex}
+                    onHover={setHoveredBlockIndex}
+                    style={pos}
+                    onClick={() => handleMenuClick(i)}
+                  />
+                ))}
+              </div>
+
+              {/* ✅ CONTACT 블록만 별도 레이어 (z-index 200) */}
+              <div className="absolute inset-0 pointer-events-none z-[200]">
                 <FloatingMenuBlock
-                  key={`intro-${i}`}
-                  index={i}
-                  id={`intro-block-${i}`}
+                  key="intro-4"
+                  index={4}
+                  id="intro-block-4"
                   shouldFloat={true}
                   isMenuOpen={false}
                   hoveredIndex={hoveredBlockIndex}
                   onHover={setHoveredBlockIndex}
-                  style={pos}
-                  onClick={() => handleMenuClick(i)}  // ✅ 클릭 핸들러 연결
+                  style={BLOCK_POSITIONS[4]}
+                  onClick={() => handleMenuClick(4)}
                 />
-              ))}
-            </div>
+              </div>
+            </>
           )}
 
         </div>

@@ -1645,7 +1645,7 @@ const IntroSection: React.FC = () => {
         animate={phase >= 24 && phase < 26 ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
-
+        {/* ✅ key 추가해서 프로젝트 바뀔 때마다 애니메이션 재실행 */}
         <motion.div
           key={`beam-${currentProject}`}
           className="absolute"
@@ -1658,25 +1658,12 @@ const IntroSection: React.FC = () => {
             top: "0vh",
             right: "20vw",
           }}
-          initial={{ opacity: 1 }}
-          animate={{ opacity: [1, 0.3, 0.1, 0.4, 1] }}
+          initial={{ opacity: 0.1 }}
+          animate={{ opacity: [0.1, 0.3, 1] }}
           transition={{
             duration: 0.6,
-            times: [0, 0.15, 0.3, 0.5, 1],
-            ease: "easeInOut",
-          }}
-        />
-        {/* ✅ 사각형을 회전시켜서 빔 효과 */}
-        <div
-          className="absolute"
-          style={{
-            width: "98vw",
-            height: "110vh",
-            background: BEAM_COLOR,
-            transform: "rotate(-30deg)",
-            transformOrigin: "top right",
-            top: "0vh",
-            right: "20vw",
+            times: [0, 0.3, 1],
+            ease: "easeOut",
           }}
         />
 
@@ -2333,13 +2320,15 @@ const IntroSection: React.FC = () => {
         animate={
           phase >= 27
             ? {
-              // 프로그레스바 위치로 이동 (하단 중앙)
-              left: `calc(50% - 350px + ${galleryProgress * 30}vw)`,  // 중앙에서 시작해서 오른쪽으로
-              top: "calc(100vh - 120px)",  // 하단 프로그레스바 위
-              x: 0,
+              left: `calc(20% + ${galleryProgress * 60}vw)`,
+              top: "calc(100vh - 120px)",
+              x: "-50%",
               y: "-50%",
               scale: 0.12,
-              rotateZ: galleryProgress * 720,
+              // 화려한 진입: 3바퀴(1080도) 회전하면서 내려옴 + 스크롤 시 추가 회전
+              rotateZ: 1080 + galleryProgress * 720,
+              rotateY: 360,
+
             }
             :
             phase >= 26
@@ -2364,10 +2353,13 @@ const IntroSection: React.FC = () => {
                     rotateY: 0
                   }
                   : phase >= 9
-                    ? { left: "50%", top: "50%", x: "-50%", y: "-50%", scale: 0.9, rotateZ: 0, rotateY: 0 }
+                    ? { left: "50%", top: "48%", x: "-50%", y: "-50%", scale: 0.9, rotateZ: 0, rotateY: 0 }
                     : { y: "150vh" }
         }
-        transition={{ duration: 1.0, ease: "easeInOut" }}
+        transition={{
+          duration: phase >= 27 ? 1.2 : 1.0,
+          ease: phase >= 27 ? [0.34, 1.56, 0.64, 1] : "easeInOut"
+        }}
       >
 
         {/* 1. HAT (모자) */}

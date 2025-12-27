@@ -813,7 +813,7 @@ const IntroSection: React.FC = () => {
     { top: "20%", right: "clamp(5%, 5%, 20%)" },
     { top: "55%", left: "clamp(3%, 7%, 15%)" },
     { top: "50%", right: "clamp(5%, 5%, 18%)" },
-    { top: "75%", left: "50%", zIndex: 150 }
+    { top: "80%", left: "50%" }
   ];
 
   const getTranslationToAlignCenters = (element: HTMLElement, targetCenter: { x: number, y: number }, container: HTMLElement) => {
@@ -2341,7 +2341,7 @@ const IntroSection: React.FC = () => {
                   rotateY: 0
                 }
                 : phase >= 9
-                  ? { left: "50%", top: "56%", x: "-50%", y: "-50%", scale: 1, rotateZ: 0, rotateY: 0 }
+                  ? { left: "50%", top: "50%", x: "-50%", y: "-50%", scale: 0.9, rotateZ: 0, rotateY: 0 }
                   : { y: "150vh" }
         }
         transition={{ duration: 1.0, ease: "easeInOut" }}

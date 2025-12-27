@@ -34,7 +34,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
     const progressRef = useRef(0);
 
     // 트랙 위치 계산
-    const trackWidth = GALLERY_IMAGES.length * 340 + 200;
+    const trackWidth = GALLERY_IMAGES.length * 420 + 200;
     const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
     const maxScroll = Math.max(0, trackWidth - viewportWidth + 100);
     const trackX = -progress * maxScroll;
@@ -226,7 +226,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                         >
                             {/* 이미지 카드 */}
                             <div
-                                className="relative w-[300px] h-[220px] rounded-xl overflow-hidden"
+                                className="relative w-[380px] h-[280px] rounded-xl overflow-hidden"
                                 style={{
                                     boxShadow: isCenter
                                         ? "0 25px 50px -12px rgba(252,187,9,0.25), 0 0 0 1px rgba(255,255,255,0.1)"
@@ -279,18 +279,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                     );
                 })}
 
-                {/* 끝 마커 */}
-                <div className="flex-shrink-0 w-[200px] h-[220px] flex items-center justify-center">
-                    <motion.div
-                        className="text-center"
-                        animate={{ opacity: progress > 0.8 ? 1 : 0.3 }}
-                    >
-                        <div className="text-white/20 text-sm tracking-widest mb-2">NEXT</div>
-                        <div className="text-white/40 text-2xl font-bold" style={{ fontFamily: "Kanit, sans-serif" }}>
-                            CONTACT →
-                        </div>
-                    </motion.div>
-                </div>
+
             </motion.div>
 
             {/* 하단 프로그레스 바 */}

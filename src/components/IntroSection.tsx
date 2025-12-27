@@ -653,7 +653,14 @@ const HamburgerMenuBlock: React.FC<{
     <motion.div
       id={id}
       onClick={onClick}
-      style={{ position: 'absolute', top: 0, left: 0, zIndex: baseZIndex }}
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        zIndex: baseZIndex,
+        visibility: 'hidden',  // ✅ 기본적으로 숨김 (useAnimate가 opacity 제어)
+        pointerEvents: 'none', // ✅ 클릭 방지
+      }}
       data-hoverable="true"
       initial={false}
       whileTap={{ scale: 0.95 }}
@@ -1203,6 +1210,15 @@ const IntroSection: React.FC = () => {
   };
 
   const runStepB_PourOut = async () => {
+    // ✅ 먼저 visibility 활성화
+    for (let i = 0; i < 5; i++) {
+      const el = document.getElementById(`menu-block-${i}`);
+      if (el) {
+        el.style.visibility = 'visible';
+        el.style.pointerEvents = 'auto';
+      }
+    }
+
     const pourAnims = [];
     for (let i = 0; i < 5; i++) {
       const coords = getStackPosition(i);
@@ -1242,6 +1258,15 @@ const IntroSection: React.FC = () => {
       );
     }
     await Promise.all(absorbAnims);
+
+    // ✅ 애니메이션 완료 후 완전히 숨기기
+    for (let i = 0; i < 5; i++) {
+      const el = document.getElementById(`menu-block-${i}`);
+      if (el) {
+        el.style.visibility = 'hidden';
+        el.style.pointerEvents = 'none';
+      }
+    }
 
     setMenuOpen(false);
     isAnimatingRef.current = false;
@@ -2260,7 +2285,7 @@ const IntroSection: React.FC = () => {
 
           {/* 그룹 2: 햄버거 메뉴 (phase 10+) */}
           {phase >= 10 && (
-            <div className="absolute inset-0 pointer-events-none z-[200]">
+            <div className="absolute inset-0 pointer-events-none z-[500]">
               {[0, 1, 2, 3, 4].map((i) => (
                 <HamburgerMenuBlock
                   key={`menu-${i}`}

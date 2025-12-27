@@ -993,18 +993,10 @@ const IntroSection: React.FC = () => {
         }
       }
       else if (currentPhase === 26) {
+        // 스킬 섹션 → 갤러리 섹션
         isAnimatingRef.current = true;
-
-        // 1. 스킬 흡수 애니메이션 시작
-        setIsSkillExiting(true);
-
-        // 2. 0.8초 후 갤러리로 전환
-        setTimeout(() => {
-          setPhase(27);
-          setIsSkillExiting(false);
-        }, 800);
-
-        setTimeout(() => { isAnimatingRef.current = false; }, 1600);
+        setPhase(27);
+        setTimeout(() => { isAnimatingRef.current = false; }, 800);
       }
 
     } else {

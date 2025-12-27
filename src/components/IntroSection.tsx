@@ -2340,7 +2340,7 @@ const IntroSection: React.FC = () => {
                   rotateY: 0
                 }
                 : phase >= 9
-                  ? { left: "47%", top: "56%", x: "-50%", y: "-50%", scale: 1, rotateZ: 0, rotateY: 0 }
+                  ? { left: "50%", top: "56%", x: "-50%", y: "-50%", scale: 1, rotateZ: 0, rotateY: 0 }
                   : { y: "150vh" }
         }
         transition={{ duration: 1.0, ease: "easeInOut" }}

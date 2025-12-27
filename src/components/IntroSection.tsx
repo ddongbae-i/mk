@@ -2165,9 +2165,6 @@ const IntroSection: React.FC = () => {
       {/* 햄버거 메뉴 */}
       <div className="fixed top-0 left-0 w-full h-24 max-w-[1920px] pointer-events-none px-6 md:px-16 xl:px-[180px] z-[999]">
         <div className="w-full h-full flex items-center justify-between">
-          <div className="w-20 h-20" /> {/* 왼쪽 로고 여백 */}
-
-          {/* 👇 [수정] 배경 조건부 적용 */}
           <motion.div
             id="hamburger"
             className="w-14 h-14 flex items-center justify-center pointer-events-auto rounded-full transition-colors duration-500"
@@ -2188,6 +2185,8 @@ const IntroSection: React.FC = () => {
               />
             )}
           </motion.div>
+          <div className="w-20 h-20" /> {/* 왼쪽 로고 여백 */}
+
         </div>
       </div>
 
@@ -2244,7 +2243,8 @@ const IntroSection: React.FC = () => {
                   animate={
                     phase >= 9
                       ? {
-                        left: "-40px",
+                        left: "auto",      // ✅ left 해제
+                        right: "-40px",    // ✅ 오른쪽으로
                         top: "20px",
                         y: 0,
                         scale: 0.4,
@@ -2252,6 +2252,7 @@ const IntroSection: React.FC = () => {
                       }
                       : {
                         left: "50%",
+                        right: "auto",
                         top: "50%",
                         y: "-50%",
                         scale: 1,

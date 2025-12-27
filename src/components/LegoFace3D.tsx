@@ -148,7 +148,7 @@ const LegoModel: React.FC<ModelProps> = ({
 
     return (
         // ✅ 얼굴이 위로 올라가 보이면 여기 y만 살짝 조절(-0.2 ~ 0.2 범위부터)
-        <group ref={modelRef} position={[0, -2.5, 0]}>
+        <group ref={modelRef} position={[-0.9, -2.5, 0]}>
             <primitive object={clonedScene} scale={1.3} />
         </group>
     );

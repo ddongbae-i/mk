@@ -764,6 +764,7 @@ const IntroSection: React.FC = () => {
   const [expandedTooltip, setExpandedTooltip] = useState<number | null>(null);
   const [currentProject, setCurrentProject] = useState(0);
   const [isProjectOpen, setIsProjectOpen] = useState(false);
+  const [skillResetKey, setSkillResetKey] = useState(0);
 
   const [faceExpression, setFaceExpression] =
     useState<FaceExpression>('neutral');
@@ -1004,8 +1005,11 @@ const IntroSection: React.FC = () => {
     } else {
 
       if (currentPhase === 27) {
-        // 갤러리 → 스킬 섹션으로 복귀
+        // ✅ galleryProgress가 0보다 클 때는 GallerySection 내부 스크롤로 처리
+        if (galleryProgress > 0.02) return;
+
         isAnimatingRef.current = true;
+        setSkillResetKey(prev => prev + 1);  // ✅ 스킬 섹션 리셋
         setPhase(26);
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
       } else if (currentPhase === 26) {
@@ -1614,6 +1618,7 @@ const IntroSection: React.FC = () => {
           <div className="absolute w-full bg-[#a6b551]" style={{ height: "100vh" }}>
             {phase >= 26 && (
               <SkillSection
+                key={skillResetKey}  // ✅ 추가
                 isActive={phase === 26}
                 isExiting={isSkillExiting}
                 onSkillsCollected={() => setSkillsCollected(true)}
@@ -2341,8 +2346,8 @@ const IntroSection: React.FC = () => {
           phase >= 27
             ? isGalleryEntering
               ? {
-                // ✅ Phase 26 중앙에서 시작 (좌표계 통일)
-                left: "calc(50% - 350px)",
+                // ✅ START 위치에서 시작 (22% - 얼굴 반너비)
+                left: "calc(22% - 42px)",
                 top: "calc(100vh - 85px)",
                 x: 0,
                 y: "-50%",

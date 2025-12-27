@@ -148,7 +148,7 @@ const LegoModel: React.FC<ModelProps> = ({
 
     return (
         // ✅ 얼굴이 위로 올라가 보이면 여기 y만 살짝 조절(-0.2 ~ 0.2 범위부터)
-        <group ref={modelRef} position={[0, -2.5, 0]}>
+        <group ref={modelRef} position={[-0.3, -2.5, 0]}>
             <primitive object={clonedScene} scale={1.3} />
         </group>
     );
@@ -225,13 +225,21 @@ export const LegoFace3D = React.memo<{
                 width: "100%",
                 height: "100%",
                 overflow: "visible",
+                display: "flex",           // ✅ 추가
+                justifyContent: "center",  // ✅ 추가
+                alignItems: "center",      // ✅ 추가
             }}
         >
             <Canvas
                 dpr={[1, 2]}
                 camera={{ position: [0, 0, 8], fov: 45 }}
                 resize={{ scroll: false }}
-                style={{ background: "transparent", overflow: "visible" }}
+                style={{
+                    background: "transparent",
+                    overflow: "visible",
+                    width: "100%",   // ✅ 추가
+                    height: "100%",  // ✅ 추가
+                }}
                 gl={{
                     alpha: true,
                     antialias: true,

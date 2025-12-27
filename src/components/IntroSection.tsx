@@ -2403,10 +2403,11 @@ const IntroSection: React.FC = () => {
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
+              width: "700px",
+              height: "700px",
             }}
             animate={{
-              width: 700 * headScale,
-              height: 700 * headScale,
+              scale: headScale,  // ← width/height 대신 scale로 변경!
             }}
           >
             <Suspense fallback={<FaceLoadingPlaceholder />}>

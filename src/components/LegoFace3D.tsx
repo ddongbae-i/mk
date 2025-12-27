@@ -178,6 +178,14 @@ export const LegoFace3D = React.memo<{
     const spinStartTime = useRef<number | null>(null);
 
     useEffect(() => {
+        window.dispatchEvent(new Event('resize'));
+        const timer = setTimeout(() => {
+            window.dispatchEvent(new Event('resize'));
+        }, 100);
+        return () => clearTimeout(timer);
+    }, []);
+
+    useEffect(() => {
         if (spinY === 360 && !isSpinning) {
             setIsSpinning(true);
             spinStartTime.current = Date.now();
@@ -233,7 +241,7 @@ export const LegoFace3D = React.memo<{
             <Canvas
                 dpr={[1, 2]}
                 camera={{ position: [0, 0, 8], fov: 45 }}
-                resize={{ scroll: false }}
+                resize={{ scroll: false, debounce: { scroll: 0, resize: 0 } }}
                 style={{
                     background: "transparent",
                     overflow: "visible",

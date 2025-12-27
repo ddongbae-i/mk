@@ -2334,23 +2334,23 @@ const IntroSection: React.FC = () => {
           phase >= 27
             ? isGalleryEntering
               ? {
-                // 진입 중: phase 26 위치 → 프로그레스바 시작점으로 이동
-                left: "20%",
-                top: "calc(100vh - 120px)",
-                x: 0,
+                // 진입 중: START 위치로 이동 (회전 줄임)
+                left: "20%",  // START 위치
+                top: "calc(100vh - 85px)",  // 프로그레스바와 겹치게 (더 아래로)
+                x: "-50%",  // 중앙 정렬
                 y: "-50%",
                 scale: 0.12,
-                rotateZ: 1080,
-                rotateY: 360,
+                rotateZ: 360,  // 1바퀴만 (기존 1080 → 360)
+                rotateY: 0,    // Y축 회전 제거
               }
               : {
                 // 진입 완료: galleryProgress에 따라 이동
                 left: `calc(20% + ${galleryProgress * 60}vw)`,
-                top: "calc(100vh - 120px)",
-                x: 0,
+                top: "calc(100vh - 9%)",  // 프로그레스바와 겹치게
+                x: "-50%",
                 y: "-50%",
                 scale: 0.12,
-                rotateZ: 1080 + galleryProgress * 720,
+                rotateZ: 360 + galleryProgress * 360,  // 스크롤 시 1바퀴 더
               }
             :
             phase >= 26

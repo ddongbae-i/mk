@@ -157,9 +157,6 @@ const SkillSection: React.FC<SkillSectionProps> = ({
 
     }, [isExiting, poppedSkills.length, onExitComplete]);
 
-    // 4. 머리 중심 좌표 계산
-    const headCenter = getHeadMouth();
-
     useEffect(() => {
         mousePosRef.current = mousePos;
     }, [mousePos]);
@@ -432,9 +429,49 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                 {bursts.map((burst) => (
                     <BurstEffect key={burst.id} x={burst.x} y={burst.y} />
                 ))}
+                {isExiting && absorbingSkills.map((item, index) => {
+                    const headCenter = headRef?.current
+                        ? {
+                            x: headRef.current.getBoundingClientRect().left + headRef.current.getBoundingClientRect().width / 2,
+                            y: headRef.current.getBoundingClientRect().top + headRef.current.getBoundingClientRect().height * 0.1
+                        }
+                        : { x: window.innerWidth / 2, y: window.innerHeight * 0.3 };
+
+                    return (
+                        <motion.div
+                            key={`absorb-${item.id}`}
+                            className="absolute pointer-events-none z-[300]"
+                            style={{ left: 0, top: 0 }}
+                            initial={{
+                                x: item.fromX - 70,
+                                y: item.fromY - 70,
+                                scale: 1,
+                                opacity: 1,
+                            }}
+                            animate={{
+                                x: headCenter.x - 70,
+                                y: headCenter.y - 70,
+                                scale: 0,
+                                opacity: 0,
+                            }}
+                            transition={{
+                                duration: 0.5,
+                                ease: [0.32, 0, 0.67, 0],
+                                delay: index * 0.04,
+                            }}
+                        >
+                            <img
+                                src={item.skill.icon}
+                                alt={item.skill.name}
+                                className="w-[140px] h-[140px] object-contain"
+                                style={{ filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.25))" }}
+                            />
+                        </motion.div>
+                    );
+                })}
 
                 {/* ✅ 스킬 아이콘들 - 개별 RAF 없이 ref만 등록 */}
-                {poppedSkills.map((item) => (
+                {!isExiting && poppedSkills.map((item) => (
                     <div
                         key={item.id}
                         ref={(el) => {

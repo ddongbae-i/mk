@@ -781,6 +781,7 @@ const IntroSection: React.FC = () => {
     setSpinY(0);
   }, []);
   const [skillsCollected, setSkillsCollected] = useState(false);
+  const [isSkillExiting, setIsSkillExiting] = useState(false);
 
   const headScale =
     phase >= 26 ? 1 :
@@ -993,10 +994,10 @@ const IntroSection: React.FC = () => {
         }
       }
       else if (currentPhase === 26) {
-        // 스킬 섹션 → 갤러리 섹션
+        // 스킬 섹션 → 갤러리 섹션 (흡수 애니메이션 후 전환)
         isAnimatingRef.current = true;
-        setPhase(27);
-        setTimeout(() => { isAnimatingRef.current = false; }, 800);
+        setIsSkillExiting(true);  // 흡수 시작! onExitComplete에서 phase(27)로 전환됨
+        setTimeout(() => { isAnimatingRef.current = false; }, 1500);
       }
 
     } else {
@@ -1615,12 +1616,17 @@ const IntroSection: React.FC = () => {
             {phase >= 26 && (
               <SkillSection
                 isActive={phase === 26}
+                isExiting={isSkillExiting}
                 onSkillsCollected={() => setSkillsCollected(true)}
                 onExpressionChange={setFaceExpression}
                 shakeTrigger={shakeTrigger}
                 headRef={headRef}
                 mousePos={absoluteMousePos}
                 mouseVelocity={mouseVelocity}
+                onExitComplete={() => {
+                  setPhase(27);
+                  setIsSkillExiting(false);
+                }}
               />
             )}
           </div>

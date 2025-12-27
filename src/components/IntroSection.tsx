@@ -2336,25 +2336,26 @@ const IntroSection: React.FC = () => {
 
         initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}
 
+
         animate={
           phase >= 27
             ? isGalleryEntering
               ? {
-                left: "18%",  // START 위치와 맞춤
+                // ✅ Phase 26 중앙에서 시작 (좌표계 통일)
+                left: "calc(50% - 350px)",
                 top: "calc(100vh - 85px)",
-                x: "-50%",    // 중앙 정렬
+                x: 0,
                 y: "-50%",
                 scale: 0.12,
                 rotateZ: 0,
               }
-
               : {
-                // 스크롤 중: 여기서 왼쪽으로 이동
-                left: `calc(18% + ${galleryProgress * 62}vw)`,
+                // ✅ START(22%) → END(80%) 이동
+                left: `calc(22% - 42px + ${galleryProgress * 58}vw)`,
                 top: galleryProgress >= 0.98
                   ? "calc(100vh + 300px)"
                   : "calc(100vh - 85px)",
-                x: 0,  // x는 항상 0으로 통일
+                x: 0,
                 y: "-50%",
                 scale: 0.12,
                 rotateZ: galleryProgress * 720,

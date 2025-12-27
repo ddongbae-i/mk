@@ -152,6 +152,10 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         // 흡수 완료 후 콜백
         const totalDuration = absorbed.length * 50 + 600; // delay + duration
         setTimeout(() => {
+            // ✅ 스킬 아이콘들 완전히 클리어
+            setPoppedSkills([]);
+            setAbsorbingSkills([]);
+            physicsObjectsRef.current.clear();
             onExitComplete?.();
         }, totalDuration);
 

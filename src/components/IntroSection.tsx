@@ -2191,6 +2191,22 @@ const IntroSection: React.FC = () => {
         </div>
       </div>
 
+      {phase >= 10 && (
+        <div className="fixed inset-0 pointer-events-none z-[500]">
+          {[0, 1, 2, 3, 4].map((i) => (
+            <HamburgerMenuBlock
+              key={`menu-${i}`}
+              index={i}
+              id={`menu-block-${i}`}
+              isMenuOpen={menuOpen}
+              hoveredIndex={hoveredBlockIndex}
+              onHover={setHoveredBlockIndex}
+              onClick={() => menuOpen && handleMenuClick(i)}
+            />
+          ))}
+        </div>
+      )}
+
       {/* 메인 콘텐츠 영역 */}
       <div className="relative w-full h-full max-w-[1920px] px-6 md:px-16 xl:px-[180px] flex items-center justify-between pointer-events-none">
         <div className="relative z-10 flex items-center justify-center overflow-visible w-full h-full">
@@ -2278,23 +2294,6 @@ const IntroSection: React.FC = () => {
                   onHover={setHoveredBlockIndex}
                   style={pos}
                   onClick={() => handleMenuClick(i)}  // ✅ 클릭 핸들러 연결
-                />
-              ))}
-            </div>
-          )}
-
-          {/* 그룹 2: 햄버거 메뉴 (phase 10+) */}
-          {phase >= 10 && (
-            <div className="absolute inset-0 pointer-events-none z-[500]">
-              {[0, 1, 2, 3, 4].map((i) => (
-                <HamburgerMenuBlock
-                  key={`menu-${i}`}
-                  index={i}
-                  id={`menu-block-${i}`}
-                  isMenuOpen={menuOpen}
-                  hoveredIndex={hoveredBlockIndex}
-                  onHover={setHoveredBlockIndex}
-                  onClick={() => menuOpen && handleMenuClick(i)}
                 />
               ))}
             </div>

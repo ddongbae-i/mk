@@ -2348,7 +2348,7 @@ const IntroSection: React.FC = () => {
                 // ✅ 진입 중에는 galleryProgress 무시하고 고정 위치 사용
                 left: "20%",
                 top: "calc(100vh - 85px)",
-                x: "-42px",
+                x: "-350px",
                 y: "-50%",
                 scale: 0.12,
                 rotateZ: 0,

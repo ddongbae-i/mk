@@ -83,6 +83,7 @@ interface PhysicsObject {
 
 interface SkillSectionProps {
     isActive: boolean;
+    isExiting?: boolean;  // ← 추가
     onSkillsCollected?: () => void;
     onExpressionChange?: (expression: Expression) => void;
     onShakingChange?: (isShaking: boolean) => void;
@@ -90,10 +91,12 @@ interface SkillSectionProps {
     headRef: React.RefObject<HTMLElement>;
     mousePos?: { x: number; y: number };
     mouseVelocity?: { x: number; y: number };
+    onExitComplete?: () => void;  // ← 흡수 완료 콜백
 }
 
 const SkillSection: React.FC<SkillSectionProps> = ({
     isActive,
+    isExiting = false,  // ← 기본값
     onSkillsCollected,
     onExpressionChange,
     onShakingChange,
@@ -101,7 +104,16 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     headRef,
     mousePos = { x: 0, y: 0 },
     mouseVelocity = { x: 0, y: 0 },
+    onExitComplete,  // ← 추가
 }) => {
+
+    const [absorbingSkills, setAbsorbingSkills] = useState<{
+        id: number;
+        fromX: number;
+        fromY: number;
+        skill: any;
+    }[]>([]);
+
     const [poppedSkills, setPoppedSkills] = useState<{ id: number; skill: any; originX: number; originY: number }[]>([]);
     const [bursts, setBursts] = useState<{ id: number; x: number; y: number }[]>([]);
     const [currentLevel, setCurrentLevel] = useState(1);
@@ -114,6 +126,39 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     // mousePos/mouseVelocity를 ref로 저장 (리렌더 방지)
     const mousePosRef = useRef(mousePos);
     const mouseVelocityRef = useRef(mouseVelocity);
+
+    useEffect(() => {
+        if (!isExiting || poppedSkills.length === 0) return;
+
+        // 물리 루프 중지
+        if (rafRef.current) {
+            cancelAnimationFrame(rafRef.current);
+            rafRef.current = null;
+        }
+
+        // 현재 위치 캡처해서 흡수 애니메이션 시작
+        const absorbed: typeof absorbingSkills = [];
+        physicsObjectsRef.current.forEach((obj) => {
+            absorbed.push({
+                id: obj.id,
+                fromX: obj.x,
+                fromY: obj.y,
+                skill: obj.skill,
+            });
+        });
+
+        setAbsorbingSkills(absorbed);
+
+        // 흡수 완료 후 콜백
+        const totalDuration = absorbed.length * 50 + 600; // delay + duration
+        setTimeout(() => {
+            onExitComplete?.();
+        }, totalDuration);
+
+    }, [isExiting, poppedSkills.length, onExitComplete]);
+
+    // 4. 머리 중심 좌표 계산
+    const headCenter = getHeadMouth();
 
     useEffect(() => {
         mousePosRef.current = mousePos;

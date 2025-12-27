@@ -993,10 +993,18 @@ const IntroSection: React.FC = () => {
         }
       }
       else if (currentPhase === 26) {
-        // 스킬 섹션 → 갤러리 섹션
         isAnimatingRef.current = true;
-        setPhase(27);
-        setTimeout(() => { isAnimatingRef.current = false; }, 800);
+
+        // 1. 스킬 흡수 애니메이션 시작
+        setIsSkillExiting(true);
+
+        // 2. 0.8초 후 갤러리로 전환
+        setTimeout(() => {
+          setPhase(27);
+          setIsSkillExiting(false);
+        }, 800);
+
+        setTimeout(() => { isAnimatingRef.current = false; }, 1600);
       }
 
     } else {
@@ -1292,10 +1300,11 @@ const IntroSection: React.FC = () => {
     if (phase === 27) {
       setIsGalleryEntering(true);
       setGalleryProgress(0);
-      // 1초 후 진입 완료
+
+      // 진입 애니메이션 완료 후
       setTimeout(() => {
         setIsGalleryEntering(false);
-      }, 1000);
+      }, 1200);  // 진입 애니메이션 시간
     }
   }, [phase]);
 
@@ -2334,25 +2343,24 @@ const IntroSection: React.FC = () => {
           phase >= 27
             ? isGalleryEntering
               ? {
-                // 진입: START 위치, 0도
-                left: "20%",
+                // ✅ Phase 26과 동일한 좌표계로 시작
+                left: "calc(50% - 350px)",  // Phase 26과 동일!
                 top: "calc(100vh - 85px)",
-                x: "-50%",
+                x: 0,                        // Phase 26과 동일!
                 y: "-50%",
                 scale: 0.12,
                 rotateZ: 0,
-                rotateY: 0,
               }
               : {
-                // 스크롤: 총 2바퀴(720도), 끝에서 낭떠러지
-                left: `calc(20% + ${galleryProgress * 60}vw)`,
+                // 스크롤 중: 여기서 왼쪽으로 이동
+                left: `calc(20% - 42px + ${galleryProgress * 60}vw)`,  // 42px = 700px * 0.12 / 2
                 top: galleryProgress >= 0.98
-                  ? "calc(100vh + 300px)"  // 떨어짐!
+                  ? "calc(100vh + 300px)"
                   : "calc(100vh - 85px)",
-                x: "-50%",
+                x: 0,  // x는 항상 0으로 통일
                 y: "-50%",
                 scale: 0.12,
-                rotateZ: galleryProgress * 720,  // 0→720도 (2바퀴)
+                rotateZ: galleryProgress * 720,
               }
             :
             phase >= 26

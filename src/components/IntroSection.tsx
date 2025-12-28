@@ -2330,38 +2330,33 @@ const IntroSection: React.FC = () => {
         dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
         dragElastic={0.1}
         onDrag={phase >= 26 ? handleDrag : undefined}
-        // whileDrag={{ cursor: "grabbing", scale: 1.25 }}
-
         initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}
-
-
         animate={
           phase >= 27
             ? {
-              // 프로그레스바: 20% ~ 80% (width 60%, 중앙정렬)
-              // 얼굴 중심이 프로그레스바 위를 따라가도록
               left: `${20 + galleryProgress * 60}%`,
               top: galleryProgress >= 0.98
                 ? "calc(100vh + 300px)"
                 : "calc(100vh - 100px)",
-              x: "-50%",  // 얼굴 중심 정렬 (width 700px * 0.12 = 84px, 절반 = 42px ≈ 50%)
+              x: "-50%",
               y: "-50%",
               scale: 0.12,
               rotateZ: galleryProgress * 720,
             }
-            :
-            phase >= 26
+            : phase >= 26
               ? {
                 left: "calc(50% - 350px)",
                 top: "calc(50% - 350px)",
-                x: 0, y: 0, scale: 1.0,
+                x: 0,
+                // ✅ 흡수 시 튕기는 애니메이션 추가
+                y: isSkillExiting ? [0, 30, -10, 0] : 0,  // 아래로 눌렸다가 위로 튕김
+                scale: isSkillExiting ? [1.0, 0.95, 1.05, 1.0] : 1.0,  // 눌렸다가 확대 후 원상복귀
                 rotateZ: 0,
               }
               : phase >= 23
                 ? { left: "95%", top: "20%", x: "-50%", y: "-50%", scale: 1.2 }
                 : phase >= 14
                   ? {
-                    // 조립 단계: 이미지가 너무 작아지지 않도록 scale 0.9~1.0 유지
                     left: "25vw",
                     top: "50%",
                     x: "-50%",
@@ -2377,7 +2372,12 @@ const IntroSection: React.FC = () => {
         }
         transition={{
           duration: phase >= 27 ? 1.2 : 1.0,
-          ease: phase >= 27 ? [0.34, 1.56, 0.64, 1] : "easeInOut"
+          ease: phase >= 27 ? [0.34, 1.56, 0.64, 1] : "easeInOut",
+          // ✅ 튕기는 애니메이션 타이밍 설정
+          ...(isSkillExiting && phase === 26 ? {
+            y: { duration: 1.0, times: [0, 0.4, 0.7, 1], ease: [0.34, 1.56, 0.64, 1] },
+            scale: { duration: 1.0, times: [0, 0.4, 0.7, 1], ease: "easeInOut" }
+          } : {})
         }}
       >
 

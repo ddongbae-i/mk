@@ -1294,6 +1294,19 @@ const IntroSection: React.FC = () => {
 
   useEffect(() => {
     if (phase >= 27) {
+      console.log('🎯 Gallery Face Position:', {
+        isGalleryEntering,
+        galleryProgress,
+        calculatedLeft: isGalleryEntering
+          ? `${window.innerWidth * 0.2}px`
+          : `calc(4% + ${galleryProgress * 60}%)`,
+        progressPercent: `${Math.round(galleryProgress * 100)}%`
+      });
+    }
+  }, [phase, isGalleryEntering, galleryProgress]);
+
+  useEffect(() => {
+    if (phase >= 27) {
       const faceEl = document.getElementById('face-container');
       if (faceEl) {
         const computed = window.getComputedStyle(faceEl);
@@ -2384,7 +2397,7 @@ const IntroSection: React.FC = () => {
               }
               : {
                 // ✅ 진입 완료 후에만 galleryProgress 적용
-                left: `calc(4% + ${galleryProgress * 60}%)`,
+                left: `calc(4% + ${galleryProgress * 76}%)`,
                 top: galleryProgress >= 0.94
                   ? "calc(100vh + 300px)"
                   : "calc(100vh - 100px)",

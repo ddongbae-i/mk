@@ -1640,13 +1640,10 @@ const IntroSection: React.FC = () => {
           <GallerySection
             isActive={phase === 27}
             headRef={headRef}
-            onProgressChange={(p) => {
-              // ✅ 진입 중에는 progress 업데이트 무시
-              if (!isGalleryEntering) {
-                setGalleryProgress(p);
-              }
-            }}
+            onProgressChange={setGalleryProgress}
             onFaceRotation={setGalleryFaceRotation}
+            onFaceExpression={setFaceExpression}  // ✅ 추가
+            onGalleryEnd={() => setPhase(28)}      // ✅ 다음 섹션으로
           />
         </motion.div>
       )}

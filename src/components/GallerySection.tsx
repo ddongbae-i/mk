@@ -149,20 +149,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                 background: "#1a1a2e",
             }}
         >
-            {/* 스포티한 대각선 스트라이프 배경 */}
-            <div
-                className="absolute inset-0 opacity-[0.03]"
-                style={{
-                    backgroundImage: `repeating-linear-gradient(
-                        -45deg,
-                        transparent,
-                        transparent 40px,
-                        white 40px,
-                        white 80px
-                    )`,
-                }}
-            />
-
             {/* 상단 컬러 바 악센트 */}
             <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#8F1E20] via-[#FCBB09] to-[#8E00BD]" />
 
@@ -312,7 +298,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                 })}
             </motion.div>
 
-            {/* ✨ 프로그레스 트랙 + 굴러가는 얼굴 */}
+            {/* ✨ 프로그레스 트랙 + 굴러가는 3D 얼굴 */}
             <div
                 className="absolute bottom-24 left-1/2 -translate-x-1/2"
                 style={{ width: progressBarWidth }}
@@ -330,20 +316,20 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                     <div className="absolute top-0 left-0 right-0 h-[2px] bg-white/20 rounded-full" />
                 </div>
 
-                {/* 굴러가는 레고 얼굴 - 트랙 위에 위치 */}
+                {/* 굴러가는 3D 레고 얼굴 - 트랙 위에 위치 */}
                 <motion.div
-                    className="absolute -top-14 pointer-events-none"
+                    className="absolute -top-16 pointer-events-none"
                     style={{
                         left: `${progress * 100}%`,
                         x: "-50%",
                     }}
                     animate={isFalling ? {
                         y: [0, -30, 300],
-                        rotate: [faceRotation, faceRotation + 180, faceRotation + 540],
+                        rotateZ: [faceRotation, faceRotation + 180, faceRotation + 540],
                         opacity: [1, 1, 0],
                     } : {
                         y: [0, -3, 0], // 통통 튀는 느낌
-                        rotate: faceRotation,
+                        rotateZ: faceRotation,
                     }}
                     transition={isFalling ? {
                         duration: 0.8,
@@ -356,19 +342,34 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                             repeatType: "reverse",
                             ease: "easeInOut",
                         },
-                        rotate: {
+                        rotateZ: {
                             duration: 0.1,
                         }
                     }}
                 >
-                    <img
-                        src={`${import.meta.env.BASE_URL}images/lego_face.png`}
-                        alt="rolling face"
-                        className="w-12 h-12 object-contain drop-shadow-lg"
+                    {/* ✅ 3D 레고 얼굴 복제 렌더링 */}
+                    <div
                         style={{
-                            filter: "drop-shadow(0 4px 8px rgba(0,0,0,0.3))",
+                            width: "48px",
+                            height: "48px",
+                            transform: `rotateY(${faceRotation}deg)`,
+                            transformStyle: "preserve-3d",
                         }}
-                    />
+                    >
+                        {headRef.current && (
+                            <div
+                                dangerouslySetInnerHTML={{
+                                    __html: headRef.current.querySelector('[data-lego-face-3d]')?.outerHTML || ''
+                                }}
+                                style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    transform: "scale(0.07)", // 48px로 축소 (700px → 48px)
+                                    transformOrigin: "top left",
+                                }}
+                            />
+                        )}
+                    </div>
                 </motion.div>
 
                 {/* 시작/끝 마커 */}

@@ -1632,18 +1632,33 @@ const IntroSection: React.FC = () => {
         <motion.div
           className="absolute w-full"
           style={{ zIndex: 95, top: 0, height: "100vh" }}
-          initial={{ y: "100vh" }}
-          animate={{ y: 0 }}
-          exit={{ y: "100vh" }}
-          transition={{ duration: 1, ease: "easeInOut" }}
+          initial={{
+            y: "100vh",
+            rotateX: -15,
+            scale: 0.9,
+          }}
+          animate={{
+            y: 0,
+            rotateX: 0,
+            scale: 1,
+          }}
+          exit={{
+            y: "100vh",
+            rotateX: -15,
+            scale: 0.9,
+          }}
+          transition={{
+            duration: 1.2,
+            ease: [0.34, 1.56, 0.64, 1],  // 탄성 이징
+          }}
         >
           <GallerySection
             isActive={phase === 27}
             headRef={headRef}
             onProgressChange={setGalleryProgress}
             onFaceRotation={setGalleryFaceRotation}
-            onFaceExpression={setFaceExpression}  // ✅ 추가
-            onGalleryEnd={() => setPhase(28)}      // ✅ 다음 섹션으로
+            onFaceExpression={setFaceExpression}
+            onGalleryEnd={() => setPhase(28)}
           />
         </motion.div>
       )}
@@ -2447,13 +2462,14 @@ const IntroSection: React.FC = () => {
             <Suspense fallback={<FaceLoadingPlaceholder />}>
               <LegoFace3D
                 className="w-full h-full drop-shadow-2xl"
+                data-lego-face-3d="true"  // ✅ 추가: 갤러리에서 찾기 위한 속성
                 followMouse={phase >= 2 && phase <= 12}
                 fixedRotationY={phase >= 26 ? 0 : phase >= 23 ? -40 : (phase >= 14 && phase < 23 ? 25 : 0)}
                 fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}
                 spinY={phase === 26 ? spinY : 0}
                 expression={finalExpression}
                 isShaking={false}
-                onSpinComplete={handleSpinComplete}  // ← 여기!
+                onSpinComplete={handleSpinComplete}
               />
             </Suspense>
           </motion.div>

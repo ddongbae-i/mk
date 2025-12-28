@@ -1634,22 +1634,28 @@ const IntroSection: React.FC = () => {
           style={{ zIndex: 95, top: 0, height: "100vh" }}
           initial={{
             y: "100vh",
-            rotateX: -15,
-            scale: 0.9,
+            rotateX: -30,  // ← 15 → 30으로 증가
+            rotateY: 20,   // ✅ Y축 회전 추가
+            scale: 0.85,   // ← 0.9 → 0.85로 축소
+            opacity: 0.7,  // ✅ 투명도 추가
           }}
           animate={{
             y: 0,
             rotateX: 0,
+            rotateY: 0,
             scale: 1,
+            opacity: 1,
           }}
           exit={{
             y: "100vh",
-            rotateX: -15,
-            scale: 0.9,
+            rotateX: -30,
+            rotateY: 20,
+            scale: 0.85,
+            opacity: 0.7,
           }}
           transition={{
-            duration: 1.2,
-            ease: [0.34, 1.56, 0.64, 1],  // 탄성 이징
+            duration: 1.4,  // ← 1.2 → 1.4 (더 느리게)
+            ease: [0.25, 0.46, 0.45, 0.94],  // ← 더 부드러운 커브
           }}
         >
           <GallerySection

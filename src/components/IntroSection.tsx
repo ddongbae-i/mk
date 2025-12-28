@@ -759,7 +759,6 @@ const IntroSection: React.FC = () => {
   const [naturalScrollY, setNaturalScrollY] = useState(0);
   const [galleryFaceRotation, setGalleryFaceRotation] = useState(0);
   const [galleryProgress, setGalleryProgress] = useState(0);
-  const [isGalleryEntering, setIsGalleryEntering] = useState(true);
   const [phase, setPhase] = useState(0);
   const [expandedTooltip, setExpandedTooltip] = useState<number | null>(null);
   const [currentProject, setCurrentProject] = useState(0);
@@ -1293,55 +1292,10 @@ const IntroSection: React.FC = () => {
   };
 
   useEffect(() => {
-    if (phase >= 27) {
-      console.log('🎯 Gallery Face Position:', {
-        isGalleryEntering,
-        galleryProgress,
-        calculatedLeft: isGalleryEntering
-          ? `${window.innerWidth * 0.2}px`
-          : `calc(4% + ${galleryProgress * 60}%)`,
-        progressPercent: `${Math.round(galleryProgress * 100)}%`
-      });
-    }
-  }, [phase, isGalleryEntering, galleryProgress]);
-
-  useEffect(() => {
-    if (phase >= 27) {
-      const faceEl = document.getElementById('face-container');
-      if (faceEl) {
-        const computed = window.getComputedStyle(faceEl);
-        console.log('🔍 Face Element ACTUAL Styles:', {
-          left: computed.left,
-          top: computed.top,
-          transform: computed.transform,
-        });
-      }
-    }
-  }, [phase, isGalleryEntering, galleryProgress]);
-
-  useEffect(() => {
-    if (phase >= 27) {
-      console.log('🎯 Gallery Debug:', {
-        phase,
-        isGalleryEntering,
-        galleryProgress,
-        calculatedLeft: isGalleryEntering ? "20%" : `calc(20% + ${galleryProgress * 60}%)`
-      });
-    }
-  }, [phase, isGalleryEntering, galleryProgress]);
-
-  useEffect(() => {
     if (phase === 27) {
-      setIsGalleryEntering(true);
-      setGalleryProgress(0);  // ✅ 여기서 0으로 설정
-
-      setTimeout(() => {
-        setIsGalleryEntering(false);  // 1.2초 후 false
-      }, 1200);
+      setGalleryProgress(0);
     }
   }, [phase]);
-
-
 
   useEffect(() => {
     // phase 10+ 진입 시 메뉴 블록들을 햄버거바 위치로 초기화
@@ -2386,26 +2340,18 @@ const IntroSection: React.FC = () => {
 
         animate={
           phase >= 27
-            ? isGalleryEntering
-              ? {
-                left: `${window.innerWidth * 0.2}px`,  // 20%를 px로 변환
-                top: "calc(100vh - 85px)",
-                x: "-350px",
-                y: "-50%",
-                scale: 0.12,
-                rotateZ: 0,
-              }
-              : {
-                // ✅ 진입 완료 후에만 galleryProgress 적용
-                left: `calc(4% + ${galleryProgress * 76}%)`,
-                top: galleryProgress >= 0.94
-                  ? "calc(100vh + 300px)"
-                  : "calc(100vh - 100px)",
-                x: "-42px",
-                y: "-50%",
-                scale: 0.12,
-                rotateZ: galleryProgress * 720,
-              }
+            ? {
+              // 프로그레스바: 20% ~ 80% (width 60%, 중앙정렬)
+              // 얼굴 중심이 프로그레스바 위를 따라가도록
+              left: `${20 + galleryProgress * 60}%`,
+              top: galleryProgress >= 0.98
+                ? "calc(100vh + 300px)"
+                : "calc(100vh - 100px)",
+              x: "-50%",  // 얼굴 중심 정렬 (width 700px * 0.12 = 84px, 절반 = 42px ≈ 50%)
+              y: "-50%",
+              scale: 0.12,
+              rotateZ: galleryProgress * 720,
+            }
             :
             phase >= 26
               ? {

@@ -950,11 +950,11 @@ const IntroSection: React.FC = () => {
         setPhase(17);  // 바로 조립 단계로
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
       }
-      else if (currentPhase === 21) {
+      else if (currentPhase === 17) {
         isAnimatingRef.current = true;
-        setPhase(22);
+        setPhase(18);
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
-      } else if (currentPhase === 22) {
+      } else if (currentPhase === 18) {
         isAnimatingRef.current = true;
         setPhase(23);
         setTimeout(() => { isAnimatingRef.current = false; }, 1000);
@@ -1017,15 +1017,15 @@ const IntroSection: React.FC = () => {
       }
       else if (currentPhase === 23) {
         isAnimatingRef.current = true;
-        setPhase(22);
+        setPhase(18);
         setTimeout(() => { isAnimatingRef.current = false; }, 1000);
-      } else if (currentPhase === 22) {
+      } else if (currentPhase === 18) {
         isAnimatingRef.current = true;
-        setPhase(16);
+        setPhase(17);
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
       } else if (currentPhase === 17) {
         isAnimatingRef.current = true;
-        setPhase(20);
+        setPhase(16);
         setTimeout(() => { isAnimatingRef.current = false; }, 600);
       } else if (currentPhase === 16) {
         isAnimatingRef.current = true;
@@ -2158,7 +2158,7 @@ const IntroSection: React.FC = () => {
             animate={{
               top: phase >= 17 ? "10%" : "-9%",
               opacity: 1,
-              y: phase >= 21 ? 20 : 0,
+              y: phase >= 17 ? 20 : 0,
               scaleX: phase >= 23 ? -1 : 1,
               scale: phase >= 23 ? 2.1 : 1,
             }}
@@ -2228,7 +2228,7 @@ const IntroSection: React.FC = () => {
         {/* --- 화살표 & 라벨 (조건 수정: phase >= 14 추가) --- */}
         <AnimatePresence>
           {/* ✅ phase >= 14 조건 추가로 초반에는 안 보이게 설정 */}
-          {(phase >= 14 && phase < 21) && (
+          {(phase >= 14 && phase < 17) && (
             <>
               {/* 라벨 1: 머리-몸통 사이 */}
               <motion.div
@@ -2290,7 +2290,7 @@ const IntroSection: React.FC = () => {
             className="absolute"
             style={{ left: "58%", x: "-50%", zIndex: 90 }}
             animate={{
-              top: phase >= 21 ? "34.5%" : "53%",
+              top: phase >= 17 ? "34.5%" : "53%",
               opacity: phase >= 23 ? 0 : 1,
             }}
             transition={{ duration: 0.6, ease: "backOut" }}
@@ -2344,7 +2344,7 @@ const IntroSection: React.FC = () => {
 
       </motion.div>
       <AnimatePresence>
-        {phase === 17 && (
+        {phase === 16 && (
           <motion.div
             style={{
               position: "absolute",

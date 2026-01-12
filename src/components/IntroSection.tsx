@@ -1976,7 +1976,6 @@ const IntroSection: React.FC = () => {
             // ✅ phase가 9보다 클 때만 배경과 블러 효과 적용
             animate={{
               backgroundColor: phase > 9 ? "#8F1E20" : "rgba(255, 255, 255, 0)",
-              boxShadow: phase > 9 ? "0 4px 6px rgba(0,0,0,0.05)" : "none"
             }}
             data-hoverable="true"
           >

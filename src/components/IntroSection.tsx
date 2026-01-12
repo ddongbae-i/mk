@@ -2094,14 +2094,19 @@ const IntroSection: React.FC = () => {
         dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
         dragElastic={0.1}
         onDrag={phase >= 26 ? handleDrag : undefined}
-        initial={{ y: "150vh", rotateZ: -45, rotateX: 30, scale: 0.8 }}
+        initial={{
+          y: phase === 27 ? "-20vh" : "150vh",  // ✅ 위에서 떨어짐
+          rotateZ: phase === 27 ? 360 : -45,    // ✅ 한 바퀴 회전하며 떨어짐
+          rotateX: 30,
+          scale: 0.8
+        }}
         animate={
           phase >= 27
             ? {
               left: `${20 + galleryProgress * 60}%`,
               top: galleryProgress >= 0.98
                 ? "calc(100vh + 300px)"
-                : "calc(100vh - 100px)",
+                : "calc(100vh - 150px)",  // ✅ 프로그레스바 위로
               x: "-50%",
               y: "-50%",
               scale: 0.12,
@@ -2112,10 +2117,9 @@ const IntroSection: React.FC = () => {
                 left: "calc(50% - 350px)",
                 top: "calc(50% - 350px)",
                 x: 0,
-                // ✅ 흡수 시 튕기는 애니메이션 추가
-                y: isSkillExiting ? [0, 30, -10, 0] : 0,  // 아래로 눌렸다가 위로 튕김
-                scale: isSkillExiting ? [1.0, 0.95, 1.05, 1.0] : 1.0,  // 눌렸다가 확대 후 원상복귀
-                rotateZ: 0,
+                y: isSkillExiting ? [0, 30, -10, 0, -350] : 0,  // ✅ 마지막에 위로 튕김
+                scale: isSkillExiting ? [1.0, 0.95, 1.05, 1.0, 0.12] : 1.0,  // ✅ 작아지면서
+                rotateZ: isSkillExiting ? [0, 0, 0, 0, 360] : 0,  // ✅ 한 바퀴 회전
               }
               : phase >= 23
                 ? { left: "95%", top: "20%", x: "-50%", y: "-50%", scale: 1.2 }
@@ -2139,8 +2143,9 @@ const IntroSection: React.FC = () => {
           ease: phase >= 27 ? [0.34, 1.56, 0.64, 1] : "easeInOut",
           // ✅ 튕기는 애니메이션 타이밍 설정
           ...(isSkillExiting && phase === 26 ? {
-            y: { duration: 1.0, times: [0, 0.4, 0.7, 1], ease: [0.34, 1.56, 0.64, 1] },
-            scale: { duration: 1.0, times: [0, 0.4, 0.7, 1], ease: "easeInOut" }
+            y: { duration: 1.2, times: [0, 0.3, 0.6, 0.8, 1], ease: [0.34, 1.56, 0.64, 1] },  // ✅ duration 늘림
+            scale: { duration: 1.2, times: [0, 0.3, 0.6, 0.8, 1], ease: "easeInOut" },
+            rotateZ: { duration: 1.2, times: [0, 0.3, 0.6, 0.8, 1], ease: "easeOut" }  // ✅ 회전 추가
           } : {})
         }}
       >

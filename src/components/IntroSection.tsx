@@ -947,25 +947,10 @@ const IntroSection: React.FC = () => {
         }, 1200);
       } else if (currentPhase === 16) {
         isAnimatingRef.current = true;
-        setPhase(17);
-        setTimeout(() => { isAnimatingRef.current = false; }, 600);
-      } else if (currentPhase === 17) {
-        isAnimatingRef.current = true;
-        setPhase(18);
-        setTimeout(() => { isAnimatingRef.current = false; }, 600);
-      } else if (currentPhase === 18) {
-        isAnimatingRef.current = true;
-        setPhase(19);
-        setTimeout(() => { isAnimatingRef.current = false; }, 600);
-      } else if (currentPhase === 19) {
-        isAnimatingRef.current = true;
-        setPhase(20);
-        setTimeout(() => { isAnimatingRef.current = false; }, 600);
-      } else if (currentPhase === 20) {
-        isAnimatingRef.current = true;
-        setPhase(21);
+        setPhase(17);  // 바로 조립 단계로
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
-      } else if (currentPhase === 21) {
+      }
+      else if (currentPhase === 21) {
         isAnimatingRef.current = true;
         setPhase(22);
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
@@ -1036,27 +1021,11 @@ const IntroSection: React.FC = () => {
         setTimeout(() => { isAnimatingRef.current = false; }, 1000);
       } else if (currentPhase === 22) {
         isAnimatingRef.current = true;
-        setPhase(21);
+        setPhase(16);
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
-      } else if (currentPhase === 21) {
-        isAnimatingRef.current = true;
-        setPhase(20);
-        setTimeout(() => { isAnimatingRef.current = false; }, 600);
-      } else if (currentPhase === 20) {
-        isAnimatingRef.current = true;
-        setPhase(19);
-        setTimeout(() => { isAnimatingRef.current = false; }, 600);
-      } else if (currentPhase === 19) {
-        isAnimatingRef.current = true;
-        setPhase(18);
-        setTimeout(() => { isAnimatingRef.current = false; }, 600);
-      } else if (currentPhase === 18) {
-        isAnimatingRef.current = true;
-        setPhase(17);
-        setTimeout(() => { isAnimatingRef.current = false; }, 600);
       } else if (currentPhase === 17) {
         isAnimatingRef.current = true;
-        setPhase(16);
+        setPhase(20);
         setTimeout(() => { isAnimatingRef.current = false; }, 600);
       } else if (currentPhase === 16) {
         isAnimatingRef.current = true;
@@ -1069,6 +1038,7 @@ const IntroSection: React.FC = () => {
           }
           isAnimatingRef.current = false;
         }, 100);
+
       } else if (currentPhase === 15) {
         isAnimatingRef.current = true;
         setPhase(14);
@@ -1862,7 +1832,7 @@ const IntroSection: React.FC = () => {
               top: "-30vh",
             }}
             initial={{ opacity: 0 }}
-            animate={{ opacity: (phase >= 16 && phase < 22) ? 1 : 0 }}
+            animate={{ opacity: (phase >= 16 && phase < 18) ? 1 : 0 }}
             transition={{ duration: 0.8 }}
           >
             <div className="relative w-[540px] h-[600px] flex flex-col items-center justify-center p-6">
@@ -1901,7 +1871,7 @@ const IntroSection: React.FC = () => {
               ></motion.div>
 
               <AnimatePresence mode="wait">
-                {phase < 21 ? (
+                {phase < 17 ? (
                   <motion.div
                     key="placeholder"
                     initial={{ scale: 1 }}
@@ -2186,7 +2156,7 @@ const IntroSection: React.FC = () => {
               transformOrigin: "bottom center"
             }}
             animate={{
-              top: phase >= 21 ? "10%" : "-9%",
+              top: phase >= 17 ? "10%" : "-9%",
               opacity: 1,
               y: phase >= 21 ? 20 : 0,
               scaleX: phase >= 23 ? -1 : 1,
@@ -2331,7 +2301,7 @@ const IntroSection: React.FC = () => {
                 <PartTooltip
                   title={PART_DESCRIPTIONS[2].title}
                   description={PART_DESCRIPTIONS[2].description}
-                  isVisible={phase === 18}
+                  isVisible={phase === 16}
                   details={PART_DESCRIPTIONS[2].details}
                   isExpanded={expandedTooltip === 2}
                   onToggle={() => setExpandedTooltip(expandedTooltip === 2 ? null : 2)}
@@ -2349,7 +2319,7 @@ const IntroSection: React.FC = () => {
             className="absolute"
             style={{ left: "54%", x: "-50%", zIndex: 80 }}
             animate={{
-              top: phase >= 21 ? "62%" : "101%",
+              top: phase >= 17 ? "62%" : "101%",
               opacity: phase >= 23 ? 0 : 1,
             }}
             transition={{ duration: 0.6, ease: "backOut" }}
@@ -2360,7 +2330,7 @@ const IntroSection: React.FC = () => {
                 <PartTooltip
                   title={PART_DESCRIPTIONS[3].title}
                   description={PART_DESCRIPTIONS[3].description}
-                  isVisible={phase === 19}
+                  isVisible={phase === 16}
                   details={PART_DESCRIPTIONS[3].details}
                   isExpanded={expandedTooltip === 3}
                   onToggle={() => setExpandedTooltip(expandedTooltip === 3 ? null : 3)}

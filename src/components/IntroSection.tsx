@@ -937,8 +937,18 @@ const IntroSection: React.FC = () => {
         isAnimatingRef.current = true;
         setPhase(14);
         setTimeout(() => {
-          setPhase(16);  // ✅ 바로 16으로 점프
-          isAnimatingRef.current = false;
+          setPhase(15);
+          setIsNaturalScrolling(true);
+          setNaturalScrollY(0);
+          if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTop = 0;
+          }
+          // ✅ 즉시 phase 16으로 넘어가도록 (스크롤 필요 없음)
+          setTimeout(() => {
+            setIsNaturalScrolling(false);
+            setPhase(16);
+            isAnimatingRef.current = false;
+          }, 100);  // 아주 짧은 딜레이 후 바로 16으로
         }, 1200);
       } else if (currentPhase === 16) {
         isAnimatingRef.current = true;
@@ -1024,8 +1034,15 @@ const IntroSection: React.FC = () => {
         setTimeout(() => { isAnimatingRef.current = false; }, 600);
       } else if (currentPhase === 16) {
         isAnimatingRef.current = true;
-        setPhase(14);
-        setTimeout(() => { isAnimatingRef.current = false; }, 800);
+        setPhase(15);
+        setIsNaturalScrolling(true);
+        setNaturalScrollY(299);
+        setTimeout(() => {
+          if (scrollContainerRef.current) {
+            scrollContainerRef.current.scrollTop = 299;
+          }
+          isAnimatingRef.current = false;
+        }, 100);
       } else if (currentPhase === 15) {
         isAnimatingRef.current = true;
         setPhase(14);
@@ -1350,8 +1367,7 @@ const IntroSection: React.FC = () => {
     const handleNaturalScroll = () => {
       const scrollTop = container.scrollTop;
       setNaturalScrollY(scrollTop);
-
-      if (scrollTop >= 300) {
+      if (scrollTop >= 0) {  // 스크롤 시작하자마자 통과
         setIsNaturalScrolling(false);
         setPhase(16);
       }
@@ -1827,28 +1843,28 @@ const IntroSection: React.FC = () => {
                 className="absolute bg-[#2b2b2b]"
                 style={{ top: 0, left: 0, height: 2 }}
                 initial={{ width: 48 }}
-                animate={{ width: phase >= 21 ? "100%" : 48 }}
+                animate={{ width: phase >= 17 ? "100%" : 48 }}
                 transition={{ duration: 0.8, ease: "easeInOut" }}
               />
               <motion.div
                 className="absolute bg-[#2b2b2b]"
                 style={{ top: 0, left: 0, width: 2 }}
                 initial={{ height: 48 }}
-                animate={{ height: phase >= 21 ? "100%" : 48 }}
+                animate={{ height: phase >= 17 ? "100%" : 48 }}
                 transition={{ duration: 0.8, ease: "easeInOut" }}
               />
               <motion.div
                 className="absolute bg-[#2b2b2b]"
                 style={{ bottom: 0, right: 0, height: 2 }}
                 initial={{ width: 48 }}
-                animate={{ width: phase >= 21 ? "100%" : 48 }}
+                animate={{ width: phase >= 17 ? "100%" : 48 }}
                 transition={{ duration: 0.8, ease: "easeInOut" }}
               />
               <motion.div
                 className="absolute bg-[#2b2b2b]"
                 style={{ bottom: 0, right: 0, width: 2 }}
                 initial={{ height: 48 }}
-                animate={{ height: phase >= 21 ? "100%" : 48 }}
+                animate={{ height: phase >= 17 ? "100%" : 48 }}
                 transition={{ duration: 0.8, ease: "easeInOut" }}
               />
 

@@ -227,23 +227,13 @@ const PROJECT_DATA = [
 const PartTooltip = ({
   title,
   description,
-  details,
   isVisible,
-  isExpanded = false,
-  onToggle,
-  counterRotateY = 0,
-  counterRotateX = 0,
   lineLength = 80,
   leftOffset = -90,
 }: {
   title: string;
   description: string;
-  details?: string;
   isVisible: boolean;
-  isExpanded?: boolean;
-  onToggle?: () => void;
-  counterRotateY?: number;
-  counterRotateX?: number;
   lineLength?: number;
   leftOffset?: number;
 }) => (
@@ -255,7 +245,7 @@ const PartTooltip = ({
           left: `calc(100% + ${leftOffset}px)`,
           top: "50%",
           zIndex: 60,
-          transform: `translateY(-50%) rotateY(${counterRotateY}deg) rotateX(${counterRotateX}deg)`,
+          transform: `translateY(-50%)`,
           transformStyle: "preserve-3d",
         }}
         initial={{ opacity: 0 }}
@@ -299,44 +289,12 @@ const PartTooltip = ({
           <p className="text-[#333] text-[18px] font-medium leading-[1.5]">
             {description}
           </p>
-
-          {/* 확장 컨텐츠 - 버튼 위에 */}
-          <AnimatePresence>
-            {isExpanded && details && (
-              <motion.div
-                initial={{ height: 0, opacity: 0 }}
-                animate={{ height: "auto", opacity: 1 }}
-                exit={{ height: 0, opacity: 0 }}
-                className="overflow-hidden"
-              >
-                <div className="pt-4 mt-4 border-t-[1px] border-[#d9d9d9]">
-                  <p className="text-[#555] text-[14px] leading-[1.5]">{details}</p>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {/* 버튼 - 항상 하단 고정 */}
-          <div className="mt-4 flex justify-center">
-            <button
-              onClick={onToggle}
-              className="w-10 h-10 flex items-center justify-center cursor-pointer"
-            >
-              <svg
-                width="20" height="20" viewBox="0 0 20 20" fill="none"
-                style={{ transform: isExpanded ? "rotate(45deg)" : "rotate(0deg)", transition: "transform 0.2s" }}
-              >
-                <path d="M10 4V16M4 10H16" stroke="#2b2b2b" strokeWidth="2.5" strokeLinecap="round" />
-              </svg>
-            </button>
-          </div>
+          {/* ✅ details, AnimatePresence, 버튼 전부 삭제됨 */}
         </motion.div>
       </motion.div>
     )}
   </AnimatePresence>
 );
-// --- COMPONENTS ---
-
 const StrokedWordmark = ({
   className,
   style,
@@ -760,7 +718,6 @@ const IntroSection: React.FC = () => {
   const [galleryFaceRotation, setGalleryFaceRotation] = useState(0);
   const [galleryProgress, setGalleryProgress] = useState(0);
   const [phase, setPhase] = useState(0);
-  const [expandedTooltip, setExpandedTooltip] = useState<number | null>(null);
   const [currentProject, setCurrentProject] = useState(0);
   const [isProjectOpen, setIsProjectOpen] = useState(false);
   const [skillResetKey, setSkillResetKey] = useState(0);
@@ -789,7 +746,7 @@ const IntroSection: React.FC = () => {
         phase >= 14 ? 0.39 :
           1.2;
 
-  const showHat = phase >= 15 && phase < 26;
+  const showHat = phase >= 14 && phase < 26;
   const followParts = phase >= 2 && phase <= 12;
   const fixedPartsY = phase >= 14 && phase < 23 ? 25 : 0;
   const partsRotateY = followParts ? 0 : fixedPartsY;
@@ -936,20 +893,11 @@ const IntroSection: React.FC = () => {
       } else if (currentPhase === 13) {
         isAnimatingRef.current = true;
         setPhase(14);
-        setTimeout(() => {
-          setPhase(15);
-          setIsNaturalScrolling(true);
-          setNaturalScrollY(0);
-          if (scrollContainerRef.current) {
-            scrollContainerRef.current.scrollTop = 0;
-          }
-          // ✅ 즉시 phase 16으로 넘어가도록 (스크롤 필요 없음)
-          setTimeout(() => {
-            setIsNaturalScrolling(false);
-            setPhase(16);
-            isAnimatingRef.current = false;
-          }, 100);  // 아주 짧은 딜레이 후 바로 16으로
-        }, 1200);
+        setTimeout(() => { isAnimatingRef.current = false; }, 1200);
+      } else if (currentPhase === 14) {
+        isAnimatingRef.current = true;
+        setPhase(16);  // 바로 16으로!
+        setTimeout(() => { isAnimatingRef.current = false; }, 800);
       } else if (currentPhase === 16) {
         isAnimatingRef.current = true;
         setPhase(17);  // 바로 조립 단계로
@@ -1034,15 +982,8 @@ const IntroSection: React.FC = () => {
         setTimeout(() => { isAnimatingRef.current = false; }, 600);
       } else if (currentPhase === 16) {
         isAnimatingRef.current = true;
-        setPhase(15);
-        setIsNaturalScrolling(true);
-        setNaturalScrollY(299);
-        setTimeout(() => {
-          if (scrollContainerRef.current) {
-            scrollContainerRef.current.scrollTop = 299;
-          }
-          isAnimatingRef.current = false;
-        }, 100);
+        setPhase(14);  // 바로 14로!
+        setTimeout(() => { isAnimatingRef.current = false; }, 800);
       } else if (currentPhase === 15) {
         isAnimatingRef.current = true;
         setPhase(14);
@@ -1278,15 +1219,6 @@ const IntroSection: React.FC = () => {
     }
   }, [phase, didIntroMenuAnim]);
 
-  useEffect(() => {
-    // phase가 바뀌면 자연스크롤은 무조건 끄기 (특히 메뉴 점프 대비)
-    if (phase !== 15 && isNaturalScrolling) {
-      setIsNaturalScrolling(false);
-      setNaturalScrollY(0);
-      if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
-    }
-  }, [phase, isNaturalScrolling]);
-
 
   useEffect(() => {
     // ✅ 11/12에서는 menuOpen을 유지, 그 외 구간 이동 시 닫기
@@ -1357,25 +1289,6 @@ const IntroSection: React.FC = () => {
   useEffect(() => {
     handleScrollActionRef.current = handleScrollAction;
   });
-
-  useEffect(() => {
-    if (!isNaturalScrolling || phase !== 15) return;
-
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    const handleNaturalScroll = () => {
-      const scrollTop = container.scrollTop;
-      setNaturalScrollY(scrollTop);
-      if (scrollTop >= 0) {  // 스크롤 시작하자마자 통과
-        setIsNaturalScrolling(false);
-        setPhase(16);
-      }
-    };
-
-    container.addEventListener('scroll', handleNaturalScroll);
-    return () => container.removeEventListener('scroll', handleNaturalScroll);
-  }, [isNaturalScrolling, phase]);
 
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
@@ -1793,7 +1706,7 @@ const IntroSection: React.FC = () => {
       </AnimatePresence>
 
       {/* 조립 가이드 섹션 (Parts Wrapper) */}
-      {phase >= 15 && (
+      {phase >= 14 && (
         <motion.div
           className="absolute z-[60] pointer-events-none"
           initial={{ left: "50%", top: "50%", x: "-50%", y: "-50%" }}
@@ -2180,9 +2093,6 @@ const IntroSection: React.FC = () => {
               title={PART_DESCRIPTIONS[0].title}
               description={PART_DESCRIPTIONS[0].description}
               isVisible={phase === 16}
-              details={PART_DESCRIPTIONS[0].details}
-              isExpanded={expandedTooltip === 0}
-              onToggle={() => setExpandedTooltip(expandedTooltip === 0 ? null : 0)}
               lineLength={80}
               leftOffset={-90}
             />
@@ -2312,9 +2222,6 @@ const IntroSection: React.FC = () => {
                   title={PART_DESCRIPTIONS[2].title}
                   description={PART_DESCRIPTIONS[2].description}
                   isVisible={phase === 16}
-                  details={PART_DESCRIPTIONS[2].details}
-                  isExpanded={expandedTooltip === 2}
-                  onToggle={() => setExpandedTooltip(expandedTooltip === 2 ? null : 2)}
                   lineLength={80}
                   leftOffset={40}
                 />
@@ -2341,11 +2248,8 @@ const IntroSection: React.FC = () => {
                   title={PART_DESCRIPTIONS[3].title}
                   description={PART_DESCRIPTIONS[3].description}
                   isVisible={phase === 16}
-                  details={PART_DESCRIPTIONS[3].details}
-                  isExpanded={expandedTooltip === 3}
-                  onToggle={() => setExpandedTooltip(expandedTooltip === 3 ? null : 3)}
                   lineLength={80}
-                  leftOffset={60}
+                  leftOffset={40}
                 />
               </div>
             </div>
@@ -2375,9 +2279,6 @@ const IntroSection: React.FC = () => {
                 title={PART_DESCRIPTIONS[1].title}
                 description={PART_DESCRIPTIONS[1].description}
                 isVisible={true}
-                details={PART_DESCRIPTIONS[1].details}
-                isExpanded={expandedTooltip === 1}
-                onToggle={() => setExpandedTooltip(expandedTooltip === 1 ? null : 1)}
                 lineLength={80}
                 leftOffset={60}
               />

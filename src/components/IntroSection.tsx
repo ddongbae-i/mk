@@ -2108,7 +2108,7 @@ const IntroSection: React.FC = () => {
                 ? "calc(100vh + 300px)"
                 : "calc(100vh - 150px)",  // ✅ 프로그레스바 위로
               x: "-50%",
-              y: "-50%",
+              y: ["-50%", "-30%", "-50%"],  // ✅ 툭! 튕기는 효과
               scale: 0.12,
               rotateZ: galleryProgress * 720,
             }
@@ -2139,13 +2139,16 @@ const IntroSection: React.FC = () => {
                     : { y: "150vh" }
         }
         transition={{
-          duration: phase >= 27 ? 1.2 : 1.0,
-          ease: phase >= 27 ? [0.34, 1.56, 0.64, 1] : "easeInOut",
-          // ✅ 튕기는 애니메이션 타이밍 설정
+          duration: phase >= 27 ? 0.6 : 1.0,  // ✅ 더 빠르게
+          ease: phase >= 27 ? [0.68, -0.55, 0.27, 1.55] : "easeInOut",  // ✅ 바운스 이징
           ...(isSkillExiting && phase === 26 ? {
-            y: { duration: 1.2, times: [0, 0.3, 0.6, 0.8, 1], ease: [0.34, 1.56, 0.64, 1] },  // ✅ duration 늘림
-            scale: { duration: 1.2, times: [0, 0.3, 0.6, 0.8, 1], ease: "easeInOut" },
-            rotateZ: { duration: 1.2, times: [0, 0.3, 0.6, 0.8, 1], ease: "easeOut" }  // ✅ 회전 추가
+            y: {
+              duration: 1.0,  // ✅ 스킬 흡수는 1초
+              times: [0, 0.3, 0.6, 0.8, 1],
+              ease: [0.34, 1.56, 0.64, 1]
+            },
+            scale: { duration: 1.0, times: [0, 0.3, 0.6, 0.8, 1], ease: "easeInOut" },
+            rotateZ: { duration: 1.0, times: [0, 0.3, 0.6, 0.8, 1], ease: "easeOut" }
           } : {})
         }}
       >

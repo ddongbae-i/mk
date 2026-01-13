@@ -786,7 +786,7 @@ const IntroSection: React.FC = () => {
   const headScale =
     phase >= 26 ? 1 :
       phase >= 23 ? 0.95 :
-        phase >= 14 ? 0.45 :
+        phase >= 14 ? 0.39 :
           1.2;
 
   const showHat = phase >= 15 && phase < 26;
@@ -937,12 +937,7 @@ const IntroSection: React.FC = () => {
         isAnimatingRef.current = true;
         setPhase(14);
         setTimeout(() => {
-          setPhase(15);
-          setIsNaturalScrolling(true);
-          setNaturalScrollY(0);
-          if (scrollContainerRef.current) {
-            scrollContainerRef.current.scrollTop = 0;
-          }
+          setPhase(16);  // ✅ 바로 16으로 점프
           isAnimatingRef.current = false;
         }, 1200);
       } else if (currentPhase === 16) {
@@ -1029,16 +1024,8 @@ const IntroSection: React.FC = () => {
         setTimeout(() => { isAnimatingRef.current = false; }, 600);
       } else if (currentPhase === 16) {
         isAnimatingRef.current = true;
-        setPhase(15);
-        setIsNaturalScrolling(true);
-        setNaturalScrollY(299);
-        setTimeout(() => {
-          if (scrollContainerRef.current) {
-            scrollContainerRef.current.scrollTop = 299;
-          }
-          isAnimatingRef.current = false;
-        }, 100);
-
+        setPhase(14);
+        setTimeout(() => { isAnimatingRef.current = false; }, 800);
       } else if (currentPhase === 15) {
         isAnimatingRef.current = true;
         setPhase(14);
@@ -2159,16 +2146,16 @@ const IntroSection: React.FC = () => {
             className="absolute pointer-events-none"
             style={{
               left: "50%",
-              x: "-40%",
+              x: "-47%",
               zIndex: 120,
               transformOrigin: "bottom center"
             }}
             animate={{
-              top: phase >= 17 ? "10%" : "-9%",
+              top: phase >= 17 ? "11%" : "-9%",
               opacity: 1,
               y: phase >= 17 ? 20 : 0,
               scaleX: phase >= 23 ? -1 : 1,
-              scale: phase >= 23 ? 2.1 : 1,
+              scale: phase >= 23 ? 2.1 : 1.1,
             }}
             transition={{ duration: 0.6, ease: "backOut" }}
           >
@@ -2187,7 +2174,6 @@ const IntroSection: React.FC = () => {
         )}
 
         {/* 2. HEAD (얼굴) */}
-        {/* 2. HEAD (얼굴) */}
         <motion.div
           className="absolute pointer-events-auto"
           style={{
@@ -2195,12 +2181,12 @@ const IntroSection: React.FC = () => {
             height: "700px",
             left: "50%",
             x: "-50%",
-            top: "-6%",
+            top: "-10%",
             transformStyle: "preserve-3d",
             zIndex: 100,
-            display: "flex",           // ✅ flex로 변경
-            justifyContent: "center",  // ✅ 추가
-            alignItems: "center",      // ✅ 추가
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
           }}
         >
           {/* 내부 wrapper - absolute 제거 */}
@@ -2241,13 +2227,13 @@ const IntroSection: React.FC = () => {
               {/* 라벨 1: 머리-몸통 사이 */}
               <motion.div
                 className="absolute pointer-events-none flex items-center gap-[160px]"
-                style={{ left: "20%", top: "18%", zIndex: 150 }}
+                style={{ left: "23%", top: "19%", zIndex: 150 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
                 <span className="text-[clamp(20px,3vw,32px)] font-normal text-[#2b2b2b]">1</span>
-                <svg width="20" height="40" viewBox="0 0 24 60" >
+                <svg width="20" height="35" viewBox="0 0 24 60" >
                   <path d="M12,0 L12,50 M6,42 L12,52 L18,42" stroke="#2b2b2b" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
               </motion.div>
@@ -2255,14 +2241,14 @@ const IntroSection: React.FC = () => {
               {/* 라벨 2: 몸통-다리 사이 */}
               <motion.div
                 className="absolute pointer-events-none flex items-center gap-[160px]"
-                style={{ left: "26%", top: "53%", zIndex: 150 }}
+                style={{ left: "23%", top: "56%", zIndex: 150 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
                 <span className="text-[32px] font-normal text-[#2b2b2b]">2</span>
                 <div className="flex gap-6">
-                  <svg width="20" height="40" viewBox="0 0 24 60" className="translate-y-2">
+                  <svg width="20" height="35" viewBox="0 0 24 60" className="translate-y-2">
                     <path d="M12,0 L12,50 M6,42 L12,52 L18,42" stroke="#2b2b2b" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </div>
@@ -2270,7 +2256,7 @@ const IntroSection: React.FC = () => {
 
               <motion.div
                 className="absolute pointer-events-none flex items-center gap-[100px]"
-                style={{ left: "26%", top: "100%", zIndex: 150 }}
+                style={{ left: "23%", top: "101%", zIndex: 150 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -2278,10 +2264,10 @@ const IntroSection: React.FC = () => {
                 <div className="flex gap-[120px]">
                   <span className="text-[32px] font-normal text-[#2b2b2b] -ml-2">3</span>
                   <div className="flex gap-[80px]">
-                    <svg width="20" height="40" viewBox="0 0 24 60" className="translate-y-1">
+                    <svg width="20" height="35" viewBox="0 0 24 60" className="translate-y-1">
                       <path d="M12,0 L12,50 M6,42 L12,52 L18,42" stroke="#2b2b2b" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
-                    <svg width="20" height="40" viewBox="0 0 24 60" className="-translate-y-2">
+                    <svg width="20" height="35" viewBox="0 0 24 60" className="-translate-y-2">
                       <path d="M12,0 L12,50 M6,42 L12,52 L18,42" stroke="#2b2b2b" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
@@ -2296,9 +2282,9 @@ const IntroSection: React.FC = () => {
         {(phase >= 14) && (
           <motion.div
             className="absolute"
-            style={{ left: "58%", x: "-50%", zIndex: 90 }}
+            style={{ left: "55%", x: "-50%", zIndex: 90 }}
             animate={{
-              top: phase >= 17 ? "34.5%" : "53%",
+              top: phase >= 17 ? "38%" : "54%",
               opacity: phase >= 23 ? 0 : 1,
             }}
             transition={{ duration: 0.6, ease: "backOut" }}
@@ -2325,9 +2311,9 @@ const IntroSection: React.FC = () => {
         {(phase >= 14) && (
           <motion.div
             className="absolute"
-            style={{ left: "54%", x: "-50%", zIndex: 80 }}
+            style={{ left: "51%", x: "-50%", zIndex: 80 }}
             animate={{
-              top: phase >= 17 ? "62%" : "101%",
+              top: phase >= 17 ? "64%" : "101%",
               opacity: phase >= 23 ? 0 : 1,
             }}
             transition={{ duration: 0.6, ease: "backOut" }}

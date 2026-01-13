@@ -743,7 +743,7 @@ const IntroSection: React.FC = () => {
   const headScale =
     phase >= 26 ? 1 :
       phase >= 23 ? 0.95 :
-        phase >= 14 ? 0.39 :
+        phase >= 14 ? 0.37 :
           1.2;
 
   const showHat = phase >= 14 && phase < 26;
@@ -2045,7 +2045,7 @@ const IntroSection: React.FC = () => {
                     top: "50%",
                     x: "-50%",
                     y: `calc(-30% + ${scrollOffset}px)`,
-                    scale: 0.9,
+                    scale: 0.85,
                     rotateX: 0,
                     rotateZ: 0,
                     rotateY: 0
@@ -2084,7 +2084,7 @@ const IntroSection: React.FC = () => {
               opacity: 1,
               y: phase >= 17 ? 20 : 0,
               scaleX: phase >= 23 ? -1 : 1,
-              scale: phase >= 23 ? 2.1 : 1.1,
+              scale: phase >= 23 ? 2.1 : 1,
             }}
             transition={{ duration: 0.6, ease: "backOut" }}
           >
@@ -2210,7 +2210,7 @@ const IntroSection: React.FC = () => {
             className="absolute"
             style={{ left: "55%", x: "-50%", zIndex: 90 }}
             animate={{
-              top: phase >= 17 ? "38%" : "54%",
+              top: phase >= 17 ? "37%" : "54%",
               opacity: phase >= 23 ? 0 : 1,
             }}
             transition={{ duration: 0.6, ease: "backOut" }}
@@ -2263,10 +2263,11 @@ const IntroSection: React.FC = () => {
             style={{
               position: "absolute",
               left: "25vw",
-              top: "50%",
+              top: "30%",
               transform: `translate(-50%, calc(-30% + ${scrollOffset}px))`,
               zIndex: 200,
               pointerEvents: "auto",
+              scale: 0.85,
             }}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}

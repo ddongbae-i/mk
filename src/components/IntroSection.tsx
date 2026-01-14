@@ -2031,7 +2031,7 @@ const IntroSection: React.FC = () => {
                 rotateZ: isSkillExiting ? [0, 0, 0, 0, 360] : 0,  // ✅ 한 바퀴 회전
               }
               : phase >= 23
-                ? { left: "96%", top: "18%", x: "-50%", y: "-50%", scale: 1.2 }
+                ? { left: "96%", top: "18%", x: "-50%", y: "-50%", scale: 1.2, }
                 : phase >= 14
                   ? {
                     left: "25vw",
@@ -2108,6 +2108,10 @@ const IntroSection: React.FC = () => {
             justifyContent: "center",
             alignItems: "center",
           }}
+          animate={{
+            rotateZ: phase >= 23 && phase < 26 ? 2 : 0,  // ← 여기 추가!
+          }}
+          transition={{ duration: 0.6 }}
         >
           {/* 내부 wrapper - absolute 제거 */}
           <motion.div

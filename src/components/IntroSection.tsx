@@ -902,12 +902,11 @@ const IntroSection: React.FC = () => {
         isAnimatingRef.current = true;
         setPhase(17);
         setTimeout(() => {
-          setPhase(18);  // 17 바로 다음에 자동으로 18로
           isAnimatingRef.current = false;
-        }, 600);  // 플레이스홀더 fade-out 시간만큼
-      } else if (currentPhase === 18) {
+        }, 800);
+      } else if (currentPhase === 17) {
         isAnimatingRef.current = true;
-        setPhase(23);
+        setPhase(23);  // 18 건너뛰고 바로 23으로!
         setTimeout(() => { isAnimatingRef.current = false; }, 1000);
       } else if (currentPhase === 23) {
         // 빔 + 프로젝트 동시 등장 (Phase 24 스킵)
@@ -968,12 +967,8 @@ const IntroSection: React.FC = () => {
       }
       else if (currentPhase === 23) {
         isAnimatingRef.current = true;
-        setPhase(18);
-        setTimeout(() => { isAnimatingRef.current = false; }, 1000);
-      } else if (currentPhase === 18) {
-        isAnimatingRef.current = true;
         setPhase(17);
-        setTimeout(() => { isAnimatingRef.current = false; }, 800);
+        setTimeout(() => { isAnimatingRef.current = false; }, 1000);
       } else if (currentPhase === 17) {
         isAnimatingRef.current = true;
         setPhase(16);
@@ -2036,7 +2031,7 @@ const IntroSection: React.FC = () => {
                 rotateZ: isSkillExiting ? [0, 0, 0, 0, 360] : 0,  // ✅ 한 바퀴 회전
               }
               : phase >= 23
-                ? { left: "95%", top: "20%", x: "-50%", y: "-50%", scale: 1.2 }
+                ? { left: "96%", top: "18%", x: "-50%", y: "-50%", scale: 1.2 }
                 : phase >= 14
                   ? {
                     left: "25vw",
@@ -2079,7 +2074,7 @@ const IntroSection: React.FC = () => {
             }}
             animate={{
               top: phase >= 23 ? "18%" : (phase >= 17 ? "11%" : "-9%"),  // phase 23일 때 5%
-              left: phase >= 23 ? "45%" : "50%",  // phase 23일 때 좌측으로 2% 이동
+              left: phase >= 23 ? "47%" : "50%",  // phase 23일 때 좌측으로 2% 이동
               opacity: 1,
               y: phase >= 23 ? 0 : (phase >= 17 ? 20 : 0),  // phase 23일 때 y offset 제거
               scaleX: phase >= 23 ? -1 : 1,
@@ -2132,7 +2127,7 @@ const IntroSection: React.FC = () => {
                 className="w-full h-full drop-shadow-2xl"
                 data-lego-face-3d="true"  // ✅ 추가: 갤러리에서 찾기 위한 속성
                 followMouse={phase >= 2 && phase <= 12}
-                fixedRotationY={phase >= 26 ? 0 : phase >= 23 ? -40 : (phase >= 14 && phase < 23 ? 25 : 0)}
+                fixedRotationY={phase >= 26 ? 0 : phase >= 23 ? -30 : (phase >= 14 && phase < 23 ? 25 : 0)}
                 fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}
                 spinY={phase === 26 ? spinY : 0}
                 expression={finalExpression}
@@ -2152,7 +2147,7 @@ const IntroSection: React.FC = () => {
               {/* 라벨 1: 머리-몸통 사이 */}
               <motion.div
                 className="absolute pointer-events-none flex items-center gap-[160px]"
-                style={{ left: "23%", top: "19%", zIndex: 150 }}
+                style={{ left: "23%", top: "20%", zIndex: 150 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -2166,7 +2161,7 @@ const IntroSection: React.FC = () => {
               {/* 라벨 2: 몸통-다리 사이 */}
               <motion.div
                 className="absolute pointer-events-none flex items-center gap-[160px]"
-                style={{ left: "23%", top: "56%", zIndex: 150 }}
+                style={{ left: "23%", top: "55%", zIndex: 150 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -2181,18 +2176,18 @@ const IntroSection: React.FC = () => {
 
               <motion.div
                 className="absolute pointer-events-none flex items-center gap-[100px]"
-                style={{ left: "23%", top: "101%", zIndex: 150 }}
+                style={{ left: "23%", top: "102%", zIndex: 150 }}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
               >
                 <div className="flex gap-[120px]">
                   <span className="text-[32px] font-normal text-[#2b2b2b] -ml-2">3</span>
-                  <div className="flex gap-[80px]">
+                  <div className="flex gap-[82px]">
                     <svg width="20" height="35" viewBox="0 0 24 60" className="translate-y-1">
                       <path d="M12,0 L12,50 M6,42 L12,52 L18,42" stroke="#2b2b2b" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
-                    <svg width="20" height="35" viewBox="0 0 24 60" className="-translate-y-2">
+                    <svg width="20" height="35" viewBox="0 0 24 60" className="-translate-y-3">
                       <path d="M12,0 L12,50 M6,42 L12,52 L18,42" stroke="#2b2b2b" strokeWidth="4" fill="none" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
@@ -2207,9 +2202,9 @@ const IntroSection: React.FC = () => {
         {(phase >= 14) && (
           <motion.div
             className="absolute"
-            style={{ left: "55%", x: "-50%", zIndex: 90 }}
+            style={{ left: "55.5%", x: "-50%", zIndex: 90 }}
             animate={{
-              top: phase >= 17 ? "37%" : "54%",
+              top: phase >= 17 ? "36.5%" : "54%",
               opacity: phase >= 23 ? 0 : 1,
             }}
             transition={{ duration: 0.6, ease: "backOut" }}
@@ -2233,7 +2228,7 @@ const IntroSection: React.FC = () => {
         {(phase >= 14) && (
           <motion.div
             className="absolute"
-            style={{ left: "51%", x: "-50%", zIndex: 80 }}
+            style={{ left: "51.5%", x: "-50%", zIndex: 80 }}
             animate={{
               top: phase >= 17 ? "64%" : "101%",
               opacity: phase >= 23 ? 0 : 1,

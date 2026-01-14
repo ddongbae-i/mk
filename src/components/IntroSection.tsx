@@ -127,6 +127,8 @@ const FONT_SIZE_CSS = 'min(14vw, 200px)';
 const FONT_FAMILY = 'Kanit, sans-serif';
 
 
+
+
 // --- PROJECT KIT BOX ---
 const ProjectKitBox = ({
   isVisible,
@@ -140,6 +142,15 @@ const ProjectKitBox = ({
   <motion.div
     className="relative z-[90] cursor-pointer -bottom-[100px]"
     onClick={onOpen}
+    onKeyDown={(e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        onOpen();
+      }
+    }}
+    tabIndex={0}
+    role="button"
+    aria-label={`Open ${project.title} project`}
     whileHover={{ scale: 1.02 }}
     whileTap={{ scale: 0.98 }}
     initial={{ opacity: 0, scale: 0.92, y: 40 }}
@@ -148,7 +159,7 @@ const ProjectKitBox = ({
   >
     {/* ✅ 키트 이미지(통째로) */}
     <img
-      src={`${import.meta.env.BASE_URL}${project.image}`} // PROJECT_DATA의 image 경로 사용
+      src={`${import.meta.env.BASE_URL}${project.image}`}
       alt={`${project.title} kit`}
       draggable={false}
       className="w-[85vw] max-w-[1000px] aspect-[16/10] md:w-[80vw] object-contain select-none"
@@ -156,7 +167,6 @@ const ProjectKitBox = ({
     />
   </motion.div>
 );
-
 const PROJECT_DATA = [
   {
     id: 1,
@@ -827,6 +837,7 @@ const IntroSection: React.FC = () => {
   const handleScrollAction = async (direction: number) => {
     if (isAnimatingRef.current) return;
     if (isNaturalScrolling) return;
+    if (isProjectOpen) return;
 
     if (menuOpen) {
       await closeMenu();
@@ -1199,6 +1210,12 @@ const IntroSection: React.FC = () => {
   };
 
   useEffect(() => {
+    if (scope.current) {
+      scope.current.focus();
+    }
+  }, []);
+
+  useEffect(() => {
     if (phase === 27) {
       setGalleryProgress(0);
     }
@@ -1285,6 +1302,7 @@ const IntroSection: React.FC = () => {
   useEffect(() => {
     const onWheel = (e: WheelEvent) => {
       if (isNaturalScrolling) return;
+      if (isProjectOpen) return;
       if (Math.abs(e.deltaY) > 10) {
         e.preventDefault();
         handleScrollActionRef.current(e.deltaY > 0 ? 1 : -1);
@@ -1296,13 +1314,17 @@ const IntroSection: React.FC = () => {
     const onTouchEnd = (e: TouchEvent) => {
       if (touchStartRef.current === null) return;
       if (isNaturalScrolling) return;
+      if (isProjectOpen) return;
       const diff = touchStartRef.current - e.changedTouches[0].clientY;
-      if (Math.abs(diff) > 30) handleScrollActionRef.current(diff > 0 ? 1 : -1);
+      console.log('Touch diff:', diff);
+      if (Math.abs(diff) > 10) handleScrollActionRef.current(diff > 0 ? 1 : -1);
       touchStartRef.current = null;
     };
 
     const onKeyDown = (e: KeyboardEvent) => {
+      console.log('Key pressed:', e.key); // ← 디버깅용
       if (isNaturalScrolling) return;
+      if (isProjectOpen) return;
       if (e.key === "ArrowDown" || e.key === "ArrowRight") {
         e.preventDefault();
         handleScrollActionRef.current(1);
@@ -1354,6 +1376,7 @@ const IntroSection: React.FC = () => {
     animate(".split-part", { color: "#C7C7C7", fontWeight: 600, fontStyle: "normal" }, { duration: 0.4 });
     await Promise.all([faceAnim, bgAnim]);
   };
+
 
   const runMergeAnimation = async () => {
     const anims: any[] = [];

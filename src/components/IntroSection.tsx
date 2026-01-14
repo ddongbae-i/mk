@@ -277,7 +277,7 @@ const PartTooltip = ({
 
         {/* 카드 */}
         <motion.div
-          className="bg-[#f0f0f0] border-[3px] border-[#2b2b2b] shadow-[4px_4px_0_0_#2b2b2b]"
+          className="bg-[#FFF2D5] border-[3px] border-[#2b2b2b]"
           style={{ width: "320px", padding: "20px 24px" }}
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
@@ -1596,8 +1596,8 @@ const IntroSection: React.FC = () => {
             fontFamily: FONT_FAMILY,
             fontSize: "clamp(32px, 4vw, 50px)",
             color: PROJECT_TEXT_COLOR,
-            top: "16%",
-            left: "64%",
+            top: "15%",
+            left: "65%",
             transform: "rotate(-30deg) translateX(-50%)",
             transformOrigin: "left center",
             whiteSpace: "nowrap"

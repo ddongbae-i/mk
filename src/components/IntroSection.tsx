@@ -575,7 +575,7 @@ const HamburgerIcon = ({
 }) => (
   <div
     onClick={onClick}
-    className={`relative flex flex-col justify-center items-end gap-[2px] cursor-pointer pointer-events-auto ${className}`}
+    className={`relative flex flex-col justify-center items-end gap-[1px] cursor-pointer pointer-events-auto ${className}`}
   >
     <img
       src={`${import.meta.env.BASE_URL}images/hamburger_line1.svg`}
@@ -1870,18 +1870,18 @@ const IntroSection: React.FC = () => {
       )}
 
       {/* 햄버거 메뉴 */}
-      <div className="fixed top-0 left-0 w-full h-24 max-w-[1920px] pointer-events-none px-6 md:px-16 xl:px-[180px] z-[999]">
+      <div className="fixed top-3 left-0 w-full h-24 max-w-[1920px] pointer-events-none px-6 md:px-16 xl:px-[180px] z-[999]">
         <div className="w-full h-full flex items-center justify-between">
           <motion.div
             id="hamburger"
             className="w-[70px] h-[70px] flex items-center justify-center pointer-events-auto rounded-full transition-colors duration-500"
             animate={{
               backgroundColor:
-                phase >= 27 ? "#FCBB09" :
-                  phase >= 26 ? "#4A90E2" :
-                    phase >= 23 ? "#8E00BD" :
-                      phase >= 17 ? "#a6b551" :
-                        phase >= 14 ? "#FFF2D5" :
+                phase >= 27 ? "#8F1E20" :
+                  phase >= 26 ? "rgb(26, 26, 46)" :
+                    phase >= 23 ? "#ffc147" :
+                      phase >= 17 ? "#8F1E20" :
+                        phase >= 14 ? "#8F1E20" :
                           phase > 9 ? "#8F1E20" :
                             "rgba(255, 255, 255, 0)",
             }}

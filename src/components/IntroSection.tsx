@@ -742,8 +742,8 @@ const IntroSection: React.FC = () => {
 
   const headScale =
     phase >= 26 ? 1 :
-      phase >= 23 ? 0.95 :
-        phase >= 14 ? 0.37 :
+      phase >= 23 ? 0.8 :
+        phase >= 14 ? 0.35 :
           1.2;
 
   const showHat = phase >= 14 && phase < 26;
@@ -900,13 +900,11 @@ const IntroSection: React.FC = () => {
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
       } else if (currentPhase === 16) {
         isAnimatingRef.current = true;
-        setPhase(17);  // 바로 조립 단계로
-        setTimeout(() => { isAnimatingRef.current = false; }, 800);
-      }
-      else if (currentPhase === 17) {
-        isAnimatingRef.current = true;
-        setPhase(18);
-        setTimeout(() => { isAnimatingRef.current = false; }, 800);
+        setPhase(17);
+        setTimeout(() => {
+          setPhase(18);  // 17 바로 다음에 자동으로 18로
+          isAnimatingRef.current = false;
+        }, 600);  // 플레이스홀더 fade-out 시간만큼
       } else if (currentPhase === 18) {
         isAnimatingRef.current = true;
         setPhase(23);
@@ -1598,8 +1596,8 @@ const IntroSection: React.FC = () => {
             fontFamily: FONT_FAMILY,
             fontSize: "clamp(32px, 4vw, 50px)",
             color: PROJECT_TEXT_COLOR,
-            top: "14%",
-            left: "66%",
+            top: "16%",
+            left: "64%",
             transform: "rotate(-30deg) translateX(-50%)",
             transformOrigin: "left center",
             whiteSpace: "nowrap"
@@ -2080,9 +2078,10 @@ const IntroSection: React.FC = () => {
               transformOrigin: "bottom center"
             }}
             animate={{
-              top: phase >= 17 ? "11%" : "-9%",
+              top: phase >= 23 ? "18%" : (phase >= 17 ? "11%" : "-9%"),  // phase 23일 때 5%
+              left: phase >= 23 ? "45%" : "50%",  // phase 23일 때 좌측으로 2% 이동
               opacity: 1,
-              y: phase >= 17 ? 20 : 0,
+              y: phase >= 23 ? 0 : (phase >= 17 ? 20 : 0),  // phase 23일 때 y offset 제거
               scaleX: phase >= 23 ? -1 : 1,
               scale: phase >= 23 ? 2.1 : 1,
             }}

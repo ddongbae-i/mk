@@ -906,17 +906,20 @@ const IntroSection: React.FC = () => {
         }, 800);
       } else if (currentPhase === 17) {
         isAnimatingRef.current = true;
-        setPhase(23);  // 18 건너뛰고 바로 23으로!
-        setTimeout(() => { isAnimatingRef.current = false; }, 1000);
-      } else if (currentPhase === 23) {
-        // 빔 + 프로젝트 동시 등장 (Phase 24 스킵)
+        setPhase(18);
+        setTimeout(() => { isAnimatingRef.current = false; }, 800);
+      } else if (currentPhase === 18) {
         isAnimatingRef.current = true;
-        setPhase(24);
-        // 빔 애니메이션 후 바로 프로젝트 표시
+        setPhase(23);
+
+        // 23 도달하면 자동으로 빔과 프로젝트 표시
         setTimeout(() => {
-          setPhase(25);
-          isAnimatingRef.current = false;
-        }, 600);  // 빔 등장 시간
+          setPhase(24);  // 빔 등장
+          setTimeout(() => {
+            setPhase(25);  // 프로젝트 등장
+            isAnimatingRef.current = false;
+          }, 600);
+        }, 800);
       } else if (currentPhase === 25) {
         if (currentProject < 2) {
           isAnimatingRef.current = true;
@@ -953,26 +956,22 @@ const IntroSection: React.FC = () => {
         setTimeout(() => { isAnimatingRef.current = false; }, 1000);
       }
       else if (currentPhase === 25) {
-        // ... (기존 25단계 로직 유지) ...
         if (currentProject > 0) {
+          // 프로젝트 3 → 2 → 1로 되돌리기
           isAnimatingRef.current = true;
           setCurrentProject((prev) => prev - 1);
           setTimeout(() => { isAnimatingRef.current = false; }, 900);
         } else {
+          // 첫 번째 프로젝트에서 스크롤 업하면 18로
           isAnimatingRef.current = true;
-          setPhase(24);  // ← 이걸
-          setPhase(23);  // ← 이걸로 변경
+          setPhase(18);  // 25 → 18
           setTimeout(() => { isAnimatingRef.current = false; }, 800);
         }
       }
-      else if (currentPhase === 23) {
+      else if (currentPhase === 18) {
         isAnimatingRef.current = true;
-        setPhase(17);
-        setTimeout(() => { isAnimatingRef.current = false; }, 1000);
-      } else if (currentPhase === 17) {
-        isAnimatingRef.current = true;
-        setPhase(16);
-        setTimeout(() => { isAnimatingRef.current = false; }, 600);
+        setPhase(17);  // 18 → 17
+        setTimeout(() => { isAnimatingRef.current = false; }, 800);
       } else if (currentPhase === 16) {
         isAnimatingRef.current = true;
         setPhase(14);  // 바로 14로!
@@ -1559,7 +1558,7 @@ const IntroSection: React.FC = () => {
           zIndex: 85,
         }}
         initial={{ opacity: 0 }}
-        animate={phase >= 25 && phase < 26 ? { opacity: 1 } : { opacity: 0 }}
+        animate={phase >= 24 && phase < 26 ? { opacity: 1 } : { opacity: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
       >
         {/* ✅ key 추가해서 프로젝트 바뀔 때마다 애니메이션 재실행 */}
@@ -1591,8 +1590,8 @@ const IntroSection: React.FC = () => {
             fontFamily: FONT_FAMILY,
             fontSize: "clamp(32px, 4vw, 50px)",
             color: PROJECT_TEXT_COLOR,
-            top: "15%",
-            left: "65%",
+            top: "13%",
+            left: "67%",
             transform: "rotate(-30deg) translateX(-50%)",
             transformOrigin: "left center",
             whiteSpace: "nowrap"
@@ -1650,7 +1649,7 @@ const IntroSection: React.FC = () => {
         animate={
           phase >= 23
             ? { x: 0, y: "-130vh" }
-            : phase >= 22
+            : phase >= 18
               ? { x: 0, y: 0 }
               : { x: "120%", y: 0 }
         }

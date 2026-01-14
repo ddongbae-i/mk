@@ -1728,8 +1728,6 @@ const IntroSection: React.FC = () => {
             transition={{ duration: 0.8, ease: "easeInOut" }}
             style={{ zIndex: 120 }} // 전체 래퍼 기준
           >
-
-            \
           </motion.div>
 
 
@@ -1798,7 +1796,7 @@ const IntroSection: React.FC = () => {
                     initial={{ opacity: 0, scale: 0.85 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.6, ease: "easeOut", delay: 0.3 }}
-                    className="w-full text-left"
+                    className="w-full text-left px-3"
                   >
                     <div className="text-center mb-8">
                       <h2 className="text-[32px] font-bold text-[#131416] font-kanit mb-1 -mt-[70px]">KIM MINKYEONG</h2>
@@ -2073,7 +2071,7 @@ const IntroSection: React.FC = () => {
               transformOrigin: "bottom center"
             }}
             animate={{
-              top: phase >= 23 ? "18%" : (phase >= 17 ? "11%" : "-9%"),  // phase 23일 때 5%
+              top: phase >= 23 ? "18%" : (phase >= 17 ? "10%" : "-9%"),  // phase 23일 때 5%
               left: phase >= 23 ? "47%" : "50%",  // phase 23일 때 좌측으로 2% 이동
               opacity: 1,
               y: phase >= 23 ? 0 : (phase >= 17 ? 20 : 0),  // phase 23일 때 y offset 제거

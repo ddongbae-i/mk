@@ -2087,8 +2087,8 @@ const IntroSection: React.FC = () => {
               title={PART_DESCRIPTIONS[0].title}
               description={PART_DESCRIPTIONS[0].description}
               isVisible={phase === 16}
-              lineLength={80}
-              leftOffset={-90}
+              lineLength={90}
+              leftOffset={-77}
             />
           </motion.div>
         )}
@@ -2220,8 +2220,8 @@ const IntroSection: React.FC = () => {
                   title={PART_DESCRIPTIONS[2].title}
                   description={PART_DESCRIPTIONS[2].description}
                   isVisible={phase === 16}
-                  lineLength={80}
-                  leftOffset={40}
+                  lineLength={90}
+                  leftOffset={22}
                 />
               </div>
             </div>
@@ -2246,8 +2246,8 @@ const IntroSection: React.FC = () => {
                   title={PART_DESCRIPTIONS[3].title}
                   description={PART_DESCRIPTIONS[3].description}
                   isVisible={phase === 16}
-                  lineLength={80}
-                  leftOffset={40}
+                  lineLength={60}
+                  leftOffset={80}
                 />
               </div>
             </div>
@@ -2273,13 +2273,13 @@ const IntroSection: React.FC = () => {
             transition={{ duration: 0.3 }}
           >
             {/* 얼굴 중심에서 툴팁 위치 조정 */}
-            <div style={{ position: "relative", left: "0px", top: "50px" }}>
+            <div style={{ position: "relative", left: "0px", top: "-5px" }}>
               <PartTooltip
                 title={PART_DESCRIPTIONS[1].title}
                 description={PART_DESCRIPTIONS[1].description}
                 isVisible={true}
-                lineLength={80}
-                leftOffset={60}
+                lineLength={100}
+                leftOffset={50.5}
               />
             </div>
           </motion.div>

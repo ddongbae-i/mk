@@ -575,7 +575,7 @@ const HamburgerIcon = ({
 }) => (
   <div
     onClick={onClick}
-    className={`relative flex flex-col justify-center items-end gap-1 cursor-pointer pointer-events-auto ${className}`}
+    className={`relative flex flex-col justify-center items-end gap-[2px] cursor-pointer pointer-events-auto ${className}`}
   >
     <img
       src={`${import.meta.env.BASE_URL}images/hamburger_line1.svg`}
@@ -586,13 +586,13 @@ const HamburgerIcon = ({
     <img
       src={`${import.meta.env.BASE_URL}images/hamburger_line2.svg`}
       alt=""
-      className="w-8 h-[6px] block"
+      className="w-8 h-[10px] block"
       style={{ filter: invert ? "invert(1)" : "none" }}
     />
     <motion.img
       src={`${import.meta.env.BASE_URL}images/hamburger_line3.svg`}
       alt=""
-      className="w-8 h-[6px] origin-right block"
+      className="w-8 h-[10px] origin-right block"
       style={{ filter: invert ? "invert(1)" : "none" }}
       animate={isOpen ? { rotate: -20, y: -6 } : { rotate: 0, y: 0 }}
       transition={{ duration: 0.3 }}
@@ -978,10 +978,13 @@ const IntroSection: React.FC = () => {
           setPhase(18);  // 25 → 18
           setTimeout(() => { isAnimatingRef.current = false; }, 800);
         }
-      }
-      else if (currentPhase === 18) {
+      } else if (currentPhase === 18) {
         isAnimatingRef.current = true;
         setPhase(17);  // 18 → 17
+        setTimeout(() => { isAnimatingRef.current = false; }, 800);
+      } else if (currentPhase === 17) {  // ← 추가!
+        isAnimatingRef.current = true;
+        setPhase(16);  // 17 → 16
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
       } else if (currentPhase === 16) {
         isAnimatingRef.current = true;
@@ -1871,10 +1874,16 @@ const IntroSection: React.FC = () => {
         <div className="w-full h-full flex items-center justify-between">
           <motion.div
             id="hamburger"
-            className="w-14 h-14 flex items-center justify-center pointer-events-auto rounded-full transition-colors duration-500"
-            // ✅ phase가 9보다 클 때만 배경과 블러 효과 적용
+            className="w-[70px] h-[70px] flex items-center justify-center pointer-events-auto rounded-full transition-colors duration-500"
             animate={{
-              backgroundColor: phase > 9 ? "#8F1E20" : "rgba(255, 255, 255, 0)",
+              backgroundColor:
+                phase >= 27 ? "#FCBB09" :
+                  phase >= 26 ? "#4A90E2" :
+                    phase >= 23 ? "#8E00BD" :
+                      phase >= 17 ? "#a6b551" :
+                        phase >= 14 ? "#FFF2D5" :
+                          phase > 9 ? "#8F1E20" :
+                            "rgba(255, 255, 255, 0)",
             }}
             data-hoverable="true"
           >
@@ -1887,7 +1896,6 @@ const IntroSection: React.FC = () => {
             )}
           </motion.div>
           <div className="w-20 h-20" /> {/* 왼쪽 로고 여백 */}
-
         </div>
       </div>
 

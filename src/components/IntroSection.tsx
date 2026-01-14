@@ -67,22 +67,18 @@ const PART_DESCRIPTIONS = [
   {
     title: "Navigation Headlight",
     description: "무엇을 가장 먼저 해결해야하는지 찾아냅니다.",
-    details: "창업과 기획 경험을 바탕으로, 프로젝트 초기 단계의 모호한 요구사항을 명확한 목표로 구체화하여 흔들리지 않는 방향성을 제시합니다.",
   },
   {
-    title: "Insight Mask",
-    description: "사용자보다 먼저 불편함을 감지합니다. ",
-    details: "사소한 불편함도 지나치지 못하는 성향을 발휘하여, 사용자가 겪을 수 있는 이탈 요소를 미리 발견하고 매끄러운 UX/UI 흐름으로 개선합니다.",
+    title: "Insight Eyes",
+    description: "사용자보다 한 발 앞서 불편의 신호를 포착합니다.",
   },
   {
-    title: "Layout Harness",
-    description: "뒤죽박죽 섞인 정보들을 이해하기 쉬운 구조로 정리합니다.",
-    details: "디자인과 퍼블리싱(Code)을 모두 고려하여, 복잡한 데이터를 시각적 위계에 맞춰 재배치하고 구현 가능성이 높은 최적의 구조를 설계합니다..",
+    title: "Flow Vest",
+    description: "복잡한 정보도 한눈에 들어오는 흐름으로 정리합니다.",
   },
   {
     title: "Responsibility Legs",
     description: "맡은 일은 마지막까지 책임감을 가지고 작업합니다",
-    details: "단순한 완료가 아닌 완벽한 마무리를 지향합니다. 난관에 부딪혀도 포기하지 않고 끈기 있게 문제를 해결하여 안정적인 결과물을 전달합니다.",
   },
 ];
 
@@ -1836,11 +1832,11 @@ const IntroSection: React.FC = () => {
                             {section.content.map((item: any, idx) => (
                               <div key={idx} className="mb-1 last:mb-0">
                                 {item.type === 'text' && (
-                                  <div className="text-[16px] font-bold text-[#383D47]">{item.text}</div>
+                                  <div className="text-[18px] font-bold text-[#383D47]">{item.text}</div>
                                 )}
                                 {item.type === 'job' && (
                                   <div className="mb-1 last:mb-0">
-                                    <div className="text-[16px] font-bold text-[#383D47] mb-1">{item.role}</div>
+                                    <div className="text-[18px] font-bold text-[#383D47] mb-1">{item.role}</div>
                                     <ul className="list-none space-y-1 text-[14px] text-[#383D47] pl-0">
                                       {item.tasks.map((task: string, tIdx: number) => (
                                         <li key={tIdx} className="before:content-['–'] before:mr-2 before:text-gray-400">

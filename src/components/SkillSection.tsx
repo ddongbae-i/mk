@@ -402,10 +402,10 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                             exit={{ opacity: 0 }}
                         >
                             <h2
-                                className="text-5xl font-black italic mb-2"
+                                className="text-5xl font-bold italic mb-2"
                                 style={{ fontFamily: "Kanit, sans-serif" }}
                             >
-                                SHAKE IT!
+                                What’s in MK’s head?
                             </h2>
                             <p className="text-lg">머리를 마구 흔들어주세요!</p>
                         </motion.div>
@@ -420,9 +420,9 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ type: "spring", stiffness: 300 }}
                         >
-                            <p className="text-5xl font-bold text-[#ffffff]"
+                            <p className="text-5xl font-bold text-[#ffffff] italic"
                                 style={{ fontFamily: "Kanit, sans-serif" }}>
-                                THIS MUCH, I CAN DO
+                                This is MK’s skill set
                             </p>
                         </motion.div>
                     )}

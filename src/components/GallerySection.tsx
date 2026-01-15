@@ -35,16 +35,26 @@ const GallerySection: React.FC<GallerySectionProps> = ({
     onFaceExpression,
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [progress, setProgress] = useState(0);
+    const [currentStep, setCurrentStep] = useState(0); // ✅ progress 대신 step으로 관리
     const [selectedImage, setSelectedImage] = useState<number | null>(null);
     const [isFalling, setIsFalling] = useState(false);
-    const progressRef = useRef(0);
+    const currentStepRef = useRef(0);
 
-    // 트랙 위치 계산
-    const trackWidth = GALLERY_IMAGES.length * 420 + 200;
-    const viewportWidth = typeof window !== 'undefined' ? window.innerWidth : 1920;
-    const maxScroll = Math.max(0, trackWidth - viewportWidth + 100);
-    const trackX = -progress * maxScroll;
+    const MAX_STEP = GALLERY_IMAGES.length; // 12 (마지막 스크롤까지)
+
+    // ✅ 트랙 위치 계산
+    const IMAGE_WIDTH = 500;
+    const IMAGE_GAP = 32;
+    const IMAGE_STEP = IMAGE_WIDTH + IMAGE_GAP;
+
+    // ✅ 현재 이미지 인덱스 (0-11)
+    const currentImageIndex = Math.min(currentStep, GALLERY_IMAGES.length - 1);
+
+    // ✅ 트랙 이동
+    const trackX = -currentImageIndex * IMAGE_STEP;
+
+    // ✅ progress는 마지막 이미지까지만 (0~1)
+    const progress = Math.min(currentStep / (GALLERY_IMAGES.length - 1), 1);
 
     // 얼굴 회전값
     const faceRotation = progress * 720;
@@ -52,33 +62,32 @@ const GallerySection: React.FC<GallerySectionProps> = ({
     // progress bar 너비
     const progressBarWidth = typeof window !== 'undefined' ? window.innerWidth * 0.6 : 800;
 
-    // ✅ 현재 활성화된 이미지 인덱스 수정 (1-based, 정확한 계산)
-    const currentIndex = progress === 0
-        ? 1
-        : Math.min(
-            Math.ceil(progress * GALLERY_IMAGES.length),
-            GALLERY_IMAGES.length
-        );
+    // ✅ 숫자 표시 (1-12)
+    const currentIndex = currentImageIndex + 1;
+
+    // ✅ 마지막 이미지 도달 여부
+    const isAtLastImage = currentStep >= GALLERY_IMAGES.length - 1;
+
     useEffect(() => {
-        progressRef.current = progress;
+        currentStepRef.current = currentStep;
         onProgressChange?.(progress);
         onFaceRotation?.(faceRotation);
-    }, [progress, faceRotation, onProgressChange, onFaceRotation]);
+    }, [currentStep, progress, faceRotation, onProgressChange, onFaceRotation]);
 
-    // ✅ 휠 이벤트 핸들러 - 감도 절반으로 줄임
+    // ✅ 휠 이벤트 핸들러 - step 기반
     const handleWheel = useCallback((e: WheelEvent) => {
         if (!isActive || isFalling) return;
 
         e.preventDefault();
         e.stopPropagation();
 
-        const delta = e.deltaY * 0.0008;  // ✅ 0.0016 → 0.0008 (절반으로 감소)
-        const newProgress = Math.max(0, Math.min(1, progressRef.current + delta));
+        const direction = e.deltaY > 0 ? 1 : -1;
+        const newStep = Math.max(0, Math.min(MAX_STEP, currentStepRef.current + direction));
 
-        setProgress(newProgress);
+        setCurrentStep(newStep);
 
-        // 1.0 도달 후 한 번 더 스크롤해야 떨어짐
-        if (newProgress >= 1.0 && delta > 0 && !isFalling) {
+        // ✅ 마지막 이미지(11) 이후 스크롤(12)에서 떨어짐
+        if (newStep >= MAX_STEP && direction > 0 && !isFalling) {
             setIsFalling(true);
             onFaceExpression?.('sweat');
 
@@ -86,7 +95,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                 onGalleryEnd?.();
             }, 800);
         }
-    }, [isActive, isFalling, onGalleryEnd, onFaceExpression]);
+    }, [isActive, isFalling, onGalleryEnd, onFaceExpression, MAX_STEP]);
 
     useEffect(() => {
         if (!isActive) return;
@@ -98,13 +107,13 @@ const GallerySection: React.FC<GallerySectionProps> = ({
     // 드래그 핸들러
     const isDragging = useRef(false);
     const startX = useRef(0);
-    const startProgress = useRef(0);
+    const startStep = useRef(0);
 
     const handleMouseDown = useCallback((e: React.MouseEvent) => {
         if (isFalling) return;
         isDragging.current = true;
         startX.current = e.clientX;
-        startProgress.current = progressRef.current;
+        startStep.current = currentStepRef.current;
         document.body.style.cursor = 'grabbing';
     }, [isFalling]);
 
@@ -112,10 +121,10 @@ const GallerySection: React.FC<GallerySectionProps> = ({
         if (!isDragging.current || isFalling) return;
 
         const deltaX = e.clientX - startX.current;
-        const sensitivity = 0.0008;
-        const newProgress = Math.max(0, Math.min(1, startProgress.current - deltaX * sensitivity));
-        setProgress(newProgress);
-    }, [isFalling]);
+        const sensitivity = 0.01;
+        const newStep = Math.max(0, Math.min(MAX_STEP, startStep.current - deltaX * sensitivity));
+        setCurrentStep(Math.round(newStep));
+    }, [isFalling, MAX_STEP]);
 
     const handleMouseUp = useCallback(() => {
         isDragging.current = false;
@@ -137,7 +146,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
     useEffect(() => {
         if (!isActive) {
             setIsFalling(false);
-            setProgress(0);
+            setCurrentStep(0);
         }
     }, [isActive]);
 
@@ -179,17 +188,17 @@ const GallerySection: React.FC<GallerySectionProps> = ({
 
             {/* 이미지 트랙 */}
             <motion.div
-                className="absolute left-0 flex items-center gap-8 pl-20"
+                className="absolute flex items-center gap-8"
                 style={{
                     x: trackX,
-                    top: '42%',
-                    transform: 'translateY(-50%)',
+                    top: '50%',
+                    left: '50%',
+                    transform: 'translate(-50%, -50%)',
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
                 {GALLERY_IMAGES.map((image, index) => {
-                    const progressIndex = progress * (GALLERY_IMAGES.length - 1);
-                    const isCenter = Math.abs(progressIndex - index) < 0.5;
+                    const isCenter = index === currentImageIndex;
 
                     return (
                         <motion.div
@@ -209,7 +218,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                             whileHover={{ scale: 1.05, y: -10 }}
                             onClick={() => setSelectedImage(index)}
                         >
-                            {/* 이미지 카드 */}
                             <div
                                 className="relative w-[500px] h-[500px] overflow-hidden"
                                 style={{
@@ -227,20 +235,8 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                                     decoding="async"
                                 />
 
-                                {/* 그라디언트 오버레이 */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
-                                {/* 하단 정보 */}
-                                <div className="absolute bottom-0 left-0 right-0 p-4">
-                                    <h3
-                                        className="text-white font-bold text-xl italic"
-                                        style={{ fontFamily: "Kanit, sans-serif" }}
-                                    >
-                                        {image.title}
-                                    </h3>
-                                </div>
-
-                                {/* 호버 시 번호 표시 */}
                                 <motion.div
                                     className="absolute top-3 right-3 w-10 h-10 bg-white/10 backdrop-blur-sm flex items-center justify-center"
                                     style={{ clipPath: "polygon(0 0, 100% 0, 100% 100%, 0 100%)" }}
@@ -253,7 +249,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                                 </motion.div>
                             </div>
 
-                            {/* 선택 인디케이터 */}
                             {isCenter && (
                                 <motion.div
                                     className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-12 h-1 bg-[#FCBB09]"
@@ -270,7 +265,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                 className="absolute bottom-24 left-1/2 -translate-x-1/2"
                 style={{ width: progressBarWidth }}
             >
-                {/* ✅ 트랙 - 노란색 단색 */}
                 <div
                     className="relative h-[6px] rounded-full overflow-hidden cursor-grab active:cursor-grabbing"
                     onMouseDown={handleMouseDown}
@@ -279,11 +273,11 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                         boxShadow: "inset 0 1px 2px rgba(0,0,0,0.3)",
                     }}
                 >
-                    {/* ✅ 진행된 부분 - 노란색 단색 */}
+                    {/* ✅ 프로그레스바 - 마지막 이미지까지만 */}
                     <motion.div
                         className="absolute top-0 left-0 h-full rounded-full"
                         style={{
-                            background: "#FCBB09",  // ✅ 그라디언트 → 노란색 단색
+                            background: "#FCBB09",
                             boxShadow: "0 2px 10px rgba(252, 187, 9, 0.4)",
                         }}
                         animate={{
@@ -295,7 +289,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                     <div className="absolute top-0 left-0 right-0 h-[2px] bg-white/20 rounded-full" />
                 </div>
 
-                {/* 굴러가는 3D 레고 얼굴 */}
+                {/* ✅ 굴러가는 3D 레고 얼굴 - 마지막에서 통통 튀기 */}
                 <motion.div
                     className="absolute -top-16 pointer-events-none"
                     style={{
@@ -306,6 +300,9 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                         y: [0, -30, 300],
                         rotateZ: [faceRotation, faceRotation + 180, faceRotation + 540],
                         opacity: [1, 1, 0],
+                    } : isAtLastImage ? {
+                        y: [0, -8, 0],  // ✅ 통통 튀기
+                        rotateZ: faceRotation,
                     } : {
                         y: [0, -3, 0],
                         rotateZ: faceRotation,
@@ -314,6 +311,14 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                         duration: 0.8,
                         ease: [0.36, 0, 0.66, -0.56],
                         times: [0, 0.2, 1],
+                    } : isAtLastImage ? {
+                        y: {
+                            duration: 0.5,  // ✅ 더 활발하게
+                            repeat: Infinity,
+                            repeatType: "reverse",
+                            ease: "easeInOut",
+                        },
+                        rotateZ: { duration: 0.1 }
                     } : {
                         y: {
                             duration: 0.3,
@@ -321,9 +326,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                             repeatType: "reverse",
                             ease: "easeInOut",
                         },
-                        rotateZ: {
-                            duration: 0.1,
-                        }
+                        rotateZ: { duration: 0.1 }
                     }}
                 >
                     <div
@@ -362,7 +365,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                         onClick={() => setSelectedImage(null)}
                     >
                         <motion.div
-                            className="relative max-w-4xl max-h-[80vh]"
+                            className="relative"
                             initial={{ scale: 0.8, opacity: 0, y: 50 }}
                             animate={{ scale: 1, opacity: 1, y: 0 }}
                             exit={{ scale: 0.8, opacity: 0, y: 50 }}
@@ -372,26 +375,11 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                             <img
                                 src={GALLERY_IMAGES[selectedImage].src}
                                 alt={GALLERY_IMAGES[selectedImage].title}
-                                className="max-w-full max-h-[80vh] shadow-2xl"
+                                className="max-w-[90vw] max-h-[85vh] shadow-2xl"
                                 style={{
                                     clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%)",
                                 }}
                             />
-                            <div className="absolute -bottom-16 left-0 right-0 text-center">
-                                <h3
-                                    className="text-white text-2xl font-bold italic"
-                                    style={{ fontFamily: "Kanit, sans-serif" }}
-                                >
-                                    {GALLERY_IMAGES[selectedImage].title}
-                                </h3>
-                                <span
-                                    className="inline-block mt-2 px-4 py-1 bg-[#FCBB09] text-black text-xs font-bold tracking-wider uppercase transform -skew-x-6"
-                                >
-                                    <span className="transform skew-x-6 inline-block">
-                                        {GALLERY_IMAGES[selectedImage].category}
-                                    </span>
-                                </span>
-                            </div>
                             <button
                                 className="absolute -top-3 -right-3 w-10 h-10 bg-[#8F1E20] flex items-center justify-center text-white hover:bg-[#a62426] transition-colors transform -skew-x-6"
                                 onClick={() => setSelectedImage(null)}

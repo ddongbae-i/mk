@@ -263,6 +263,151 @@ const PROJECT_DATA = [
 
   },
 ];
+
+
+// ContactSection 컴포넌트 추가
+const ContactSection: React.FC<{
+  isActive: boolean;
+  headRef: React.RefObject<HTMLElement>;
+}> = ({ isActive, headRef }) => {
+  const [isStamped, setIsStamped] = useState(false);
+
+  useEffect(() => {
+    if (isActive) {
+      // 섹션 활성화 후 0.5초 뒤 도장 찍기
+      setTimeout(() => setIsStamped(true), 500);
+    } else {
+      setIsStamped(false);
+    }
+  }, [isActive]);
+
+  if (!isActive) return null;
+
+  return (
+    <motion.div
+      className="absolute inset-0 flex flex-col items-center justify-center bg-[#8F1E20] overflow-hidden"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8 }}
+    >
+      {/* 메인 텍스트 */}
+      <div className="relative flex items-center justify-center mb-16">
+        <motion.h1
+          className="font-bold italic text-[clamp(32px,8vw,120px)] text-[#F0F0F0]"
+          style={{ fontFamily: FONT_FAMILY }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+        >
+          Let's build something meaningful
+        </motion.h1>
+
+        {/* 마침표 자리에 얼굴 도장 */}
+        <motion.div
+          className="absolute"
+          style={{
+            right: "-60px",
+            bottom: "10px",
+            width: "80px",
+            height: "80px",
+          }}
+          initial={{ scale: 0, rotate: -180 }}
+          animate={isStamped ? {
+            scale: [0, 1.3, 1],
+            rotate: [180, 0, 0],
+          } : {
+            scale: 0,
+            rotate: -180,
+          }}
+          transition={{
+            duration: 0.4,
+            ease: [0.34, 1.56, 0.64, 1],
+            times: [0, 0.6, 1],
+          }}
+        >
+          {headRef.current && (
+            <div
+              dangerouslySetInnerHTML={{
+                __html: headRef.current.querySelector('[data-lego-face-3d]')?.outerHTML || ''
+              }}
+              style={{
+                width: "100%",
+                height: "100%",
+                transform: "scale(0.12)",
+                transformOrigin: "center center",
+                filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.3))",
+              }}
+            />
+          )}
+        </motion.div>
+      </div>
+
+      {/* 컨택 아이콘들 */}
+      <motion.div
+        className="flex items-center gap-8"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.6 }}
+      >
+        {/* 이메일 */}
+        <motion.a
+          href="mailto:your@email.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex items-center justify-center w-20 h-20 bg-[#F0F0F0] rounded-full cursor-pointer"
+          whileHover={{ scale: 1.1, y: -5 }}
+          whileTap={{ scale: 0.95 }}
+          data-hoverable="true"
+        >
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#8F1E20"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+            <polyline points="22,6 12,13 2,6" />
+          </svg>
+        </motion.a>
+
+        {/* 카카오톡 */}
+        <motion.a
+          href="https://open.kakao.com/your-link"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group flex items-center justify-center w-20 h-20 bg-[#FEE500] rounded-full cursor-pointer"
+          whileHover={{ scale: 1.1, y: -5 }}
+          whileTap={{ scale: 0.95 }}
+          data-hoverable="true"
+        >
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="#3C1E1E"
+          >
+            <path d="M12 3C6.48 3 2 6.58 2 11c0 2.9 1.88 5.45 4.71 7.07-.2.69-.66 2.27-.76 2.63-.12.45.17.45.35.32.14-.09 2.26-1.52 3.14-2.12.52.08 1.06.13 1.61.13 5.52 0 10-3.58 10-8S17.52 3 12 3zm-4.5 10.5a.5.5 0 01-.5-.5V9.5h-1a.5.5 0 010-1h3a.5.5 0 010 1h-1V13a.5.5 0 01-.5.5zm3.5-.5a.5.5 0 01-1 0v-4a.5.5 0 011 0v4zm3.5.5c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm0-1a1 1 0 100-2 1 1 0 000 2zm3.5 1a.5.5 0 01-.5-.5v-1.5h-1.5a.5.5 0 010-1h2a.5.5 0 01.5.5v2.5a.5.5 0 01-.5.5z" />
+          </svg>
+        </motion.a>
+      </motion.div>
+
+      {/* 하단 카피라이트 */}
+      <motion.div
+        className="absolute bottom-8 text-[#F0F0F0]/50 text-sm font-medium"
+        style={{ fontFamily: FONT_FAMILY }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.8 }}
+      >
+        © 2025 KIM MINKYEONG. Built with LEGO blocks & passion.
+      </motion.div>
+    </motion.div >
+  );
+};
 // --- TOOLTIP COMPONENT ---
 
 const PartTooltip = ({
@@ -990,6 +1135,19 @@ const IntroSection: React.FC = () => {
         setTimeout(() => { isAnimatingRef.current = false; }, 1500);
       }
 
+    } else if (currentPhase === 27) {
+      // ✅ galleryProgress가 1.0에 가까울 때만 다음 섹션으로
+      if (direction > 0 && galleryProgress >= 0.98) {
+        isAnimatingRef.current = true;
+        setPhase(28);  // 컨택 섹션으로
+        setTimeout(() => { isAnimatingRef.current = false; }, 800);
+      } else if (direction < 0 && galleryProgress <= 0.02) {
+        // 스크롤 업: 스킬 섹션으로 복귀
+        isAnimatingRef.current = true;
+        setSkillResetKey(prev => prev + 1);
+        setPhase(26);
+        setTimeout(() => { isAnimatingRef.current = false; }, 800);
+      }
     } else {
 
       if (currentPhase === 27) {
@@ -1593,6 +1751,19 @@ const IntroSection: React.FC = () => {
             onFaceExpression={setFaceExpression}
             onGalleryEnd={() => setPhase(28)}
           />
+        </motion.div>
+      )}
+
+      {phase >= 28 && (
+        <motion.div
+          className="absolute w-full h-full"
+          style={{ zIndex: 100 }}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <ContactSection isActive={phase === 28} headRef={headRef} />
         </motion.div>
       )}
 

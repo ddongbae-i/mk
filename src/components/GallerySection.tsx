@@ -3,13 +3,13 @@ import { motion, AnimatePresence } from "framer-motion";
 
 // 임시 갤러리 이미지 데이터 (나중에 실제 이미지로 교체)
 const GALLERY_IMAGES = [
-    { id: 1, src: "https://picsum.photos/seed/gallery1/600/400", title: "Project Alpha", category: "UI/UX" },
-    { id: 2, src: "https://picsum.photos/seed/gallery2/600/400", title: "Brand Identity", category: "Branding" },
-    { id: 3, src: "https://picsum.photos/seed/gallery3/600/400", title: "UI Components", category: "Design System" },
-    { id: 4, src: "https://picsum.photos/seed/gallery4/600/400", title: "Mobile App", category: "Mobile" },
-    { id: 5, src: "https://picsum.photos/seed/gallery5/600/400", title: "Dashboard", category: "Web App" },
-    { id: 6, src: "https://picsum.photos/seed/gallery6/600/400", title: "E-commerce", category: "Web" },
-    { id: 7, src: "https://picsum.photos/seed/gallery7/600/400", title: "Landing Page", category: "Marketing" },
+    { id: 1, src: "/gallery/02.png", title: "Project Alpha", category: "UI/UX" },
+    { id: 2, src: "/gallery/03.png", title: "Brand Identity", category: "Branding" },
+    { id: 3, src: "/gallery/04.png", title: "UI Components", category: "Design System" },
+    { id: 4, src: "/gallery/05.png", title: "Mobile App", category: "Mobile" },
+    { id: 5, src: "/gallery/01.png", title: "Dashboard", category: "Web App" },
+    { id: 6, src: "/gallery/06.png", title: "E-commerce", category: "Web" },
+    { id: 7, src: "/gallery/07.jpg", title: "Landing Page", category: "Marketing" },
     { id: 8, src: "https://picsum.photos/seed/gallery8/600/400", title: "Portfolio", category: "Personal" },
 ];
 
@@ -60,14 +60,14 @@ const GallerySection: React.FC<GallerySectionProps> = ({
         onFaceRotation?.(faceRotation);
     }, [progress, faceRotation, onProgressChange, onFaceRotation]);
 
-    // 휠 이벤트 핸들러
+    // ✅ 휠 이벤트 핸들러 - 감도 2배 증가
     const handleWheel = useCallback((e: WheelEvent) => {
         if (!isActive || isFalling) return;
 
         e.preventDefault();
         e.stopPropagation();
 
-        const delta = e.deltaY * 0.0008;
+        const delta = e.deltaY * 0.0016; // ✅ 0.0008 → 0.0016 (2배 빠르게)
         const newProgress = Math.max(0, Math.min(1, progressRef.current + delta));
 
         setProgress(newProgress);
@@ -149,11 +149,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                 background: "#1a1a2e",
             }}
         >
-
-
-            {/* 상단 타이틀 - 스포티한 스타일 */}
-
-
             {/* 우측 상단 진행률 - 스포티한 카운터 */}
             <motion.div
                 className="absolute top-10 right-10 z-50"
@@ -180,10 +175,14 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                 </div>
             </motion.div>
 
-            {/* 이미지 트랙 */}
+            {/* ✅ 이미지 트랙 - 수직 중앙 정렬 */}
             <motion.div
-                className="absolute top-1/2 -translate-y-1/2 flex items-center gap-8 pl-20"
-                style={{ x: trackX }}
+                className="absolute left-0 flex items-center gap-8 pl-20"
+                style={{
+                    x: trackX,
+                    top: '25%',  // ✅ 50% → 45% (조금 더 위로)
+                    transform: 'translateY(-50%)',
+                }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
                 {GALLERY_IMAGES.map((image, index) => {
@@ -227,8 +226,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                                 {/* 그라디언트 오버레이 */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
-
-
                                 {/* 하단 정보 */}
                                 <div className="absolute bottom-0 left-0 right-0 p-4">
                                     <h3
@@ -269,15 +266,28 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                 className="absolute bottom-24 left-1/2 -translate-x-1/2"
                 style={{ width: progressBarWidth }}
             >
-                {/* 트랙 (길) */}
+                {/* ✅ 트랙 (배경 회색 + 진행된 부분만 그라디언트) */}
                 <div
                     className="relative h-[6px] rounded-full overflow-hidden cursor-grab active:cursor-grabbing"
                     onMouseDown={handleMouseDown}
                     style={{
-                        background: "linear-gradient(90deg, #8F1E20, #FCBB09, #8E00BD)",
-                        boxShadow: "0 2px 10px rgba(252, 187, 9, 0.3), inset 0 1px 2px rgba(0,0,0,0.3)",
+                        background: "#2a2a3e", // 회색 배경
+                        boxShadow: "inset 0 1px 2px rgba(0,0,0,0.3)",
                     }}
                 >
+                    {/* ✅ 진행된 부분만 그라디언트 색상 */}
+                    <motion.div
+                        className="absolute top-0 left-0 h-full rounded-full"
+                        style={{
+                            background: "linear-gradient(90deg, #8F1E20, #FCBB09, #8E00BD)",
+                            boxShadow: "0 2px 10px rgba(252, 187, 9, 0.3)",
+                        }}
+                        animate={{
+                            width: `${progress * 100}%`,
+                        }}
+                        transition={{ duration: 0.1 }}
+                    />
+
                     {/* 트랙 하이라이트 */}
                     <div className="absolute top-0 left-0 right-0 h-[2px] bg-white/20 rounded-full" />
                 </div>
@@ -337,22 +347,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                         )}
                     </div>
                 </motion.div>
-
-                {/* 시작/끝 마커 */}
-                <div className="flex justify-between mt-3">
-                    <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 bg-[#8F1E20] transform rotate-45" />
-                        <span className="text-white/40 text-[10px] font-bold tracking-widest uppercase" style={{ fontFamily: "Kanit, sans-serif" }}>
-                            Start
-                        </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-white/40 text-[10px] font-bold tracking-widest uppercase" style={{ fontFamily: "Kanit, sans-serif" }}>
-                            End
-                        </span>
-                        <div className="w-2 h-2 bg-[#8E00BD] transform rotate-45" />
-                    </div>
-                </div>
             </div>
 
             {/* 이미지 모달 */}

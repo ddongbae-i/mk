@@ -4,6 +4,7 @@ import {
     Calendar,
     User,
     Layers,
+    Wrench,
     FileText,      // 문서/기획서
     Globe,         // 웹사이트
     ArrowRight,
@@ -35,17 +36,15 @@ const ProjectDetailCard: React.FC<ProjectDetailProps> = ({ onClose, data }) => {
         description: data?.description || "프로젝트 설명이 들어갈 자리입니다.",
         imgSrc: data?.detailImgSrc || "/api/placeholder/800/600",
         tags: data?.tags || [],
-        accentColor: data?.color || "#000000",
         specs: [
-            { icon: <Calendar size={16} />, label: "Period", value: data?.specs?.period || "-" },
-            { icon: <User size={16} />, label: "Role", value: data?.specs?.role || "-" },
-            { icon: <Layers size={16} />, label: "Tech", value: data?.specs?.tech || "-" },
+            { icon: <Calendar size={16} />, label: "Period", value: data?.specs?.period || "-", type: "text" },
+            { icon: <User size={16} />, label: "Role", value: data?.specs?.role || "-", type: "text" },
+            // ✅ Tech는 이미지 배열로 처리
+            { icon: <Wrench size={16} />, label: "Tool", value: data?.specs?.techStack || [], type: "images" },
         ],
-        buttons: data?.buttons || [
-            { label: "View Docs", url: "#", type: "gray" },
-            { label: "Visit Site", url: "#", type: "primary" },
-        ],
+        buttons: data?.buttons || [],
     };
+
 
     const getButtonIcon = (label: string) => {
         const l = label.toLowerCase();
@@ -124,27 +123,49 @@ const ProjectDetailCard: React.FC<ProjectDetailProps> = ({ onClose, data }) => {
                         {project.specs.map((spec: any, index: number) => (
                             <div key={index} className="flex items-start gap-4">
                                 <div className="text-gray-400 mt-0.5">{spec.icon}</div>
-                                <div>
-                                    <span className="block text-[12px] font-medium text-[#767676] uppercase tracking-wider mb-1">
+                                <div className="flex-1">
+                                    <span className="block text-[12px] font-normal text-[#767676] uppercase tracking-wider mb-1">
                                         {spec.label}
                                     </span>
-                                    <div className="text-[#2b2b2b] font-medium text-[16px]">{spec.value}</div>
+
+                                    {/* ✅ 타입에 따라 렌더링 분기 */}
+                                    {spec.type === "images" ? (
+                                        <div className="flex flex-wrap items-center">
+                                            {spec.value.map((tech: any, i: number) => (
+                                                <div
+                                                    key={i}
+                                                    className="relative group"
+                                                    title={tech.name}
+                                                >
+                                                    <img
+                                                        src={tech.icon}
+                                                        alt={tech.name}
+                                                        className="w-10 h-10 object-contain transition-all duration-200"
+                                                    />
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-[#2b2b2b] font-normal text-[16px]">
+                                            {spec.value}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ))}
                     </div>
 
                     {/* Description */}
-                    <div className="py-6 text-[#4c4c4c] text-[16px] leading-[1.5] whitespace-pre-line">{project.description}</div>
+                    <div className="py-6 text-[#4c4c4c] text-[16px] leading-[1.5] font-normal whitespace-pre-line">{project.description}</div>
 
                     {/* Tags */}
-                    <div className="flex flex-wrap gap-2 mb-8">
+                    {/* <div className="flex flex-wrap gap-2 mb-8">
                         {project.tags.map((tag: string, i: number) => (
-                            <span key={i} className="text-[12px] font-normal text-[#4c4c4c] bg-gray-100 px-3 py-1.5 uppercase">
+                            <span key={i} className="text-[12px] font-normal text-[#555555] bg-[#f9f9f9] px-3 py-1.5 uppercase">
                                 #{tag}
                             </span>
                         ))}
-                    </div>
+                    </div> */}
 
                     {/* Buttons */}
                     <div className="mt-auto pt-6 border-t border-gray-100">
@@ -159,11 +180,11 @@ const ProjectDetailCard: React.FC<ProjectDetailProps> = ({ onClose, data }) => {
                                             onClick={() => window.open(btn.url, "_blank")}
                                             className={`
               flex items-center justify-center gap-2 px-4 py-3
-              text-[16px] font-medium tracking-wide transition-all duration-200
+              text-[14px] font-medium tracking-wide transition-all duration-200
               border box-border
               ${isPrimary
                                                     ? "bg-black text-white border-black hover:bg-gray-800"
-                                                    : "bg-white text-[#2b2b2b] border-[#e0e0e0] hover:bg-[#2ECACA] hover:text-white hover:border-white"}
+                                                    : "bg-white text-[#2b2b2b] border-[#e0e0e0] hover:bg-[#C1843A] hover:text-white hover:border-white"}
             `}
                                         >
                                             {!isPrimary && getButtonIcon(btn.label)}
@@ -175,7 +196,7 @@ const ProjectDetailCard: React.FC<ProjectDetailProps> = ({ onClose, data }) => {
                             </div>
                         ) : project.buttons.length === 3 ? (
                             // 버튼 3개: 2+1 레이아웃
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-2 gap-2">
                                 {project.buttons.map((btn: any, index: number) => {
                                     const isPrimary = btn.type === "primary";
                                     return (
@@ -185,7 +206,7 @@ const ProjectDetailCard: React.FC<ProjectDetailProps> = ({ onClose, data }) => {
                                             className={`
               ${index === 2 ? 'col-span-2' : ''} // 마지막 버튼만 전체 너비
               flex items-center justify-center gap-2 px-4 py-3
-              text-[16px] font-medium tracking-wide transition-all duration-200
+              text-[14px] font-medium tracking-wide transition-all duration-200
               border box-border
               ${isPrimary
                                                     ? "bg-black text-white border-black hover:bg-gray-800"
@@ -204,15 +225,15 @@ const ProjectDetailCard: React.FC<ProjectDetailProps> = ({ onClose, data }) => {
                             <>
                                 <button
                                     onClick={() => window.open(project.buttons[0].url, "_blank")}
-                                    className="w-full flex items-center justify-center gap-2 px-4 py-3 mb-3
-                   text-[16px] font-medium tracking-wide transition-all duration-200
-                   bg-white text-black border border-gray-200 hover:border-black"
+                                    className="w-full flex items-center justify-center gap-2 px-4 py-3 mb-2
+                   text-[14px] font-medium tracking-wide transition-all duration-200
+                   bg-white text-black border border-gray-200 hover:bg-[#531110] hover:text-white hover:border-white"
                                 >
                                     {getButtonIcon(project.buttons[0].label)}
                                     <span className="truncate">{project.buttons[0].label}</span>
                                 </button>
 
-                                <div className="grid grid-cols-2 gap-3">
+                                <div className="grid grid-cols-2 gap-2">
                                     {project.buttons.slice(1).map((btn: any, index: number) => {
                                         const isPrimary = btn.type === "primary";
                                         return (
@@ -221,7 +242,7 @@ const ProjectDetailCard: React.FC<ProjectDetailProps> = ({ onClose, data }) => {
                                                 onClick={() => window.open(btn.url, "_blank")}
                                                 className={`
                 flex items-center justify-center gap-2 px-4 py-3.5
-                text-[16px] font-medium tracking-wide transition-all duration-200
+                text-[14px] font-medium tracking-wide transition-all duration-200
                 border box-border
                 ${isPrimary
                                                         ? "bg-black text-white border-black hover:bg-gray-800"

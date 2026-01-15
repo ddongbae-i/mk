@@ -167,17 +167,31 @@ const PROJECT_DATA = [
   {
     id: 1,
     title: "WELLIO",
-    subtitle: "가족 건강 공유 앱, 웰리오",
+    subtitle: "올인원 가족 건강 공유 앱",
     image: "images/project2.png",
     detailImgSrc: "images/info1.png",
-    description: "가족의 건강을 하나로 연결하는 경험.병원 탐색, 건강 기록, 커뮤니티 기능을 중심으로 한 가족 헬스케어 서비스 웰리오의 UX/ UI를 설계한 프로젝트입니다.분산된 정보 구조를 정리하고 직관적인 사용 흐름을 통해, 누구나 쉽게 건강을 관리할 수 있는 친화적인 경험을 제공합니다.",
-    tags: ["UI/UX", "Mobile App", "Mobile App", "Vibe Coding"],
-    specs: { period: "25.08.13 - 25.08.27,", role: "병원리스트/정보/접수/결제/병원 후기&찜한병원/캘린더 메인 디자인, 로고/아이콘 제작, AI 앱버전 개발", tech: "Figma,REACT,Typescript,Illustrator" },
+    description: "가족 간 건강 정보를 공유하고 함께 관리할 수 있도록 설계한 가족 헬스케어 서비스 웰리오의 UX/UI 프로젝트입니다. \n병원 탐색과 건강 기록을 직관적인 흐름으로 구성해 일상 속 건강 관리의 진입 장벽을 낮추는 데 집중했습니다.",
+    tags: ["UI/UX", "Mobile App", "Family Care", "Vibe Coding", "Prototype"],
+    specs: {
+      period: "25.08.13 - 08.27, 25.11.14 - 11.21", role: "병원정보,접수,결제,후기,찜한병원,캘린더,메인 디자인 | 로고,아이콘 제작 | 프로토타입 | 앱버전 개발", techStack: [
+        { name: "Figma", icon: "/images/skill_figma.png" },
+        { name: "Illustrator", icon: "/images/skill_illustrator.png" },
+        { name: "Photoshop", icon: "/images/skill_photoshop.png" },
+        { name: "Figmamake", icon: "/images/skill_figmamake.png" },
+        { name: "React", icon: "/images/skill_react.png" },
+        { name: "TypeScript", icon: "/images/skill_typescript.png" },
+        { name: "Tailwind", icon: "/images/skill_tailwind.png" },
+        { name: "Github", icon: "/images/skill_git.png" },
+        { name: "Claude", icon: "/images/skill_claude.png" },
+        { name: "GPT", icon: "/images/skill_gpt.png" },
+        { name: "Chatbase", icon: "/images/skill_chatbase.png" },
+      ]
+    },
 
     buttons: [
-      { label: "기획서 보기", url: "https://www.figma.com/proto/YgY5CNo9U0iNRQcw6MiKZ5/3%EC%A1%B0-Ai--Wellio?page-id=10897%3A59342&node-id=10897-59350&viewport=639%2C155%2C0.1&t=uDXy317GRj0LX8Jv-1&scaling=scale-down&content-scaling=fixed", type: "gray" },
-      { label: "프로토타입", url: "https://www.figma.com/proto/YgY5CNo9U0iNRQcw6MiKZ5/3%EC%A1%B0-Ai--Wellio?page-id=8657%3A13196&node-id=8877-12777&viewport=8295%2C4598%2C0.26&t=3BuPl2X1rPy84xHQ-1&scaling=scale-down&content-scaling=fixed&starting-point-node-id=8877%3A13597", type: "gray" },
-      { label: "AI 웰리오 앱", url: "https://wellio-iota.vercel.app/", type: "gray" }, // 강조 버튼
+      { label: "기획서", url: "https://www.figma.com/proto/8NmGntNzRggbGLMNmIptpY/%EA%B9%80%EB%AF%BC%EA%B2%BD-%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4?page-id=911%3A7047&node-id=911-7053&viewport=611%2C40%2C0.03&t=oaf7vGBsX4oiG3Ya-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=911%3A7053", type: "gray" },
+      { label: "프로토타입", url: "https://www.figma.com/proto/x55IXQJNuGUhw1jmBksbcA/3%EC%A1%B0-Ai--Wellio--%EB%B3%B5%EC%82%AC-?page-id=8657%3A13196&node-id=8877-12777&viewport=9307%2C4907%2C0.31&t=8q34iFWgClx4C40N-1&scaling=scale-down&content-scaling=fixed&starting-point-node-id=8877%3A13597", type: "gray" },
+      { label: "AI APP 버전", url: "https://wellio-iota.vercel.app/", type: "gray" },
     ]
   },
   {
@@ -187,18 +201,27 @@ const PROJECT_DATA = [
     image: "images/project1.png",
 
     detailImgSrc: "images/info2.png",
-    description: "한국 전통 미학을 현대적으로 재해석한 경험. K-뷰티 브랜드 조선미녀의 글로벌 사용자를 고려해 웹사이트를 리뉴얼한 프로젝트입니다. 브랜드 스토리와 제품 정보를 명확히 정리하고 가독성과 사용성을 개선해, 신뢰감 있는 브랜드 경험을 제공합니다.",
+    description: "한국 전통 미학을 현대적으로 재해석한 K-뷰티 브랜드 조선미녀 웹사이트 리뉴얼 프로젝트입니다. \n글로벌 사용자를 고려해 브랜드 스토리와 품 정보를 구조적으로 정리하고, 가독성과 사용성을 개선해 신뢰감 있는 브랜드 경험을 설계했습니다.",
     tags: ["UX/UI", "Design System", "Renewal"],
     specs: {
       period: "25.09.19 - 25.10.24",
-      role: "Header&Footer/메인(1204-360 개발, SHOP디자인 및 개발, 아이콘 제작, 신제품/인트로 영상",
-      tech: "Figma, html, css, js, Midjourney, Illustrator"
+      role: "Header&Footer,메인(1204-360) 개발 | SHOP 디자인 및 개발 | 아이콘 제작 | 신제품,인트로 영상",
+      techStack: [
+        { name: "Figma", icon: "/images/skill_figma.png" },
+        { name: "Illustrator", icon: "/images/skill_illustrator.png" },
+        { name: "Photoshop", icon: "/images/skill_photoshop.png" },
+        { name: "Html", icon: "/images/skill_html.png" },
+        { name: "Css", icon: "/images/skill_css.png" },
+        { name: "Js", icon: "/images/skill_js.png" },
+        { name: "Midjourney", icon: "/images/skill_midjourney.png" },
+        { name: "GPT", icon: "/images/skill_gpt.png" },
+      ]
     },
     buttons: [
       {
-        label: "기획서 보기", url: "https://www.figma.com/deck/YP3BTYoRHbMzOydhFS5qoO/-%ED%8C%80%ED%94%8C1-3%EC%A1%B0--%EA%B2%B0%EA%B3%BC%EB%B3%B4%EA%B3%A0%EC%84%9C_%EB%AC%B8%EC%96%B4%EC%A7%80%EC%A7%80%EB%A7%88?node-id=2078-4602&viewport=-3134%2C-1274%2C0.5&t=MZGqIbqakXF0yVpw-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1", type: "gray"
+        label: "기획서", url: "https://www.figma.com/deck/qmqwtb0OMrSJ2bFjGtwwcb/-%ED%8C%80%ED%94%8C1-3%EC%A1%B0--%EA%B2%B0%EA%B3%BC%EB%B3%B4%EA%B3%A0%EC%84%9C_%EB%AC%B8%EC%96%B4%EC%A7%80%EC%A7%80%EB%A7%88--%EB%B3%B5%EC%82%AC---%EB%B3%B5%EC%82%AC-?node-id=2078-4602&viewport=-159%2C-112%2C0.73&t=78bWWCiHbCWzD4WU-1&scaling=min-zoom&content-scaling=fixed&page-id=0%3A1", type: "gray"
       },
-      { label: "웹사이트 보기", url: "https://ddongbae-i.github.io/boj_en/", type: "gray" },
+      { label: "Web", url: "https://ddongbae-i.github.io/boj_en/", type: "gray" },
     ]
   },
   {
@@ -208,22 +231,34 @@ const PROJECT_DATA = [
     image: "images/project3.png",
 
     detailImgSrc: "images/info3.png",
-    description: `함께하는 맛의 행복. 쿠우쿠우 고급화 전략에 맞춰 웹사이트를 리뉴얼한 프로젝트입니다.\n기존 웹사이트에 부족했던 메뉴, 쿠우쿠우 상점, 멤버쉽, 슬로건, 가독성 등을 개선하고 고급스러우면도 친화적인 디자인으로 쿠우쿠우 브랜드 이미지를 상승시킴과 동시에 방문자들의 니즈를 충족할 컨텐츠를 제공합니다`,
+    description: `프리미엄 오프라인 경험을 온라인으로 확장해 탐색부터 예약, 매장 방문, 커머스로 자연스럽게 이어지는 사용자 흐름을 설계한 쿠우쿠우 웹사이트 UX 리뉴얼 프로젝트입니다. \n브랜드 고급화 전략에 맞춰 정보 구조와 콘텐츠 경험을 재정비했습니다.`,
     tags: ["Renewal", "Brand Design", "Responsive"],
     specs: {
-      period: "25.07 - 25.09",
-      role: "기획, 반응형 디자인",
-      tech: "Figma, HTML/CSS, React, Firefly, Midjourney, Photoshop "
+      period: "2025.07.14 - 08.11",
+      role: "개인프로젝트(기획,디자인)",
+      techStack: [
+        { name: "Figma", icon: "/images/skill_figma.png" },
+        { name: "Illustrator", icon: "/images/skill_illustrator.png" },
+        { name: "Photoshop", icon: "/images/skill_photoshop.png" },
+        { name: "Premiere", icon: "/images/skill_premiere.png" },
+        { name: "Firefly", icon: "/images/skill_firefly.png" },
+        { name: "Midjourney", icon: "/images/skill_midjourney.png" },
+        { name: "GPT", icon: "/images/skill_gpt.png" },
+        { name: "Gemini", icon: "/images/skill_gemini.png" },
+      ]
     },
     buttons: [
       {
-        label: "Web(1920)", url: "https://www.figma.com/proto/ovfWPSdRr3myp4oidk8kwX/%EA%B9%80%EB%AF%BC%EA%B2%BD?page-id=2224%3A832&node-id=2224-833&viewport=506%2C284%2C0.11&t=gb20orGuQ99jHPkH-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=2224%3A833", type: "gray"
+        label: "기획서", url: "https://www.figma.com/proto/8NmGntNzRggbGLMNmIptpY/%EA%B9%80%EB%AF%BC%EA%B2%BD-%ED%8F%AC%ED%8A%B8%ED%8F%B4%EB%A6%AC%EC%98%A4?page-id=922%3A18820&node-id=922-18821&viewport=610%2C40%2C0.03&t=ogUSIUjOPgTLMtEu-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=922%3A18821", type: "gray"
       },
       {
-        label: "Tablet(1024)", url: "https://www.figma.com/proto/ovfWPSdRr3myp4oidk8kwX/%EA%B9%80%EB%AF%BC%EA%B2%BD?page-id=2224%3A832&node-id=2229-2328&viewport=506%2C284%2C0.11&t=gb20orGuQ99jHPkH-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=2224%3A833", type: "gray"
+        label: "Web(1920)", url: "https://www.figma.com/proto/59sGhI4lpTRCe5dStQqW5B/%EA%B9%80%EB%AF%BC%EA%B2%BD--%EB%B3%B5%EC%82%AC-?page-id=4139%3A291&node-id=4139-2468&viewport=354%2C199%2C0.12&t=oVzVSaX9ztkZ62ap-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=4139%3A2468", type: "gray"
       },
-      { label: "Tablet(744", url: "https://www.figma.com/proto/ovfWPSdRr3myp4oidk8kwX/%EA%B9%80%EB%AF%BC%EA%B2%BD?page-id=2224%3A832&node-id=2229-3754&viewport=316%2C427%2C0.18&t=D3dfPhSgangy8CES-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=2224%3A833", type: "gray" },
-      { label: "Mobile(412)", url: "https://ddongbae-i.github.io/boj_en/", type: "gray" },
+      {
+        label: "Tablet(1024)", url: "https://www.figma.com/proto/59sGhI4lpTRCe5dStQqW5B/%EA%B9%80%EB%AF%BC%EA%B2%BD--%EB%B3%B5%EC%82%AC-?page-id=4139%3A291&node-id=4139-585&viewport=354%2C199%2C0.12&t=GVMyvyRW1owp5kcA-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=4139%3A585", type: "gray"
+      },
+      { label: "Tablet(744)", url: "https://www.figma.com/proto/59sGhI4lpTRCe5dStQqW5B/%EA%B9%80%EB%AF%BC%EA%B2%BD--%EB%B3%B5%EC%82%AC-?page-id=4139%3A291&node-id=4139-1323&viewport=354%2C199%2C0.12&t=fYam018xB2lnDVLJ-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=4139%3A1323", type: "gray" },
+      { label: "Mobile(412)", url: "https://www.figma.com/proto/59sGhI4lpTRCe5dStQqW5B/%EA%B9%80%EB%AF%BC%EA%B2%BD--%EB%B3%B5%EC%82%AC-?page-id=4139%3A291&node-id=4139-1980&viewport=354%2C199%2C0.12&t=bXkMkLy1IHV5u9aC-1&scaling=min-zoom&content-scaling=fixed&starting-point-node-id=4139%3A1980", type: "gray" },
     ]
 
   },
@@ -1819,17 +1854,17 @@ const IntroSection: React.FC = () => {
                     <div className="space-y-4 b">
                       {RESUME_DATA.map((section) => (
                         <div key={section.id} className="border-t border-[#d9d9d9] pt-4 first:border-none first:pt-0">
-                          <h3 className="text-[14px] font-medium text-[#5F677C] font-kanit mb-2">BUILD {section.id} · {section.title}</h3>
+                          <h3 className="text-[14px] font-medium text-[#676767] font-kanit mb-2">BUILD {section.id} · {section.title}</h3>
                           <div className="pl-0">
                             {section.content.map((item: any, idx) => (
                               <div key={idx} className="mb-1 last:mb-0">
                                 {item.type === 'text' && (
-                                  <div className="text-[18px] font-bold text-[#383D47]">{item.text}</div>
+                                  <div className="text-[18px] font-semibold text-[#2b2b2b]">{item.text}</div>
                                 )}
                                 {item.type === 'job' && (
                                   <div className="mb-1 last:mb-0">
-                                    <div className="text-[18px] font-bold text-[#383D47] mb-1">{item.role}</div>
-                                    <ul className="list-none space-y-1 text-[14px] text-[#383D47] pl-0">
+                                    <div className="text-[18px] font-semibold text-[#383D47] mb-1">{item.role}</div>
+                                    <ul className="list-none space-y-1 text-[15px] text-[#676767] pl-0">
                                       {item.tasks.map((task: string, tIdx: number) => (
                                         <li key={tIdx} className="before:content-['–'] before:mr-2 before:text-gray-400">
                                           {task}

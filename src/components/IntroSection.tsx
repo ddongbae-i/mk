@@ -270,6 +270,22 @@ const ContactSection: React.FC<{
   isActive: boolean;
   headRef: React.RefObject<HTMLElement>;
 }> = ({ isActive, headRef }) => {
+
+  const [showEmail, setShowEmail] = useState(false);
+  const [showKakao, setShowKakao] = useState(false);
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+    } catch {
+      const ta = document.createElement("textarea");
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+  };
   if (!isActive) return null;
 
   return (
@@ -281,7 +297,7 @@ const ContactSection: React.FC<{
     >
       <div className="relative mb-16">
         <motion.div
-          className="font-bold italic text-[clamp(32px,8vw,120px)] text-[#F0F0F0] text-center"
+          className="font-bold italic text-[6vw] text-[#F0F0F0] text-center"
           style={{ fontFamily: FONT_FAMILY }}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -291,7 +307,7 @@ const ContactSection: React.FC<{
         </motion.div>
 
         <motion.div
-          className="font-bold italic text-[clamp(32px,8vw,120px)] text-[#F0F0F0] text-center"
+          className="-mt-[30px] font-bold italic text-[6vw] text-[#F0F0F0] text-center"
           style={{ fontFamily: FONT_FAMILY }}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
@@ -305,59 +321,95 @@ const ContactSection: React.FC<{
 
       {/* 컨택 아이콘들 */}
       <motion.div
-        className="flex items-center gap-8"
+        className="relative flex flex-col items-center"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, delay: 0.8 }}
       >
-        {/* 이메일 */}
-        <motion.a
-          href="na_dog@naver.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex items-center justify-center w-20 h-20 bg-[#F0F0F0] rounded-full cursor-pointer"
-          whileHover={{ scale: 1.1, y: -5 }}
-          whileTap={{ scale: 0.95 }}
-          data-hoverable="true"
-        >
-          <svg
-            width="32"
-            height="32"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#8F1E20"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+        {/* 아이콘 줄 */}
+        <div className="flex items-center gap-8">
+          {/* 이메일 아이콘 */}
+          <motion.button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowEmail((v) => !v);
+              setShowKakao(false);
+            }}
+            className="group flex items-center justify-center w-20 h-20 bg-[#F0F0F0] rounded-full cursor-pointer"
+            whileHover={{ scale: 1.1, y: -5 }}
+            whileTap={{ scale: 0.95 }}
+            data-hoverable="true"
           >
-            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
-            <polyline points="22,6 12,13 2,6" />
-          </svg>
-        </motion.a>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#8F1E20" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
+              <polyline points="22,6 12,13 2,6" />
+            </svg>
+          </motion.button>
 
-        {/* 카카오톡 */}
-        <motion.a
-          href="mailto:na_dog@naver.com"
-          onClick={(e) => e.stopPropagation()}
-          className="group flex items-center justify-center w-20 h-20 bg-[#F0F0F0] rounded-full cursor-pointer"
-          whileHover={{ scale: 1.1, y: -5 }}
-          whileTap={{ scale: 0.95 }}
-          data-hoverable="true"
-        >
-          <svg
-            width="32"
-            height="32"
-            viewBox="0 0 24 24"
-            fill="#3C1E1E"
+          {/* 카카오 아이콘 */}
+          <motion.button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowKakao((v) => !v);
+              setShowEmail(false);
+            }}
+            className="group flex items-center justify-center w-20 h-20 bg-[#FEE500] rounded-full cursor-pointer"
+            whileHover={{ scale: 1.1, y: -5 }}
+            whileTap={{ scale: 0.95 }}
+            data-hoverable="true"
           >
-            <path d="M12 3C6.48 3 2 6.58 2 11c0 2.9 1.88 5.45 4.71 7.07-.2.69-.66 2.27-.76 2.63-.12.45.17.45.35.32.14-.09 2.26-1.52 3.14-2.12.52.08 1.06.13 1.61.13 5.52 0 10-3.58 10-8S17.52 3 12 3zm-4.5 10.5a.5.5 0 01-.5-.5V9.5h-1a.5.5 0 010-1h3a.5.5 0 010 1h-1V13a.5.5 0 01-.5.5zm3.5-.5a.5.5 0 01-1 0v-4a.5.5 0 011 0v4zm3.5.5c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm0-1a1 1 0 100-2 1 1 0 000 2zm3.5 1a.5.5 0 01-.5-.5v-1.5h-1.5a.5.5 0 010-1h2a.5.5 0 01.5.5v2.5a.5.5 0 01-.5.5z" />
-          </svg>
-        </motion.a>
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="#3C1E1E">
+              <path d="M12 3C6.48 3 2 6.58 2 11c0 2.9 1.88 5.45 4.71 7.07-.2.69-.66 2.27-.76 2.63-.12.45.17.45.35.32.14-.09 2.26-1.52 3.14-2.12.52.08 1.06.13 1.61.13 5.52 0 10-3.58 10-8S17.52 3 12 3z" />
+            </svg>
+          </motion.button>
+        </div>
+
+        {/* ✅ 아이콘 아래에 "떠 있는" 텍스트 (레이아웃에 영향 X) */}
+        <AnimatePresence mode="wait">
+          {(showEmail || showKakao) && (
+            <motion.div
+              key={showEmail ? "email" : "kakao"}
+              className="absolute top-full mt-6 inset-x-0 flex justify-center"
+              initial={{ opacity: 0, y: -12 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -8 }}
+              transition={{ type: "spring", stiffness: 380, damping: 26 }}
+              style={{ fontFamily: FONT_FAMILY }}
+            >
+              <motion.button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  copyToClipboard(showEmail ? "na_dog@naver.com" : "ddongbae.i");
+                }}
+                whileHover={{ y: 2 }}
+                whileTap={{ scale: 0.98 }}
+                className="bg-transparent px-0 py-0 cursor-pointer select-text text-center"
+                style={{
+                  color: "#F0F0F0",
+                  fontWeight: 700,
+                  fontStyle: "italic",
+                  fontSize: "40px",
+                  letterSpacing: "0.01em",
+                }}
+              >
+                {showEmail ? "na_dog@naver.com" : "ddongbae.i"}
+              </motion.button>
+            </motion.div>
+
+          )}
+        </AnimatePresence>
       </motion.div>
+
 
       {/* 하단 카피라이트 */}
       <motion.div
-        className="absolute bottom-8 text-[#F0F0F0]/50 text-sm font-medium"
+        className="absolute bottom-8 text-[#F0F0F0]/50 text-sm font-normal"
         style={{ fontFamily: FONT_FAMILY }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
@@ -1517,7 +1569,7 @@ const IntroSection: React.FC = () => {
     splitAnimations.push(animate(".hidden-char", { opacity: 1, width: "auto", scale: 1 }, { duration: 0.2, delay: 0.05 }));
     splitAnimations.push(animate("#split-play", { x: "-18vw" }, { duration: 0.5, ease: "backOut" }));
     splitAnimations.push(animate("#split-out", { x: "18vw" }, { duration: 0.5, ease: "backOut" }));
-    splitAnimations.push(animate(scope.current, { backgroundColor: COLORS }, { duration: 2, ease: "linear" }));
+    splitAnimations.push(animate(scope.current, { backgroundColor: COLORS }, { duration: 1, ease: "linear" }));
     await Promise.all(splitAnimations);
   };
 
@@ -2204,11 +2256,11 @@ const IntroSection: React.FC = () => {
         animate={
           phase === 28 ? {
             // ✅ 컨택: 갤러리 위치에서 meaningful 옆으로 이동하며 커졌다 쿵!
-            left: "50%",
-            top: "calc(50% + 40px)",
+            left: "52%",
+            top: "calc(50% + 30px)",
             x: "calc(280px)",
             y: "-50%",
-            scale: [0.12, 0.5, 0.15],  // ✅ 작은 상태에서 크게 커졌다가 쿵!
+            scale: [0.12, 1.5, 0.1],  // ✅ 작은 상태에서 크게 커졌다가 쿵!
             rotateZ: galleryProgress * 720,  // ✅ 회전 유지 (갤러리에서 이어짐)
             opacity: 1,
           } :

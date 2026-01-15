@@ -23,7 +23,7 @@ interface GallerySectionProps {
     onProgressChange?: (progress: number) => void;
     onFaceRotation?: (rotation: number) => void;
     onGalleryEnd?: () => void;
-    onFaceExpression?: (expression: 'neutral' | 'happy' | 'sad' | 'sweat' | 'blank') => void;
+    onFaceExpression?: (expression: "neutral" | "happy" | "sad" | "sweat" | "blank") => void;
 }
 
 const GallerySection: React.FC<GallerySectionProps> = ({
@@ -50,7 +50,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
     const trackX = -currentImageIndex * IMAGE_STEP;
     const progress = Math.min(currentStep / (GALLERY_IMAGES.length - 1), 1);
     const faceRotation = progress * 720;
-    const progressBarWidth = typeof window !== 'undefined' ? window.innerWidth * 0.6 : 800;
+    const progressBarWidth = typeof window !== "undefined" ? window.innerWidth * 0.6 : 800;
     const currentIndex = currentImageIndex + 1;
     const isAtLastImage = currentStep >= GALLERY_IMAGES.length - 1;
 
@@ -60,69 +60,78 @@ const GallerySection: React.FC<GallerySectionProps> = ({
         onFaceRotation?.(faceRotation);
     }, [currentStep, progress, faceRotation, onProgressChange, onFaceRotation]);
 
-    const handleWheel = useCallback((e: WheelEvent) => {
-        if (!isActive || isFalling) return;
+    const handleWheel = useCallback(
+        (e: WheelEvent) => {
+            if (!isActive || isFalling) return;
 
-        e.preventDefault();
-        e.stopPropagation();
+            e.preventDefault();
+            e.stopPropagation();
 
-        const direction = e.deltaY > 0 ? 1 : -1;
-        const newStep = Math.max(0, Math.min(MAX_STEP, currentStepRef.current + direction));
+            const direction = e.deltaY > 0 ? 1 : -1;
+            const newStep = Math.max(0, Math.min(MAX_STEP, currentStepRef.current + direction));
 
-        setCurrentStep(newStep);
+            setCurrentStep(newStep);
 
-        if (newStep >= MAX_STEP && direction > 0 && !isFalling) {
-            setIsFalling(true);
-            onFaceExpression?.('sweat');
+            if (newStep >= MAX_STEP && direction > 0 && !isFalling) {
+                setIsFalling(true);
+                onFaceExpression?.("sweat");
 
-            setTimeout(() => {
-                onGalleryEnd?.();
-            }, 800);
-        }
-    }, [isActive, isFalling, onGalleryEnd, onFaceExpression, MAX_STEP]);
+                setTimeout(() => {
+                    onGalleryEnd?.();
+                }, 800);
+            }
+        },
+        [isActive, isFalling, onGalleryEnd, onFaceExpression, MAX_STEP]
+    );
 
     useEffect(() => {
         if (!isActive) return;
 
-        window.addEventListener('wheel', handleWheel, { passive: false });
-        return () => window.removeEventListener('wheel', handleWheel);
+        window.addEventListener("wheel", handleWheel, { passive: false });
+        return () => window.removeEventListener("wheel", handleWheel);
     }, [isActive, handleWheel]);
 
     const isDragging = useRef(false);
     const startX = useRef(0);
     const startStep = useRef(0);
 
-    const handleMouseDown = useCallback((e: React.MouseEvent) => {
-        if (isFalling) return;
-        isDragging.current = true;
-        startX.current = e.clientX;
-        startStep.current = currentStepRef.current;
-        document.body.style.cursor = 'grabbing';
-    }, [isFalling]);
+    const handleMouseDown = useCallback(
+        (e: React.MouseEvent) => {
+            if (isFalling) return;
+            isDragging.current = true;
+            startX.current = e.clientX;
+            startStep.current = currentStepRef.current;
+            document.body.style.cursor = "grabbing";
+        },
+        [isFalling]
+    );
 
-    const handleMouseMove = useCallback((e: MouseEvent) => {
-        if (!isDragging.current || isFalling) return;
+    const handleMouseMove = useCallback(
+        (e: MouseEvent) => {
+            if (!isDragging.current || isFalling) return;
 
-        const deltaX = e.clientX - startX.current;
-        const sensitivity = 0.01;
-        const newStep = Math.max(0, Math.min(MAX_STEP, startStep.current - deltaX * sensitivity));
-        setCurrentStep(Math.round(newStep));
-    }, [isFalling, MAX_STEP]);
+            const deltaX = e.clientX - startX.current;
+            const sensitivity = 0.01;
+            const newStep = Math.max(0, Math.min(MAX_STEP, startStep.current - deltaX * sensitivity));
+            setCurrentStep(Math.round(newStep));
+        },
+        [isFalling, MAX_STEP]
+    );
 
     const handleMouseUp = useCallback(() => {
         isDragging.current = false;
-        document.body.style.cursor = '';
+        document.body.style.cursor = "";
     }, []);
 
     useEffect(() => {
         if (!isActive) return;
 
-        window.addEventListener('mousemove', handleMouseMove);
-        window.addEventListener('mouseup', handleMouseUp);
+        window.addEventListener("mousemove", handleMouseMove);
+        window.addEventListener("mouseup", handleMouseUp);
 
         return () => {
-            window.removeEventListener('mousemove', handleMouseMove);
-            window.removeEventListener('mouseup', handleMouseUp);
+            window.removeEventListener("mousemove", handleMouseMove);
+            window.removeEventListener("mouseup", handleMouseUp);
         };
     }, [isActive, handleMouseMove, handleMouseUp]);
 
@@ -140,7 +149,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
             ref={containerRef}
             className="absolute inset-0 overflow-hidden"
             style={{
-                background: "#16213e",
+                background: "rgb(26, 26, 46)",
             }}
         >
             <motion.div
@@ -160,11 +169,13 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                             exit={{ y: 20, opacity: 0 }}
                             transition={{ duration: 0.3 }}
                         >
-                            {String(currentIndex).padStart(2, '0')}
+                            {String(currentIndex).padStart(2, "0")}
                         </motion.span>
                     </AnimatePresence>
                     <span className="text-xl text-white/30 font-medium">/</span>
-                    <span className="text-xl text-white/30 font-medium">{String(GALLERY_IMAGES.length).padStart(2, '0')}</span>
+                    <span className="text-xl text-white/30 font-medium">
+                        {String(GALLERY_IMAGES.length).padStart(2, "0")}
+                    </span>
                 </div>
             </motion.div>
 
@@ -172,9 +183,9 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                 className="absolute flex items-center gap-8"
                 style={{
                     x: trackX,
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
+                    top: "25%",
+                    left: "35%",
+                    transform: "translate(-50%, -50%)",
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
@@ -194,7 +205,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                             transition={{
                                 delay: Math.min(0.1 * index, 0.5),
                                 duration: 0.6,
-                                scale: { duration: 0.3 }
+                                scale: { duration: 0.3 },
                             }}
                             whileHover={{ scale: 1.05, y: -10 }}
                             onClick={() => setSelectedImage(index)}
@@ -202,10 +213,15 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                             <div
                                 className="relative w-[500px] h-[500px] overflow-hidden"
                                 style={{
-                                    clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%)",
+                                    clipPath:
+                                        "polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%)",
+
+                                    // ✅ (요청한 2번) 얇은 라이트 프레임 + 기존 그림자 유지/보강
+                                    // - 센터: 더 선명한 분리 + 골드 글로우
+                                    // - 비센터: 아주 약한 프레임만
                                     boxShadow: isCenter
-                                        ? "0 20px 40px -12px rgba(252,187,9,0.3)"
-                                        : "0 15px 30px -10px rgba(0,0,0,0.5)",
+                                        ? "0 20px 40px -12px rgba(252,187,9,0.30), 0 0 0 1px rgba(255,255,255,0.06)"
+                                        : "0 15px 30px -10px rgba(0,0,0,0.50), 0 0 0 1px rgba(255,255,255,0.03)",
                                 }}
                             >
                                 <img
@@ -225,7 +241,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                                     whileHover={{ opacity: 1 }}
                                 >
                                     <span className="text-white font-bold text-sm" style={{ fontFamily: "Kanit, sans-serif" }}>
-                                        {String(index + 1).padStart(2, '0')}
+                                        {String(index + 1).padStart(2, "0")}
                                     </span>
                                 </motion.div>
                             </div>
@@ -242,10 +258,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
             </motion.div>
 
             {/* ✨ 프로그레스 트랙 + 굴러가는 3D 얼굴 */}
-            <div
-                className="absolute bottom-24 left-1/2 -translate-x-1/2"
-                style={{ width: progressBarWidth }}
-            >
+            <div className="absolute bottom-24 left-1/2 -translate-x-1/2" style={{ width: progressBarWidth }}>
                 <div
                     className="relative h-[6px] rounded-full overflow-hidden cursor-grab active:cursor-grabbing"
                     onMouseDown={handleMouseDown}
@@ -270,45 +283,57 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                 </div>
 
                 {/* ✅ 굴러가는 3D 레고 얼굴 - 마지막에서 프로그레스바 끝에 고정 + 통통 튀기 */}
-                {/* ✅ 굴러가는 3D 레고 얼굴 - 마지막까지 progress 따라가기 */}
-                <motion.div key={`face-${isAtLastImage}`}
+                <motion.div
+                    key={`face-${isAtLastImage}`}
                     className="absolute -top-16 pointer-events-none"
                     style={{
-                        left: `${progress * 100}%`,  // ✅ 항상 progress 따라가기 (100% 제거)
+                        left: `${progress * 100}%`, // ✅ 항상 progress 따라가기 (100% 제거)
                         x: "-50%",
                     }}
-                    animate={isFalling ? {
-                        y: [0, -30, 300],
-                        rotateZ: [faceRotation, faceRotation + 180, faceRotation + 540],
-                        opacity: [1, 1, 0],
-                    } : isAtLastImage ? {
-                        y: [0, -15, 0],  // ✅ 통통 튀기 범위 증가
-                        rotateZ: faceRotation,
-                    } : {
-                        y: [0, -3, 0],
-                        rotateZ: faceRotation,
-                    }}
-                    transition={isFalling ? {
-                        duration: 0.8,
-                        ease: [0.36, 0, 0.66, -0.56],
-                        times: [0, 0.2, 1],
-                    } : isAtLastImage ? {
-                        y: {
-                            duration: 0.5,  // ✅ 빠르게
-                            repeat: Infinity,
-                            repeatType: "reverse",
-                            ease: "easeInOut",
-                        },
-                        rotateZ: { duration: 0.1 }
-                    } : {
-                        y: {
-                            duration: 0.3,
-                            repeat: Infinity,
-                            repeatType: "reverse",
-                            ease: "easeInOut",
-                        },
-                        rotateZ: { duration: 0.1 }
-                    }}
+                    animate={
+                        isFalling
+                            ? {
+                                y: [0, -30, 300],
+                                rotateZ: [faceRotation, faceRotation + 180, faceRotation + 540],
+                                opacity: [1, 1, 0],
+                            }
+                            : isAtLastImage
+                                ? {
+                                    y: [0, -15, 0], // ✅ 통통 튀기 범위 증가
+                                    rotateZ: faceRotation,
+                                }
+                                : {
+                                    y: [0, -3, 0],
+                                    rotateZ: faceRotation,
+                                }
+                    }
+                    transition={
+                        isFalling
+                            ? {
+                                duration: 0.8,
+                                ease: [0.36, 0, 0.66, -0.56],
+                                times: [0, 0.2, 1],
+                            }
+                            : isAtLastImage
+                                ? {
+                                    y: {
+                                        duration: 0.5, // ✅ 빠르게
+                                        repeat: Infinity,
+                                        repeatType: "reverse",
+                                        ease: "easeInOut",
+                                    },
+                                    rotateZ: { duration: 0.1 },
+                                }
+                                : {
+                                    y: {
+                                        duration: 0.3,
+                                        repeat: Infinity,
+                                        repeatType: "reverse",
+                                        ease: "easeInOut",
+                                    },
+                                    rotateZ: { duration: 0.1 },
+                                }
+                    }
                 >
                     <div
                         style={{
@@ -321,7 +346,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                         {headRef.current && (
                             <div
                                 dangerouslySetInnerHTML={{
-                                    __html: headRef.current.querySelector('[data-lego-face-3d]')?.outerHTML || ''
+                                    __html: headRef.current.querySelector("[data-lego-face-3d]")?.outerHTML || "",
                                 }}
                                 style={{
                                     width: "100%",
@@ -358,7 +383,8 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                                 alt={GALLERY_IMAGES[selectedImage].title}
                                 className="max-w-[90vw] max-h-[85vh] shadow-2xl"
                                 style={{
-                                    clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%)",
+                                    clipPath:
+                                        "polygon(0 0, 100% 0, 100% calc(100% - 24px), calc(100% - 24px) 100%, 0 100%)",
                                 }}
                             />
                             <button

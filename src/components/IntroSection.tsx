@@ -10,7 +10,7 @@ console.log('IntroSection render', Date.now());
 
 type FaceExpression = 'sad' | 'neutral' | 'happy' | 'sweat' | 'blank';
 const COLORS = [
-  '#8F1E20', '#F25F09', '#ffc147', '#8E00BD', '#a6b551', '#B7156C', '#8F1E20'
+  '#8F1E20', '#bd8109', '#610380', '#677032', '#8F1E20'
 ];
 
 const BG_CREAM = "#ffedcb";

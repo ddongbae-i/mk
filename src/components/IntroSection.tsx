@@ -596,12 +596,7 @@ const HamburgerIcon = ({
   </div>
 );
 
-
-// 기존 FloatingMenuBlock 컴포넌트 끝난 후 (약 530줄 근처)에 추가
-
-// ============================================================================
-// 그룹 2: 햄버거 메뉴 전용 블록 (phase 10+)
-// ============================================================================
+// 550줄 근처: HamburgerMenuBlock 컴포넌트 수정
 const HamburgerMenuBlock: React.FC<{
   index: number;
   id?: string;
@@ -617,21 +612,25 @@ const HamburgerMenuBlock: React.FC<{
   return (
     <motion.div
       id={id}
-      onClick={onClick}
+      onClick={(e) => {
+        e.stopPropagation(); // 부모로 클릭 이벤트 전파 방지
+        if (isMenuOpen) onClick?.();
+      }}
       style={{
         position: 'absolute',
         top: 0,
         left: 0,
         zIndex: baseZIndex,
-        visibility: 'hidden',  // ✅ 기본적으로 숨김 (useAnimate가 opacity 제어)
-        pointerEvents: 'none', // ✅ 클릭 방지
+        // ✅ 상태에 따라 자동으로 스타일 적용 (리렌더링 시 초기화 방지)
+        visibility: isMenuOpen ? 'visible' : 'hidden',
+        pointerEvents: isMenuOpen ? 'auto' : 'none',
       }}
       data-hoverable="true"
       initial={false}
       whileTap={{ scale: 0.95 }}
-      onMouseEnter={() => onHover?.(index)}
-      onMouseLeave={() => onHover?.(null)}
-      className="w-40 h-24 md:w-52 md:h-32 cursor-pointer pointer-events-auto"
+      onMouseEnter={() => isMenuOpen && onHover?.(index)}
+      onMouseLeave={() => isMenuOpen && onHover?.(null)}
+      className="w-40 h-24 md:w-52 md:h-32 cursor-pointer" // pointer-events-auto 삭제 (style에서 제어)
     >
       <motion.div
         className="w-full h-full"
@@ -660,9 +659,12 @@ const IntroSection: React.FC = () => {
     await animate(selector, keyframes, options);
   };
 
+  // 590줄 근처: handleMenuClick 함수 수정
   const handleMenuClick = async (index: number) => {
-    const label = BRICK_LABELS[index];
+    // ✅ 애니메이션 중이면 중단
+    if (isAnimatingRef.current) return;
 
+    const label = BRICK_LABELS[index];
     const targetByLabel: Record<string, number | null> = {
       BUILD: 14,
       PROJECT: 25,
@@ -674,30 +676,29 @@ const IntroSection: React.FC = () => {
     const target = targetByLabel[label];
     if (target == null) return;
 
-    // ✅ 애니메이션 잠금
-    if (isAnimatingRef.current) return;
     isAnimatingRef.current = true;
 
-    // ✅ 메뉴가 열려있으면 "흡수"로 닫아주고
-    if (menuOpen) await closeMenu();
+    // ✅ 1. 메뉴 닫기 애니메이션 수행
+    if (menuOpen) {
+      await closeMenu();
+      // closeMenu 내부에서 isAnimatingRef.current를 false로 만들기 때문에 다시 true로 설정
+      isAnimatingRef.current = true;
+    }
 
-    // ✅ 블럭 좌표/투명도 상태 초기화(중요)
-    await resetMenuBlocks();
-
-    // ✅ 네비 점프 전에 스크롤 오버레이/상태 정리 (2번 문제도 같이 해결)
+    // ✅ 2. 상태 초기화 및 네비게이션 준비
     setIsNaturalScrolling(false);
     setNaturalScrollY(0);
     if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
 
-    setExpandedTooltip(null);
     setIsProjectOpen(false);
 
-    // ✅ 이동
+    // ✅ 3. 섹션 이동 (Phase 변경)
     setPhase(target);
 
-    window.setTimeout(() => {
+    // ✅ 4. 이동 후 잠금 해제
+    setTimeout(() => {
       isAnimatingRef.current = false;
-    }, 400);
+    }, 600);
   };
 
 
@@ -751,14 +752,6 @@ const IntroSection: React.FC = () => {
       phase >= 23 ? 0.8 :
         phase >= 14 ? 0.35 :
           1.2;
-
-  useEffect(() => {
-    console.log('=== DEBUG ===');
-    console.log('phase:', phase);
-    console.log('headScale:', headScale);
-    // console.log('vw:', vw);
-    console.log('window.innerWidth:', window.innerWidth);
-  }, [phase, headScale]);
 
   const showHat = phase >= 14 && phase < 26;
   const followParts = phase >= 2 && phase <= 12;
@@ -1148,15 +1141,7 @@ const IntroSection: React.FC = () => {
   };
 
   const runStepB_PourOut = async () => {
-    // ✅ 먼저 visibility 활성화
-    for (let i = 0; i < 5; i++) {
-      const el = document.getElementById(`menu-block-${i}`);
-      if (el) {
-        el.style.visibility = 'visible';
-        el.style.pointerEvents = 'auto';
-      }
-    }
-
+    // ✅ 직접 el.style을 만지던 부분 삭제 (컴포넌트 내부에서 처리함)
     const pourAnims = [];
     for (let i = 0; i < 5; i++) {
       const coords = getStackPosition(i);
@@ -1541,29 +1526,20 @@ const IntroSection: React.FC = () => {
           className="absolute w-full"
           style={{ zIndex: 95, top: 0, height: "100vh" }}
           initial={{
-            y: "100vh",
-            rotateX: -30,  // ← 15 → 30으로 증가
-            rotateY: 20,   // ✅ Y축 회전 추가
-            scale: 0.85,   // ← 0.9 → 0.85로 축소
-            opacity: 0.7,  // ✅ 투명도 추가
+            y: "10vh",  // ← 100vh → 20vh (덜 격렬함)
+            opacity: 0,
           }}
           animate={{
             y: 0,
-            rotateX: 0,
-            rotateY: 0,
-            scale: 1,
             opacity: 1,
           }}
           exit={{
-            y: "100vh",
-            rotateX: -30,
-            rotateY: 20,
-            scale: 0.85,
-            opacity: 0.7,
+            y: "-10vh",
+            opacity: 0,
           }}
           transition={{
-            duration: 1.4,  // ← 1.2 → 1.4 (더 느리게)
-            ease: [0.25, 0.46, 0.45, 0.94],  // ← 더 부드러운 커브
+            duration: 1.0,
+            ease: [0.16, 0.5, 0.3, 1],  // easeOutExpo
           }}
         >
           <GallerySection

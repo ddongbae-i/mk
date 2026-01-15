@@ -270,17 +270,6 @@ const ContactSection: React.FC<{
   isActive: boolean;
   headRef: React.RefObject<HTMLElement>;
 }> = ({ isActive, headRef }) => {
-  const [isStamped, setIsStamped] = useState(false);
-
-  useEffect(() => {
-    if (isActive) {
-      // 섹션 활성화 후 0.5초 뒤 도장 찍기
-      setTimeout(() => setIsStamped(true), 500);
-    } else {
-      setIsStamped(false);
-    }
-  }, [isActive]);
-
   if (!isActive) return null;
 
   return (
@@ -290,56 +279,28 @@ const ContactSection: React.FC<{
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
     >
-      {/* 메인 텍스트 */}
-      <div className="relative flex items-center justify-center mb-16">
-        <motion.h1
-          className="font-bold italic text-[clamp(32px,8vw,120px)] text-[#F0F0F0]"
+      <div className="relative mb-16">
+        <motion.div
+          className="font-bold italic text-[clamp(32px,8vw,120px)] text-[#F0F0F0] text-center"
           style={{ fontFamily: FONT_FAMILY }}
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          Let's build something meaningful
-        </motion.h1>
-
-        {/* 마침표 자리에 얼굴 도장 */}
-        <motion.div
-          className="absolute"
-          style={{
-            right: "-60px",
-            bottom: "10px",
-            width: "80px",
-            height: "80px",
-          }}
-          initial={{ scale: 0, rotate: -180 }}
-          animate={isStamped ? {
-            scale: [0, 1.3, 1],
-            rotate: [180, 0, 0],
-          } : {
-            scale: 0,
-            rotate: -180,
-          }}
-          transition={{
-            duration: 0.4,
-            ease: [0.34, 1.56, 0.64, 1],
-            times: [0, 0.6, 1],
-          }}
-        >
-          {headRef.current && (
-            <div
-              dangerouslySetInnerHTML={{
-                __html: headRef.current.querySelector('[data-lego-face-3d]')?.outerHTML || ''
-              }}
-              style={{
-                width: "100%",
-                height: "100%",
-                transform: "scale(0.12)",
-                transformOrigin: "center center",
-                filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.3))",
-              }}
-            />
-          )}
+          Let's build
         </motion.div>
+
+        <motion.div
+          className="font-bold italic text-[clamp(32px,8vw,120px)] text-[#F0F0F0] text-center"
+          style={{ fontFamily: FONT_FAMILY }}
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.3 }}
+        >
+          something meaningful
+        </motion.div>
+
+
       </div>
 
       {/* 컨택 아이콘들 */}
@@ -347,7 +308,7 @@ const ContactSection: React.FC<{
         className="flex items-center gap-8"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.6 }}
+        transition={{ duration: 0.6, delay: 0.8 }}
       >
         {/* 이메일 */}
         <motion.a
@@ -401,7 +362,7 @@ const ContactSection: React.FC<{
         style={{ fontFamily: FONT_FAMILY }}
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.6, delay: 0.8 }}
+        transition={{ duration: 0.6, delay: 1.0 }}
       >
         © 2025 KIM MINKYEONG. Built with LEGO blocks & passion.
       </motion.div>
@@ -1136,13 +1097,17 @@ const IntroSection: React.FC = () => {
       }
 
     } else if (currentPhase === 27) {
-      // ✅ galleryProgress가 1.0에 가까울 때만 다음 섹션으로
-      if (direction > 0 && galleryProgress >= 0.98) {
+      // ✅ 스크롤 다운: 컨택 섹션으로
+      if (direction > 0) {
         isAnimatingRef.current = true;
-        setPhase(28);  // 컨택 섹션으로
+        setPhase(28);
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
-      } else if (direction < 0 && galleryProgress <= 0.02) {
-        // 스크롤 업: 스킬 섹션으로 복귀
+      }
+      // ✅ 스크롤 업: galleryProgress가 0보다 클 때는 GallerySection 내부 처리
+      else if (galleryProgress > 0.02) {
+        return;  // GallerySection이 알아서 처리
+      } else {
+        // 스킬 섹션으로 복귀
         isAnimatingRef.current = true;
         setSkillResetKey(prev => prev + 1);
         setPhase(26);
@@ -1727,20 +1692,17 @@ const IntroSection: React.FC = () => {
           className="absolute w-full"
           style={{ zIndex: 95, top: 0, height: "100vh" }}
           initial={{
-            y: "10vh",  // ← 100vh → 20vh (덜 격렬함)
-            opacity: 0,
+            y: "100vh",  // ✅ 아래에서 시작
           }}
           animate={{
-            y: 0,
-            opacity: 1,
+            y: 0,  // ✅ 위로 올라옴
           }}
           exit={{
-            y: "-10vh",
-            opacity: 0,
+            y: "100vh",  // ✅ 아래로 내려감
           }}
           transition={{
-            duration: 1.0,
-            ease: [0.16, 0.5, 0.3, 1],  // easeOutExpo
+            duration: 0.8,
+            ease: [0.22, 1, 0.36, 1],  // ✅ easeOutQuart
           }}
         >
           <GallerySection
@@ -1758,10 +1720,19 @@ const IntroSection: React.FC = () => {
         <motion.div
           className="absolute w-full h-full"
           style={{ zIndex: 100 }}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.8 }}
+          initial={{
+            y: "100vh",  // ✅ 아래에서 시작
+          }}
+          animate={{
+            y: 0,  // ✅ 위로 올라옴
+          }}
+          exit={{
+            y: "100vh",
+          }}
+          transition={{
+            duration: 0.8,
+            ease: [0.22, 1, 0.36, 1],
+          }}
         >
           <ContactSection isActive={phase === 28} headRef={headRef} />
         </motion.div>
@@ -2232,59 +2203,67 @@ const IntroSection: React.FC = () => {
           scale: 0.8
         }}
         animate={
-          phase >= 27
-            ? {
+          phase === 28 ? {
+            // ✅ 컨택: 하늘에서 쿵! 떨어지기 (회전 X)
+            left: "50%",
+            top: "calc(50% + 40px)",
+            x: "280px",
+            y: "-50%",
+            scale: [0, 0.4, 0.15],  // ✅ 0에서 크게 커졌다가 작게
+            rotateZ: 0,  // ✅ 회전 안 함
+            opacity: 1,
+          } :
+            phase >= 27 ? {
+              // ✅ 갤러리: 원래 위치 복구
               left: `${20 + galleryProgress * 60}%`,
-              top: galleryProgress >= 0.98
-                ? "calc(100vh + 300px)"
-                : "calc(100vh - 150px)",
+              top: "calc(100vh - 150px)",  // ✅ 원래대로
               x: "-50%",
               y: "-50%",
               scale: 0.12,
               rotateZ: galleryProgress * 720,
+              opacity: 1,
             }
-            : phase >= 26
-              ? {
+              : phase >= 26 ? {
                 left: "calc(50% - 350px)",
                 top: "calc(50% - 350px)",
                 x: 0,
                 y: isSkillExiting ? [0, 30, -10, 0, -150] : 0,
                 scale: isSkillExiting ? [1.0, 0.95, 1.05, 1.0, 0.12] : 1.0,
-                rotateZ: isSkillExiting ? [0, 0, 0, 0, 360] : 0,  // ✅ 180 → 360으로 변경
+                rotateZ: isSkillExiting ? [0, 0, 0, 0, 360] : 0,
+                opacity: 1,
               }
-              : phase >= 23
-                ? { left: "96%", top: "18%", x: "-50%", y: "-50%", scale: 1.2, }
-                : phase >= 14
-                  ? {
-                    left: "25vw",
-                    top: "50%",
-                    x: "-50%",
-                    y: `calc(-30% + ${scrollOffset}px)`,
-                    scale: 0.85,
-                    rotateX: 0,
-                    rotateZ: 0,
-                    rotateY: 0
-                  }
-                  : phase >= 9
-                    ? { left: "50%", top: "45%", x: "-50%", y: "-50%", scale: 0.8, rotateZ: 0, rotateY: 0 }
-                    : { y: "150vh" }
+                : phase >= 23
+                  ? { left: "96%", top: "18%", x: "-50%", y: "-50%", scale: 1.2, }
+                  : phase >= 14
+                    ? {
+                      left: "25vw",
+                      top: "50%",
+                      x: "-50%",
+                      y: `calc(-30% + ${scrollOffset}px)`,
+                      scale: 0.85,
+                      rotateX: 0,
+                      rotateZ: 0,
+                      rotateY: 0
+                    }
+                    : phase >= 9
+                      ? { left: "50%", top: "45%", x: "-50%", y: "-50%", scale: 0.8, rotateZ: 0, rotateY: 0 }
+                      : { y: "150vh" }
         }
-        transition={{
-          duration: phase >= 27 ? 0.8 : 1.0,
-          ease: phase >= 27 ? "easeOut" : "easeInOut",
-          ...(isSkillExiting && phase === 26 ? {
-            y: {
-              duration: 1.0,  // ✅ 0.8 → 1.0 (한 바퀴 도는 시간 확보)
-              times: [0, 0.25, 0.5, 0.75, 1],
-              ease: "easeInOut"
-            },
-            scale: { duration: 1.0, ease: "easeOut" },  // ✅ 0.8 → 1.0
-            rotateZ: {
-              duration: 1.0,  // ✅ 0.8 → 1.0
-              ease: [0.45, 0, 0.55, 1]  // ✅ easeInOutQuad - 회전이 부드럽게
-            }
-          } : {})
-        }}
+        transition={
+          phase === 28 ? {
+            duration: 0.6,
+            ease: [0.6, 0.01, 0.05, 0.9],  // ✅ 떨어지는 느낌 (빠르게 가속)
+            times: [0, 0.4, 1],  // ✅ 크게 커지고 → 작아지며 착지
+          } : {
+            duration: phase >= 27 ? 0.8 : 1.0,
+            ease: "easeInOut",
+            ...(isSkillExiting && phase === 26 ? {
+              y: { duration: 1.0, times: [0, 0.25, 0.5, 0.75, 1], ease: "easeInOut" },
+              scale: { duration: 1.0, ease: "easeOut" },
+              rotateZ: { duration: 1.0, ease: [0.45, 0, 0.55, 1] }
+            } : {})
+          }
+        }
       >
 
         {/* 1. HAT (모자) */}

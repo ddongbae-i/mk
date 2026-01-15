@@ -35,37 +35,23 @@ const GallerySection: React.FC<GallerySectionProps> = ({
     onFaceExpression,
 }) => {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [currentStep, setCurrentStep] = useState(0); // ✅ progress 대신 step으로 관리
+    const [currentStep, setCurrentStep] = useState(0);
     const [selectedImage, setSelectedImage] = useState<number | null>(null);
     const [isFalling, setIsFalling] = useState(false);
     const currentStepRef = useRef(0);
 
-    const MAX_STEP = GALLERY_IMAGES.length; // 12 (마지막 스크롤까지)
+    const MAX_STEP = GALLERY_IMAGES.length;
 
-    // ✅ 트랙 위치 계산
     const IMAGE_WIDTH = 500;
     const IMAGE_GAP = 32;
     const IMAGE_STEP = IMAGE_WIDTH + IMAGE_GAP;
 
-    // ✅ 현재 이미지 인덱스 (0-11)
     const currentImageIndex = Math.min(currentStep, GALLERY_IMAGES.length - 1);
-
-    // ✅ 트랙 이동
     const trackX = -currentImageIndex * IMAGE_STEP;
-
-    // ✅ progress는 마지막 이미지까지만 (0~1)
     const progress = Math.min(currentStep / (GALLERY_IMAGES.length - 1), 1);
-
-    // 얼굴 회전값
     const faceRotation = progress * 720;
-
-    // progress bar 너비
     const progressBarWidth = typeof window !== 'undefined' ? window.innerWidth * 0.6 : 800;
-
-    // ✅ 숫자 표시 (1-12)
     const currentIndex = currentImageIndex + 1;
-
-    // ✅ 마지막 이미지 도달 여부
     const isAtLastImage = currentStep >= GALLERY_IMAGES.length - 1;
 
     useEffect(() => {
@@ -74,7 +60,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
         onFaceRotation?.(faceRotation);
     }, [currentStep, progress, faceRotation, onProgressChange, onFaceRotation]);
 
-    // ✅ 휠 이벤트 핸들러 - step 기반
     const handleWheel = useCallback((e: WheelEvent) => {
         if (!isActive || isFalling) return;
 
@@ -86,7 +71,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
 
         setCurrentStep(newStep);
 
-        // ✅ 마지막 이미지(11) 이후 스크롤(12)에서 떨어짐
         if (newStep >= MAX_STEP && direction > 0 && !isFalling) {
             setIsFalling(true);
             onFaceExpression?.('sweat');
@@ -104,7 +88,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
         return () => window.removeEventListener('wheel', handleWheel);
     }, [isActive, handleWheel]);
 
-    // 드래그 핸들러
     const isDragging = useRef(false);
     const startX = useRef(0);
     const startStep = useRef(0);
@@ -160,7 +143,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                 background: "#16213e",
             }}
         >
-            {/* 우측 상단 진행률 */}
             <motion.div
                 className="absolute top-10 right-10 z-50"
                 initial={{ opacity: 0 }}
@@ -186,7 +168,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                 </div>
             </motion.div>
 
-            {/* 이미지 트랙 */}
             <motion.div
                 className="absolute flex items-center gap-8"
                 style={{
@@ -273,7 +254,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                         boxShadow: "inset 0 1px 2px rgba(0,0,0,0.3)",
                     }}
                 >
-                    {/* ✅ 프로그레스바 - 마지막 이미지까지만 */}
                     <motion.div
                         className="absolute top-0 left-0 h-full rounded-full"
                         style={{
@@ -289,11 +269,12 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                     <div className="absolute top-0 left-0 right-0 h-[2px] bg-white/20 rounded-full" />
                 </div>
 
-                {/* ✅ 굴러가는 3D 레고 얼굴 - 마지막에서 통통 튀기 */}
-                <motion.div
+                {/* ✅ 굴러가는 3D 레고 얼굴 - 마지막에서 프로그레스바 끝에 고정 + 통통 튀기 */}
+                {/* ✅ 굴러가는 3D 레고 얼굴 - 마지막까지 progress 따라가기 */}
+                <motion.div key={`face-${isAtLastImage}`}
                     className="absolute -top-16 pointer-events-none"
                     style={{
-                        left: `${progress * 100}%`,
+                        left: `${progress * 100}%`,  // ✅ 항상 progress 따라가기 (100% 제거)
                         x: "-50%",
                     }}
                     animate={isFalling ? {
@@ -301,7 +282,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                         rotateZ: [faceRotation, faceRotation + 180, faceRotation + 540],
                         opacity: [1, 1, 0],
                     } : isAtLastImage ? {
-                        y: [0, -8, 0],  // ✅ 통통 튀기
+                        y: [0, -15, 0],  // ✅ 통통 튀기 범위 증가
                         rotateZ: faceRotation,
                     } : {
                         y: [0, -3, 0],
@@ -313,7 +294,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                         times: [0, 0.2, 1],
                     } : isAtLastImage ? {
                         y: {
-                            duration: 0.5,  // ✅ 더 활발하게
+                            duration: 0.5,  // ✅ 빠르게
                             repeat: Infinity,
                             repeatType: "reverse",
                             ease: "easeInOut",

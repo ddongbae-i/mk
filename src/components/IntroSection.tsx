@@ -312,7 +312,7 @@ const ContactSection: React.FC<{
       >
         {/* 이메일 */}
         <motion.a
-          href="mailto:your@email.com"
+          href="na_dog@naver.com"
           target="_blank"
           rel="noopener noreferrer"
           className="group flex items-center justify-center w-20 h-20 bg-[#F0F0F0] rounded-full cursor-pointer"
@@ -337,10 +337,9 @@ const ContactSection: React.FC<{
 
         {/* 카카오톡 */}
         <motion.a
-          href="https://open.kakao.com/your-link"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="group flex items-center justify-center w-20 h-20 bg-[#FEE500] rounded-full cursor-pointer"
+          href="mailto:na_dog@naver.com"
+          onClick={(e) => e.stopPropagation()}
+          className="group flex items-center justify-center w-20 h-20 bg-[#F0F0F0] rounded-full cursor-pointer"
           whileHover={{ scale: 1.1, y: -5 }}
           whileTap={{ scale: 0.95 }}
           data-hoverable="true"
@@ -2204,21 +2203,21 @@ const IntroSection: React.FC = () => {
         }}
         animate={
           phase === 28 ? {
-            // ✅ 컨택: 하늘에서 쿵! 떨어지기 (회전 X)
+            // ✅ 컨택: 갤러리 위치에서 meaningful 옆으로 이동하며 커졌다 쿵!
             left: "50%",
             top: "calc(50% + 40px)",
-            x: "280px",
+            x: "calc(280px)",
             y: "-50%",
-            scale: [0, 0.4, 0.15],  // ✅ 0에서 크게 커졌다가 작게
-            rotateZ: 0,  // ✅ 회전 안 함
+            scale: [0.12, 0.5, 0.15],  // ✅ 작은 상태에서 크게 커졌다가 쿵!
+            rotateZ: galleryProgress * 720,  // ✅ 회전 유지 (갤러리에서 이어짐)
             opacity: 1,
           } :
             phase >= 27 ? {
-              // ✅ 갤러리: 원래 위치 복구
+              // ✅ 갤러리: 프로그레스바 위 + 마지막에서 통통 튀기
               left: `${20 + galleryProgress * 60}%`,
-              top: "calc(100vh - 150px)",  // ✅ 원래대로
+              top: "calc(100vh - 150px)",
               x: "-50%",
-              y: "-50%",
+              y: galleryProgress >= 0.99 ? ["-50%", "calc(-50% - 15px)", "-50%"] : "-50%",  // ✅ 통통!
               scale: 0.12,
               rotateZ: galleryProgress * 720,
               opacity: 1,
@@ -2229,7 +2228,7 @@ const IntroSection: React.FC = () => {
                 x: 0,
                 y: isSkillExiting ? [0, 30, -10, 0, -150] : 0,
                 scale: isSkillExiting ? [1.0, 0.95, 1.05, 1.0, 0.12] : 1.0,
-                rotateZ: isSkillExiting ? [0, 0, 0, 0, 360] : 0,
+                rotateZ: isSkillExiting ? [0, 0, 0, 0, 360] : 0,  // ✅ 스킬→갤러리에서 회전!
                 opacity: 1,
               }
                 : phase >= 23
@@ -2251,16 +2250,24 @@ const IntroSection: React.FC = () => {
         }
         transition={
           phase === 28 ? {
-            duration: 0.6,
-            ease: [0.6, 0.01, 0.05, 0.9],  // ✅ 떨어지는 느낌 (빠르게 가속)
-            times: [0, 0.4, 1],  // ✅ 크게 커지고 → 작아지며 착지
+            duration: 0.7,
+            ease: [0.6, 0.01, 0.05, 0.9],
+            times: [0, 0.5, 1],  // ✅ 천천히 커지다가 → 빠르게 쿵!
+          } : phase >= 27 ? {
+            duration: 0.1,
+            y: galleryProgress >= 0.99 ? {  // ✅ 마지막에서만 통통
+              duration: 0.5,
+              repeat: Infinity,
+              repeatType: "reverse" as const,
+              ease: "easeInOut",
+            } : undefined,
           } : {
-            duration: phase >= 27 ? 0.8 : 1.0,
+            duration: 1.0,
             ease: "easeInOut",
             ...(isSkillExiting && phase === 26 ? {
               y: { duration: 1.0, times: [0, 0.25, 0.5, 0.75, 1], ease: "easeInOut" },
               scale: { duration: 1.0, ease: "easeOut" },
-              rotateZ: { duration: 1.0, ease: [0.45, 0, 0.55, 1] }
+              rotateZ: { duration: 1.0, ease: [0.45, 0, 0.55, 1] }  // ✅ 스킬→갤러리 회전
             } : {})
           }
         }

@@ -3,16 +3,16 @@ import { motion, AnimatePresence } from "framer-motion";
 
 // ✅ 이미지 12개로 확장
 const GALLERY_IMAGES = [
-    { id: 1, src: "/gallery/02.png", title: "Project Alpha", category: "UI/UX" },
-    { id: 2, src: "/gallery/03.png", title: "Brand Identity", category: "Branding" },
-    { id: 3, src: "/gallery/04.png", title: "UI Components", category: "Design System" },
-    { id: 4, src: "/gallery/05.png", title: "Mobile App", category: "Mobile" },
-    { id: 5, src: "/gallery/01.png", title: "Dashboard", category: "Web App" },
+    { id: 1, src: "/gallery/01.png", title: "Project Alpha", category: "UI/UX" },
+    { id: 2, src: "/gallery/02.png", title: "Brand Identity", category: "Branding" },
+    { id: 3, src: "/gallery/03.png", title: "UI Components", category: "Design System" },
+    { id: 4, src: "/gallery/04.jpg", title: "Mobile App", category: "Mobile" },
+    { id: 5, src: "/gallery/05.png", title: "Dashboard", category: "Web App" },
     { id: 6, src: "/gallery/06.png", title: "E-commerce", category: "Web" },
-    { id: 7, src: "/gallery/07.jpg", title: "Landing Page", category: "Marketing" },
+    { id: 7, src: "/gallery/07.png", title: "Landing Page", category: "Marketing" },
     { id: 8, src: "/gallery/08.png", title: "Portfolio", category: "Personal" },
-    { id: 9, src: "/gallery/09.png", title: "Design System", category: "UI Kit" },
-    { id: 10, src: "/gallery/10.png", title: "Branding", category: "Identity" },
+    { id: 9, src: "/gallery/09.jpg", title: "Design System", category: "UI Kit" },
+    { id: 10, src: "/gallery/10.jpg", title: "Branding", category: "Identity" },
     { id: 11, src: "/gallery/11.png", title: "Web App", category: "SaaS" },
     { id: 12, src: "/gallery/12.png", title: "Mobile Design", category: "App" },
 ];

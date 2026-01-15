@@ -2133,28 +2133,28 @@ const IntroSection: React.FC = () => {
             alignItems: "center",
           }}
           animate={{
-            rotateZ: phase >= 23 && phase < 26 ? 2 : 0,  // ← 여기 추가!
+            rotateZ: phase >= 23 && phase < 26 ? 2 : 0,
           }}
           transition={{ duration: 0.6 }}
         >
-          {/* 내부 wrapper - absolute 제거 */}
-          <motion.div
+          {/* ✅ motion.div → div로 변경 + CSS transform 직접 적용 */}
+          <div
             style={{
               display: "flex",
               justifyContent: "center",
               alignItems: "center",
               width: "700px",
               height: "700px",
-            }}
-            animate={{
-              scale: headScale,
-              y: phase >= 26 ? 50 : 0,
+              // ✅ CSS transform으로 직접 scale 적용 (Framer Motion 우회)
+              transform: `scale(${headScale}) translateY(${phase >= 26 ? 50 : 0}px)`,
+              transformOrigin: "center center",
+              willChange: "transform",  // ✅ 성능 최적화
             }}
           >
             <Suspense fallback={<FaceLoadingPlaceholder />}>
               <LegoFace3D
                 className="w-full h-full drop-shadow-2xl"
-                data-lego-face-3d="true"  // ✅ 추가: 갤러리에서 찾기 위한 속성
+                data-lego-face-3d="true"
                 followMouse={phase >= 2 && phase <= 12}
                 fixedRotationY={phase >= 26 ? 0 : phase >= 23 ? -30 : (phase >= 14 && phase < 23 ? 25 : 0)}
                 fixedRotationX={phase >= 14 && phase < 23 ? 3 : 0}
@@ -2164,8 +2164,7 @@ const IntroSection: React.FC = () => {
                 onSpinComplete={handleSpinComplete}
               />
             </Suspense>
-          </motion.div>
-
+          </div>
         </motion.div>
 
         {/* --- 화살표 & 라벨 (조건 수정: phase >= 14 추가) --- */}

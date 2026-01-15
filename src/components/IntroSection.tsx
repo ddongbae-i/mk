@@ -53,7 +53,7 @@ const S2_CONTENT = [
     keyword: "PLAY",
     splits: ["P", "LAY"],
     top: "사용자가 즐겁게",
-    bottom: "하는 흐름을 만들며,"
+    bottom: "하는 흐름을 만들고"
   },
   {
     keyword: "OUT",
@@ -289,10 +289,10 @@ const PartTooltip = ({
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3, delay: 0.2 }}
         >
-          <h3 className="font-bold text-[#2b2b2b] italic text-[26px] mb-2" style={{ fontFamily: 'Kanit, sans-serif' }}>
+          <h3 className="font-bold text-[#2b2b2b] italic text-[26px] mb-1" style={{ fontFamily: 'Kanit, sans-serif' }}>
             {title}
           </h3>
-          <p className="text-[#333] text-[18px] font-medium leading-[1.5]">
+          <p className="text-[#4c4c4c] text-[20px] font-medium leading-[1.4]">
             {description}
           </p>
           {/* ✅ details, AnimatePresence, 버튼 전부 삭제됨 */}
@@ -2147,7 +2147,8 @@ const IntroSection: React.FC = () => {
               height: "700px",
             }}
             animate={{
-              scale: headScale,  // ← width/height 대신 scale로 변경!
+              scale: headScale,
+              y: phase >= 26 ? 50 : 0,
             }}
           >
             <Suspense fallback={<FaceLoadingPlaceholder />}>
@@ -2279,6 +2280,8 @@ const IntroSection: React.FC = () => {
         )}
 
       </motion.div>
+
+
       <AnimatePresence>
         {phase === 16 && (
           <motion.div

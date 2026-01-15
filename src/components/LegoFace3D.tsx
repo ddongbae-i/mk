@@ -148,8 +148,8 @@ const LegoModel: React.FC<ModelProps> = ({
 
     return (
         // ✅ 얼굴이 위로 올라가 보이면 여기 y만 살짝 조절(-0.2 ~ 0.2 범위부터)
-        <group ref={modelRef} position={[-0.9, -2.5, 0]}>
-            <primitive object={clonedScene} scale={1.3} />
+        <group ref={modelRef} position={[-0.4, -5.2, 0]}>
+            <primitive object={clonedScene} scale={1.5} />
         </group>
     );
 };
@@ -177,13 +177,14 @@ export const LegoFace3D = React.memo<{
     const [isSpinning, setIsSpinning] = useState(false);
     const spinStartTime = useRef<number | null>(null);
 
-    useEffect(() => {
-        window.dispatchEvent(new Event('resize'));
-        const timer = setTimeout(() => {
-            window.dispatchEvent(new Event('resize'));
-        }, 100);
-        return () => clearTimeout(timer);
-    }, []);
+    // ✅ resize 이벤트 제거
+    // useEffect(() => {
+    //     window.dispatchEvent(new Event('resize'));
+    //     const timer = setTimeout(() => {
+    //         window.dispatchEvent(new Event('resize'));
+    //     }, 100);
+    //     return () => clearTimeout(timer);
+    // }, []);
 
     useEffect(() => {
         if (spinY === 360 && !isSpinning) {
@@ -233,31 +234,28 @@ export const LegoFace3D = React.memo<{
                 width: "100%",
                 height: "100%",
                 overflow: "visible",
-                display: "flex",           // ✅ 추가
-                justifyContent: "center",  // ✅ 추가
-                alignItems: "center",      // ✅ 추가
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
             }}
         >
             <Canvas
                 dpr={[1, 2]}
                 camera={{ position: [0, 0, 8], fov: 45 }}
-                resize={{ scroll: false, debounce: { scroll: 0, resize: 0 } }}
+                resize={{ scroll: false, debounce: { scroll: 0, resize: 0 } }}  // ✅ 이미 resize 비활성화되어 있음
                 style={{
                     background: "transparent",
                     overflow: "visible",
-                    width: "700px",
-                    height: "700px",
-                    // maxWidth: "100%",
-                    // maxHeight: "100%",
+                    width: "700px",      // ✅ 고정 크기 유지
+                    height: "700px",     // ✅ 고정 크기 유지
                 }}
                 gl={{
                     alpha: true,
                     antialias: true,
                     toneMapping: THREE.NoToneMapping,
-                    outputColorSpace: THREE.SRGBColorSpace, // ✅ 색감 고정
+                    outputColorSpace: THREE.SRGBColorSpace,
                 }}
             >
-                {/* ✅ 색감 안정: 과한 라이트 줄이고, 표정은 emissive로 보정했음 */}
                 <ambientLight intensity={2.0} />
                 <directionalLight position={[0, 0, 9]} intensity={1.0} />
                 <directionalLight position={[-5, 5, -5]} intensity={0.5} />

@@ -396,7 +396,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                 <AnimatePresence>
                     {isActive && poppedSkills.length < SKILLS_DATA.length && (
                         <motion.div
-                            className="absolute top-24 w-full text-center text-white z-[250]"
+                            className="absolute top-24 w-full text-center text-[#f0f0f0] z-[250]"
                             initial={{ y: -20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
                             exit={{ opacity: 0 }}
@@ -420,7 +420,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ type: "spring", stiffness: 300 }}
                         >
-                            <p className="text-5xl font-bold text-[#ffffff] italic"
+                            <p className="text-5xl font-bold text-[#f0f0f0] italic"
                                 style={{ fontFamily: "Kanit, sans-serif" }}>
                                 This is MK’s skill set
                             </p>

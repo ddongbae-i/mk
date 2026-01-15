@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 
-// 임시 갤러리 이미지 데이터 (나중에 실제 이미지로 교체)
+// ✅ 이미지 12개로 확장
 const GALLERY_IMAGES = [
     { id: 1, src: "/gallery/02.png", title: "Project Alpha", category: "UI/UX" },
     { id: 2, src: "/gallery/03.png", title: "Brand Identity", category: "Branding" },
@@ -10,7 +10,11 @@ const GALLERY_IMAGES = [
     { id: 5, src: "/gallery/01.png", title: "Dashboard", category: "Web App" },
     { id: 6, src: "/gallery/06.png", title: "E-commerce", category: "Web" },
     { id: 7, src: "/gallery/07.jpg", title: "Landing Page", category: "Marketing" },
-    { id: 8, src: "https://picsum.photos/seed/gallery8/600/400", title: "Portfolio", category: "Personal" },
+    { id: 8, src: "/gallery/08.png", title: "Portfolio", category: "Personal" },
+    { id: 9, src: "/gallery/09.png", title: "Design System", category: "UI Kit" },
+    { id: 10, src: "/gallery/10.png", title: "Branding", category: "Identity" },
+    { id: 11, src: "/gallery/11.png", title: "Web App", category: "SaaS" },
+    { id: 12, src: "/gallery/12.png", title: "Mobile Design", category: "App" },
 ];
 
 interface GallerySectionProps {
@@ -42,49 +46,48 @@ const GallerySection: React.FC<GallerySectionProps> = ({
     const maxScroll = Math.max(0, trackWidth - viewportWidth + 100);
     const trackX = -progress * maxScroll;
 
-    // 얼굴 회전값 (progress에 따라)
-    const faceRotation = progress * 720; // 2바퀴
+    // 얼굴 회전값
+    const faceRotation = progress * 720;
 
     // progress bar 너비
     const progressBarWidth = typeof window !== 'undefined' ? window.innerWidth * 0.6 : 800;
 
-    // 현재 활성화된 이미지 인덱스 (1-based)
-    const currentIndex = Math.min(
-        Math.floor(progress * GALLERY_IMAGES.length) + 1,
-        GALLERY_IMAGES.length
-    );
-
+    // ✅ 현재 활성화된 이미지 인덱스 수정 (1-based, 정확한 계산)
+    const currentIndex = progress === 0
+        ? 1
+        : Math.min(
+            Math.ceil(progress * GALLERY_IMAGES.length),
+            GALLERY_IMAGES.length
+        );
     useEffect(() => {
         progressRef.current = progress;
         onProgressChange?.(progress);
         onFaceRotation?.(faceRotation);
     }, [progress, faceRotation, onProgressChange, onFaceRotation]);
 
-    // ✅ 휠 이벤트 핸들러 - 감도 2배 증가
+    // ✅ 휠 이벤트 핸들러 - 감도 절반으로 줄임
     const handleWheel = useCallback((e: WheelEvent) => {
         if (!isActive || isFalling) return;
 
         e.preventDefault();
         e.stopPropagation();
 
-        const delta = e.deltaY * 0.0016; // ✅ 0.0008 → 0.0016 (2배 빠르게)
+        const delta = e.deltaY * 0.0008;  // ✅ 0.0016 → 0.0008 (절반으로 감소)
         const newProgress = Math.max(0, Math.min(1, progressRef.current + delta));
 
         setProgress(newProgress);
 
-        // 끝에 도달하면 놀란 표정 + 떨어지기
-        if (newProgress >= 0.98 && delta > 0 && !isFalling) {
+        // 1.0 도달 후 한 번 더 스크롤해야 떨어짐
+        if (newProgress >= 1.0 && delta > 0 && !isFalling) {
             setIsFalling(true);
-            onFaceExpression?.('sweat'); // 놀란 표정
+            onFaceExpression?.('sweat');
 
-            // 떨어지는 애니메이션 후 다음 섹션
             setTimeout(() => {
                 onGalleryEnd?.();
             }, 800);
         }
     }, [isActive, isFalling, onGalleryEnd, onFaceExpression]);
 
-    // 휠 이벤트 등록 (window level에서)
     useEffect(() => {
         if (!isActive) return;
 
@@ -131,7 +134,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
         };
     }, [isActive, handleMouseMove, handleMouseUp]);
 
-    // Reset falling state when section becomes inactive
     useEffect(() => {
         if (!isActive) {
             setIsFalling(false);
@@ -146,10 +148,10 @@ const GallerySection: React.FC<GallerySectionProps> = ({
             ref={containerRef}
             className="absolute inset-0 overflow-hidden"
             style={{
-                background: "#1a1a2e",
+                background: "#16213e",
             }}
         >
-            {/* 우측 상단 진행률 - 스포티한 카운터 */}
+            {/* 우측 상단 진행률 */}
             <motion.div
                 className="absolute top-10 right-10 z-50"
                 initial={{ opacity: 0 }}
@@ -160,7 +162,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                     <AnimatePresence mode="wait">
                         <motion.span
                             key={currentIndex}
-                            className="text-6xl font-black italic text-[#FCBB09]"
+                            className="text-4xl font-bold italic text-[#FCBB09]"
                             style={{ fontFamily: "Kanit, sans-serif" }}
                             initial={{ y: -20, opacity: 0 }}
                             animate={{ y: 0, opacity: 1 }}
@@ -170,23 +172,24 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                             {String(currentIndex).padStart(2, '0')}
                         </motion.span>
                     </AnimatePresence>
-                    <span className="text-2xl text-white/30 font-bold">/</span>
-                    <span className="text-2xl text-white/30 font-bold">{String(GALLERY_IMAGES.length).padStart(2, '0')}</span>
+                    <span className="text-xl text-white/30 font-medium">/</span>
+                    <span className="text-xl text-white/30 font-medium">{String(GALLERY_IMAGES.length).padStart(2, '0')}</span>
                 </div>
             </motion.div>
 
-            {/* ✅ 이미지 트랙 - 수직 중앙 정렬 */}
+            {/* 이미지 트랙 */}
             <motion.div
                 className="absolute left-0 flex items-center gap-8 pl-20"
                 style={{
                     x: trackX,
-                    top: '25%',  // ✅ 50% → 45% (조금 더 위로)
+                    top: '42%',
                     transform: 'translateY(-50%)',
                 }}
                 transition={{ type: "spring", stiffness: 300, damping: 30 }}
             >
                 {GALLERY_IMAGES.map((image, index) => {
-                    const isCenter = Math.abs(progress * (GALLERY_IMAGES.length - 1) - index) < 0.5;
+                    const progressIndex = progress * (GALLERY_IMAGES.length - 1);
+                    const isCenter = Math.abs(progressIndex - index) < 0.5;
 
                     return (
                         <motion.div
@@ -199,14 +202,14 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                                 scale: isCenter ? 1.02 : 0.95,
                             }}
                             transition={{
-                                delay: 0.1 * index,
+                                delay: Math.min(0.1 * index, 0.5),
                                 duration: 0.6,
                                 scale: { duration: 0.3 }
                             }}
                             whileHover={{ scale: 1.05, y: -10 }}
                             onClick={() => setSelectedImage(index)}
                         >
-                            {/* 이미지 카드 - 스포티한 스타일 */}
+                            {/* 이미지 카드 */}
                             <div
                                 className="relative w-[500px] h-[500px] overflow-hidden"
                                 style={{
@@ -221,10 +224,11 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                                     alt={image.title}
                                     className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
                                     loading="lazy"
+                                    decoding="async"
                                 />
 
                                 {/* 그라디언트 오버레이 */}
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
 
                                 {/* 하단 정보 */}
                                 <div className="absolute bottom-0 left-0 right-0 p-4">
@@ -266,21 +270,21 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                 className="absolute bottom-24 left-1/2 -translate-x-1/2"
                 style={{ width: progressBarWidth }}
             >
-                {/* ✅ 트랙 (배경 회색 + 진행된 부분만 그라디언트) */}
+                {/* ✅ 트랙 - 노란색 단색 */}
                 <div
                     className="relative h-[6px] rounded-full overflow-hidden cursor-grab active:cursor-grabbing"
                     onMouseDown={handleMouseDown}
                     style={{
-                        background: "#2a2a3e", // 회색 배경
+                        background: "#2a3a52",
                         boxShadow: "inset 0 1px 2px rgba(0,0,0,0.3)",
                     }}
                 >
-                    {/* ✅ 진행된 부분만 그라디언트 색상 */}
+                    {/* ✅ 진행된 부분 - 노란색 단색 */}
                     <motion.div
                         className="absolute top-0 left-0 h-full rounded-full"
                         style={{
-                            background: "linear-gradient(90deg, #8F1E20, #FCBB09, #8E00BD)",
-                            boxShadow: "0 2px 10px rgba(252, 187, 9, 0.3)",
+                            background: "#FCBB09",  // ✅ 그라디언트 → 노란색 단색
+                            boxShadow: "0 2px 10px rgba(252, 187, 9, 0.4)",
                         }}
                         animate={{
                             width: `${progress * 100}%`,
@@ -288,11 +292,10 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                         transition={{ duration: 0.1 }}
                     />
 
-                    {/* 트랙 하이라이트 */}
                     <div className="absolute top-0 left-0 right-0 h-[2px] bg-white/20 rounded-full" />
                 </div>
 
-                {/* 굴러가는 3D 레고 얼굴 - 트랙 위에 위치 */}
+                {/* 굴러가는 3D 레고 얼굴 */}
                 <motion.div
                     className="absolute -top-16 pointer-events-none"
                     style={{
@@ -304,12 +307,12 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                         rotateZ: [faceRotation, faceRotation + 180, faceRotation + 540],
                         opacity: [1, 1, 0],
                     } : {
-                        y: [0, -3, 0], // 통통 튀는 느낌
+                        y: [0, -3, 0],
                         rotateZ: faceRotation,
                     }}
                     transition={isFalling ? {
                         duration: 0.8,
-                        ease: [0.36, 0, 0.66, -0.56], // 떨어지는 가속
+                        ease: [0.36, 0, 0.66, -0.56],
                         times: [0, 0.2, 1],
                     } : {
                         y: {
@@ -323,7 +326,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                         }
                     }}
                 >
-                    {/* ✅ 3D 레고 얼굴 복제 렌더링 */}
                     <div
                         style={{
                             width: "48px",
@@ -340,7 +342,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                                 style={{
                                     width: "100%",
                                     height: "100%",
-                                    transform: "scale(0.07)", // 48px로 축소 (700px → 48px)
+                                    transform: "scale(0.07)",
                                     transformOrigin: "top left",
                                 }}
                             />

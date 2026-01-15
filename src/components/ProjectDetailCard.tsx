@@ -43,7 +43,7 @@ const ProjectDetailCard: React.FC<ProjectDetailProps> = ({ onClose, data }) => {
 
     return (
         // ✅ 카드 전체 높이 고정 (글자 늘어나도 카드가 커지지 않음)
-        <div className="w-full h-[75vh] bg-white flex flex-col relative border border-gray-200">
+        <div className="w-full h-[80vh] bg-white flex flex-col relative border border-gray-200">
             {/* 닫기 버튼 */}
             <button
                 onClick={onClose}
@@ -69,13 +69,12 @@ const ProjectDetailCard: React.FC<ProjectDetailProps> = ({ onClose, data }) => {
                 <div className="lg:col-span-5 h-full overflow-y-auto custom-scrollbar p-8 md:p-10 flex flex-col bg-white">
                     {/* Title Group */}
                     <div className="mb-8 mt-4">
-                        <h2 className="text-3xl md:text-4xl font-bold text-black mb-3 leading-tight tracking-tight">
+                        <h2 className="text-[40px] font-bold text-[#2b2b2b] mb-1 leading-tight tracking-tight">
                             {project.title}
                         </h2>
 
                         <p
-                            className="text-base md:text-lg font-medium leading-relaxed opacity-80"
-                            style={{ color: project.accentColor }}
+                            className="text-[18px] font-normal text-[#4c4c4c]"
                         >
                             {project.subTitle}
                         </p>
@@ -87,22 +86,22 @@ const ProjectDetailCard: React.FC<ProjectDetailProps> = ({ onClose, data }) => {
                             <div key={index} className="flex items-start gap-4">
                                 <div className="text-gray-400 mt-0.5">{spec.icon}</div>
                                 <div>
-                                    <span className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1">
+                                    <span className="block text-[12px] font-medium text-[#767676] uppercase tracking-wider mb-1">
                                         {spec.label}
                                     </span>
-                                    <div className="text-black font-medium text-sm">{spec.value}</div>
+                                    <div className="text-[#2b2b2b] font-medium text-[16px]">{spec.value}</div>
                                 </div>
                             </div>
                         ))}
                     </div>
 
                     {/* Description */}
-                    <div className="py-6 text-gray-600 text-sm leading-7 whitespace-pre-line">{project.description}</div>
+                    <div className="py-6 text-[#4c4c4c] text-[16px] leading-[1.5] whitespace-pre-line">{project.description}</div>
 
                     {/* Tags */}
                     <div className="flex flex-wrap gap-2 mb-8">
                         {project.tags.map((tag: string, i: number) => (
-                            <span key={i} className="text-[11px] font-bold text-gray-500 bg-gray-100 px-3 py-1.5 uppercase">
+                            <span key={i} className="text-[12px] font-normal text-[#4c4c4c] bg-gray-100 px-3 py-1.5 uppercase">
                                 #{tag}
                             </span>
                         ))}

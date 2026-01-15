@@ -40,6 +40,14 @@ const LegoModel: React.FC<ModelProps> = ({
         blank: `${import.meta.env.BASE_URL}tex/face_blank.png`,
     });
 
+    useEffect(() => {
+        Object.values(faceTex).forEach(tex => {
+            tex.flipY = false;
+            tex.colorSpace = THREE.SRGBColorSpace;
+            tex.needsUpdate = true;
+        });
+    }, [faceTex]);
+
     // ✅ clone + "한 번만" 센터링
     const clonedScene = useMemo(() => {
         if (!scene) return null;

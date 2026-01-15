@@ -10,7 +10,7 @@ console.log('IntroSection render', Date.now());
 
 type FaceExpression = 'sad' | 'neutral' | 'happy' | 'sweat' | 'blank';
 const COLORS = [
-  '#8F1E20', '#bd8109', '#610380', '#677032', '#8F1E20'
+  '#8F1E20', '#bd8109', '#610380', '#78823c', '#8F1E20'
 ];
 
 const BG_CREAM = "#ffedcb";
@@ -661,7 +661,6 @@ const IntroSection: React.FC = () => {
 
   // 590줄 근처: handleMenuClick 함수 수정
   const handleMenuClick = async (index: number) => {
-    // ✅ 애니메이션 중이면 중단
     if (isAnimatingRef.current) return;
 
     const label = BRICK_LABELS[index];
@@ -678,29 +677,38 @@ const IntroSection: React.FC = () => {
 
     isAnimatingRef.current = true;
 
-    // ✅ 1. 메뉴 닫기 애니메이션 수행
+    // 1. 메뉴 닫기
     if (menuOpen) {
       await closeMenu();
-      // closeMenu 내부에서 isAnimatingRef.current를 false로 만들기 때문에 다시 true로 설정
       isAnimatingRef.current = true;
     }
 
-    // ✅ 2. 상태 초기화 및 네비게이션 준비
+    // 2. 상태 초기화
     setIsNaturalScrolling(false);
     setNaturalScrollY(0);
     if (scrollContainerRef.current) scrollContainerRef.current.scrollTop = 0;
-
     setIsProjectOpen(false);
 
-    // ✅ 3. 섹션 이동 (Phase 변경)
+    // ✅ 3. 스택 섹션으로 직접 이동 시 초기화 추가
+    if (target === 26) {
+      setSkillResetKey(prev => prev + 1);  // 스킬 섹션 리셋
+      setIsSkillExiting(false);
+      setSkillsCollected(false);
+      setSpinY(360);  // 회전 애니메이션 트리거
+      setHeadPosition({
+        x: window.innerWidth / 2,
+        y: window.innerHeight * 0.3
+      });
+    }
+
+    // 4. 섹션 이동
     setPhase(target);
 
-    // ✅ 4. 이동 후 잠금 해제
+    // 5. 잠금 해제
     setTimeout(() => {
       isAnimatingRef.current = false;
     }, 600);
-  };
-
+  }
 
   const resetMenuBlocks = async () => {
     const jobs: Promise<any>[] = [];
@@ -2023,9 +2031,9 @@ const IntroSection: React.FC = () => {
               left: `${20 + galleryProgress * 60}%`,
               top: galleryProgress >= 0.98
                 ? "calc(100vh + 300px)"
-                : "calc(100vh - 150px)",  // ✅ 프로그레스바 위로
+                : "calc(100vh - 150px)",
               x: "-50%",
-              y: ["-50%", "-30%", "-50%"],  // ✅ 툭! 튕기는 효과
+              y: "-50%",
               scale: 0.12,
               rotateZ: galleryProgress * 720,
             }
@@ -2034,9 +2042,9 @@ const IntroSection: React.FC = () => {
                 left: "calc(50% - 350px)",
                 top: "calc(50% - 350px)",
                 x: 0,
-                y: isSkillExiting ? [0, 30, -10, 0, -350] : 0,  // ✅ 마지막에 위로 튕김
-                scale: isSkillExiting ? [1.0, 0.95, 1.05, 1.0, 0.12] : 1.0,  // ✅ 작아지면서
-                rotateZ: isSkillExiting ? [0, 0, 0, 0, 360] : 0,  // ✅ 한 바퀴 회전
+                y: isSkillExiting ? [0, 30, -10, 0, -150] : 0,
+                scale: isSkillExiting ? [1.0, 0.95, 1.05, 1.0, 0.12] : 1.0,
+                rotateZ: isSkillExiting ? [0, 0, 0, 0, 360] : 0,  // ✅ 180 → 360으로 변경
               }
               : phase >= 23
                 ? { left: "96%", top: "18%", x: "-50%", y: "-50%", scale: 1.2, }
@@ -2056,16 +2064,19 @@ const IntroSection: React.FC = () => {
                     : { y: "150vh" }
         }
         transition={{
-          duration: phase >= 27 ? 0.6 : 1.0,  // ✅ 더 빠르게
-          ease: phase >= 27 ? [0.68, -0.55, 0.27, 1.55] : "easeInOut",  // ✅ 바운스 이징
+          duration: phase >= 27 ? 0.8 : 1.0,
+          ease: phase >= 27 ? "easeOut" : "easeInOut",
           ...(isSkillExiting && phase === 26 ? {
             y: {
-              duration: 1.0,  // ✅ 스킬 흡수는 1초
-              times: [0, 0.3, 0.6, 0.8, 1],
-              ease: [0.34, 1.56, 0.64, 1]
+              duration: 1.0,  // ✅ 0.8 → 1.0 (한 바퀴 도는 시간 확보)
+              times: [0, 0.25, 0.5, 0.75, 1],
+              ease: "easeInOut"
             },
-            scale: { duration: 1.0, times: [0, 0.3, 0.6, 0.8, 1], ease: "easeInOut" },
-            rotateZ: { duration: 1.0, times: [0, 0.3, 0.6, 0.8, 1], ease: "easeOut" }
+            scale: { duration: 1.0, ease: "easeOut" },  // ✅ 0.8 → 1.0
+            rotateZ: {
+              duration: 1.0,  // ✅ 0.8 → 1.0
+              ease: [0.45, 0, 0.55, 1]  // ✅ easeInOutQuad - 회전이 부드럽게
+            }
           } : {})
         }}
       >

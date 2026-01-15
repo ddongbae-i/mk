@@ -149,37 +149,10 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                 background: "#1a1a2e",
             }}
         >
-            {/* 상단 컬러 바 악센트 */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#8F1E20] via-[#FCBB09] to-[#8E00BD]" />
+
 
             {/* 상단 타이틀 - 스포티한 스타일 */}
-            <motion.div
-                className="absolute top-10 left-10 z-50"
-                initial={{ x: -50, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ delay: 0.3, duration: 0.6 }}
-            >
-                <div className="flex items-center gap-3">
-                    {/* 스포티한 넘버링 */}
-                    <div
-                        className="w-12 h-12 bg-[#8F1E20] flex items-center justify-center transform -skew-x-6"
-                        style={{ fontFamily: "Kanit, sans-serif" }}
-                    >
-                        <span className="text-white font-black text-xl transform skew-x-6">G</span>
-                    </div>
-                    <div>
-                        <h2
-                            className="text-4xl font-black italic text-white tracking-tight"
-                            style={{ fontFamily: "Kanit, sans-serif" }}
-                        >
-                            GALLERY
-                        </h2>
-                        <p className="text-white/40 text-xs tracking-[0.2em] uppercase">
-                            Selected Works
-                        </p>
-                    </div>
-                </div>
-            </motion.div>
+
 
             {/* 우측 상단 진행률 - 스포티한 카운터 */}
             <motion.div
@@ -236,7 +209,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                         >
                             {/* 이미지 카드 - 스포티한 스타일 */}
                             <div
-                                className="relative w-[360px] h-[260px] overflow-hidden"
+                                className="relative w-[500px] h-[500px] overflow-hidden"
                                 style={{
                                     clipPath: "polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%)",
                                     boxShadow: isCenter
@@ -254,14 +227,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                                 {/* 그라디언트 오버레이 */}
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
-                                {/* 카테고리 태그 - 스포티한 스타일 */}
-                                <div className="absolute top-3 left-3">
-                                    <span
-                                        className="px-3 py-1 bg-[#FCBB09] text-black text-[10px] font-bold tracking-wider uppercase transform -skew-x-6 inline-block"
-                                    >
-                                        <span className="transform skew-x-6 inline-block">{image.category}</span>
-                                    </span>
-                                </div>
+
 
                                 {/* 하단 정보 */}
                                 <div className="absolute bottom-0 left-0 right-0 p-4">

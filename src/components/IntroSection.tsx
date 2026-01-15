@@ -177,7 +177,7 @@ const PROJECT_DATA = [
     buttons: [
       { label: "기획서 보기", url: "https://www.figma.com/proto/YgY5CNo9U0iNRQcw6MiKZ5/3%EC%A1%B0-Ai--Wellio?page-id=10897%3A59342&node-id=10897-59350&viewport=639%2C155%2C0.1&t=uDXy317GRj0LX8Jv-1&scaling=scale-down&content-scaling=fixed", type: "gray" },
       { label: "프로토타입", url: "https://www.figma.com/proto/YgY5CNo9U0iNRQcw6MiKZ5/3%EC%A1%B0-Ai--Wellio?page-id=8657%3A13196&node-id=8877-12777&viewport=8295%2C4598%2C0.26&t=3BuPl2X1rPy84xHQ-1&scaling=scale-down&content-scaling=fixed&starting-point-node-id=8877%3A13597", type: "gray" },
-      { label: "AI 웰리오 앱", url: "https://wellio-iota.vercel.app/", type: "primary" }, // 강조 버튼
+      { label: "AI 웰리오 앱", url: "https://wellio-iota.vercel.app/", type: "gray" }, // 강조 버튼
     ]
   },
   {

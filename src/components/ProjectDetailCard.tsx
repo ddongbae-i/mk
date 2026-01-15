@@ -1,5 +1,20 @@
 import React, { useEffect } from "react";
-import { X, Calendar, User, Layers, FileText, Globe, ArrowRight, Layout, Github } from "lucide-react";
+import {
+    X,
+    Calendar,
+    User,
+    Layers,
+    FileText,      // 문서/기획서
+    Globe,         // 웹사이트
+    ArrowRight,
+    Layout,        // Figma/디자인
+    Github,        // 깃허브
+    Smartphone,    // 📱 모바일/앱
+    Tablet,        // 📱 태블릿
+    Monitor,       // 🖥️ 데스크톱/웹
+    Presentation,  // 📊 프레젠테이션/프로토타입
+    ExternalLink,  // 🔗 외부 링크
+} from "lucide-react";
 
 interface ProjectDetailProps {
     onClose: () => void;
@@ -34,13 +49,38 @@ const ProjectDetailCard: React.FC<ProjectDetailProps> = ({ onClose, data }) => {
 
     const getButtonIcon = (label: string) => {
         const l = label.toLowerCase();
-        if (l.includes("site") || l.includes("web") || l.includes("방문") || l.includes("이동"))
-            return <Globe size={16} />;
-        if (l.includes("github") || l.includes("git")) return <Github size={16} />;
-        if (l.includes("figma") || l.includes("design") || l.includes("시안")) return <Layout size={16} />;
-        return <FileText size={16} />;
-    };
 
+        // 모바일/앱
+        if (l.includes("앱") || l.includes("app") || l.includes("mobile") || l.includes("모바일"))
+            return <Smartphone size={16} />;
+
+        // 태블릿
+        if (l.includes("tablet") || l.includes("태블릿"))
+            return <Tablet size={16} />;
+
+        // 데스크톱/웹
+        if (l.includes("web") || l.includes("website") || l.includes("웹사이트") || l.includes("사이트"))
+            return <Monitor size={16} />;
+
+        // 프로토타입
+        if (l.includes("proto") || l.includes("프로토"))
+            return <Presentation size={16} />;
+
+        // 기획서/문서
+        if (l.includes("기획") || l.includes("docs") || l.includes("document"))
+            return <FileText size={16} />;
+
+        // Figma/디자인
+        if (l.includes("figma") || l.includes("design") || l.includes("시안") || l.includes("디자인"))
+            return <Layout size={16} />;
+
+        // GitHub
+        if (l.includes("github") || l.includes("git"))
+            return <Github size={16} />;
+
+        // 기본 외부링크
+        return <ExternalLink size={16} />;
+    };
     return (
         // ✅ 카드 전체 높이 고정 (글자 늘어나도 카드가 커지지 않음)
         <div className="w-full h-[80vh] bg-white flex flex-col relative border border-gray-200">
@@ -53,7 +93,6 @@ const ProjectDetailCard: React.FC<ProjectDetailProps> = ({ onClose, data }) => {
                 <X size={24} strokeWidth={1.5} />
             </button>
 
-            {/* ✅ 컨텐츠: 카드 높이(85vh) 안에서만 동작 */}
             <div className="grid grid-cols-1 lg:grid-cols-12 h-full">
                 {/* ✅ LEFT: 이미지 영역 (고정, 스크롤 없음) */}
                 <div className="lg:col-span-7 relative border-b lg:border-b-0 lg:border-r border-gray-200 bg-gray-100 h-full">
@@ -68,7 +107,7 @@ const ProjectDetailCard: React.FC<ProjectDetailProps> = ({ onClose, data }) => {
                 {/* ✅ RIGHT: 텍스트 영역만 스크롤 */}
                 <div className="lg:col-span-5 h-full overflow-y-auto custom-scrollbar p-8 md:p-10 flex flex-col bg-white">
                     {/* Title Group */}
-                    <div className="mb-8 mt-4">
+                    <div className="mb-6 mt-4">
                         <h2 className="text-[40px] font-bold text-[#2b2b2b] mb-1 leading-tight tracking-tight">
                             {project.title}
                         </h2>
@@ -108,26 +147,96 @@ const ProjectDetailCard: React.FC<ProjectDetailProps> = ({ onClose, data }) => {
                     </div>
 
                     {/* Buttons */}
-                    <div className="mt-auto grid grid-cols-2 gap-3 pt-6 border-t border-gray-100">
-                        {project.buttons.map((btn: any, index: number) => {
-                            const isPrimary = btn.type === "primary";
-                            return (
+                    <div className="mt-auto pt-6 border-t border-gray-100">
+                        {project.buttons.length <= 2 ? (
+                            // 버튼 2개 이하: 기존처럼 2열 그리드만
+                            <div className="grid grid-cols-2 gap-2">
+                                {project.buttons.map((btn: any, index: number) => {
+                                    const isPrimary = btn.type === "primary";
+                                    return (
+                                        <button
+                                            key={index}
+                                            onClick={() => window.open(btn.url, "_blank")}
+                                            className={`
+              flex items-center justify-center gap-2 px-4 py-3
+              text-[16px] font-medium tracking-wide transition-all duration-200
+              border box-border
+              ${isPrimary
+                                                    ? "bg-black text-white border-black hover:bg-gray-800"
+                                                    : "bg-white text-[#2b2b2b] border-[#e0e0e0] hover:bg-[#2ECACA] hover:text-white hover:border-white"}
+            `}
+                                        >
+                                            {!isPrimary && getButtonIcon(btn.label)}
+                                            <span className="truncate">{btn.label}</span>
+                                            {isPrimary && <ArrowRight size={16} />}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        ) : project.buttons.length === 3 ? (
+                            // 버튼 3개: 2+1 레이아웃
+                            <div className="grid grid-cols-2 gap-3">
+                                {project.buttons.map((btn: any, index: number) => {
+                                    const isPrimary = btn.type === "primary";
+                                    return (
+                                        <button
+                                            key={index}
+                                            onClick={() => window.open(btn.url, "_blank")}
+                                            className={`
+              ${index === 2 ? 'col-span-2' : ''} // 마지막 버튼만 전체 너비
+              flex items-center justify-center gap-2 px-4 py-3
+              text-[16px] font-medium tracking-wide transition-all duration-200
+              border box-border
+              ${isPrimary
+                                                    ? "bg-black text-white border-black hover:bg-gray-800"
+                                                    : "bg-white text-[#2b2b2b] border-[#e0e0e0] hover:bg-[#2ECACA] hover:text-white hover:border-white"}
+            `}
+                                        >
+                                            {!isPrimary && getButtonIcon(btn.label)}
+                                            <span className="truncate">{btn.label}</span>
+                                            {isPrimary && <ArrowRight size={16} />}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                        ) : (
+                            // 버튼 4개 이상: 첫 버튼 전체 너비 + 나머지 2열
+                            <>
                                 <button
-                                    key={index}
-                                    onClick={() => window.open(btn.url, "_blank")}
-                                    className={`
-                    flex items-center justify-center gap-2 px-4 py-3.5
-                    text-sm font-bold tracking-wide transition-all duration-200
-                    border box-border
-                    ${isPrimary ? "bg-black text-white border-black hover:bg-gray-800" : "bg-white text-black border-gray-200 hover:border-black"}
-                  `}
+                                    onClick={() => window.open(project.buttons[0].url, "_blank")}
+                                    className="w-full flex items-center justify-center gap-2 px-4 py-3 mb-3
+                   text-[16px] font-medium tracking-wide transition-all duration-200
+                   bg-white text-black border border-gray-200 hover:border-black"
                                 >
-                                    {!isPrimary && getButtonIcon(btn.label)}
-                                    <span className="truncate">{btn.label}</span>
-                                    {isPrimary && <ArrowRight size={16} />}
+                                    {getButtonIcon(project.buttons[0].label)}
+                                    <span className="truncate">{project.buttons[0].label}</span>
                                 </button>
-                            );
-                        })}
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    {project.buttons.slice(1).map((btn: any, index: number) => {
+                                        const isPrimary = btn.type === "primary";
+                                        return (
+                                            <button
+                                                key={index}
+                                                onClick={() => window.open(btn.url, "_blank")}
+                                                className={`
+                flex items-center justify-center gap-2 px-4 py-3.5
+                text-[16px] font-medium tracking-wide transition-all duration-200
+                border box-border
+                ${isPrimary
+                                                        ? "bg-black text-white border-black hover:bg-gray-800"
+                                                        : "bg-white text-[#2b2b2b] border-[#e0e0e0] hover:bg-[#531110] hover:text-white hover:border-white"}
+              `}
+                                            >
+                                                {!isPrimary && getButtonIcon(btn.label)}
+                                                <span className="truncate">{btn.label}</span>
+                                                {isPrimary && <ArrowRight size={16} />}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

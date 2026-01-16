@@ -83,7 +83,7 @@ interface PhysicsObject {
 
 interface SkillSectionProps {
     isActive: boolean;
-    isExiting?: boolean;  // ← 추가
+    isExiting?: boolean;
     onSkillsCollected?: () => void;
     onExpressionChange?: (expression: Expression) => void;
     onShakingChange?: (isShaking: boolean) => void;
@@ -91,7 +91,7 @@ interface SkillSectionProps {
     headRef: React.RefObject<HTMLElement>;
     mousePos?: { x: number; y: number };
     mouseVelocity?: { x: number; y: number };
-    onExitComplete?: () => void;  // ← 흡수 완료 콜백
+    onExitComplete?: () => void;
 }
 
 const SkillSection: React.FC<SkillSectionProps> = ({
@@ -106,7 +106,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     mouseVelocity = { x: 0, y: 0 },
     onExitComplete,
 }) => {
-    // ✅ 1. 마운트 상태 추가
+    // ✅ 초기화 상태
     const [isInitialized, setIsInitialized] = useState(false);
 
     const [absorbingSkills, setAbsorbingSkills] = useState<{
@@ -127,14 +127,19 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     const mousePosRef = useRef(mousePos);
     const mouseVelocityRef = useRef(mouseVelocity);
 
-    // ✅ 2. 초기화 useEffect 추가 (가장 먼저 실행)
+    const shakeCountRef = useRef(0);
+    const prevShakeTrigger = useRef(shakeTrigger);
+    const baseExpressionRef = useRef<Expression>("neutral");
+    const isShakingRef = useRef(false);
+    const shakeEndTimerRef = useRef<number | null>(null);
+
+    // ✅ 초기화 로직
     useEffect(() => {
         if (!isActive) {
             setIsInitialized(false);
             return;
         }
 
-        // 짧은 딜레이로 DOM과 headRef가 준비될 시간 확보
         const initTimer = setTimeout(() => {
             console.log('✅ SkillSection initialized');
             setIsInitialized(true);
@@ -143,9 +148,70 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         return () => clearTimeout(initTimer);
     }, [isActive]);
 
-    // ✅ 3. 물리 엔진 useEffect 수정 - isInitialized 조건 추가
+    // isExiting 처리
     useEffect(() => {
-        // 초기화 전에는 물리 엔진 시작 안 함
+        if (!isExiting || poppedSkills.length === 0) return;
+
+        if (rafRef.current) {
+            cancelAnimationFrame(rafRef.current);
+            rafRef.current = null;
+        }
+
+        const absorbed: typeof absorbingSkills = [];
+        physicsObjectsRef.current.forEach((obj) => {
+            absorbed.push({
+                id: obj.id,
+                fromX: obj.x,
+                fromY: obj.y,
+                skill: obj.skill,
+            });
+        });
+
+        setAbsorbingSkills(absorbed);
+
+        const totalDuration = absorbed.length * 50 + 600;
+        setTimeout(() => {
+            setPoppedSkills([]);
+            setAbsorbingSkills([]);
+            physicsObjectsRef.current.clear();
+            onExitComplete?.();
+        }, totalDuration);
+
+    }, [isExiting, poppedSkills.length, onExitComplete]);
+
+    useEffect(() => {
+        mousePosRef.current = mousePos;
+    }, [mousePos]);
+
+    useEffect(() => {
+        mouseVelocityRef.current = mouseVelocity;
+    }, [mouseVelocity]);
+
+    const getHeadMouth = useCallback(() => {
+        const el = headRef?.current;
+        if (!el) return { x: window.innerWidth / 2, y: window.innerHeight * 0.3 };
+        const r = el.getBoundingClientRect();
+        return { x: r.left + r.width / 2, y: r.top + r.height * 0.1 };
+    }, [headRef]);
+
+    const getLevelExpression = useCallback((level: number): Expression => {
+        if (level === 1) return "sad";
+        if (level === 2) return "neutral";
+        return "happy";
+    }, []);
+
+    const applyBaseExpression = useCallback(() => {
+        onExpressionChange?.(baseExpressionRef.current);
+    }, [onExpressionChange]);
+
+    const setShaking = useCallback((v: boolean) => {
+        if (isShakingRef.current === v) return;
+        isShakingRef.current = v;
+        onShakingChange?.(v);
+    }, [onShakingChange]);
+
+    // ✅ 물리 엔진 - isInitialized 추가
+    useEffect(() => {
         if (!isActive || !isInitialized) return;
 
         console.log('🔴 Physics loop STARTED');
@@ -230,33 +296,8 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                 rafRef.current = null;
             }
         };
-    }, [isActive, isInitialized]); // ✅ isInitialized 의존성 추가
+    }, [isActive, isInitialized]);
 
-    // ✅ 4. popSkill 함수 수정 - 초기화 체크 추가
-    const popSkill = useCallback(() => {
-        if (!isActive || !isInitialized) return; // ✅ 초기화 체크 추가
-
-        if (remainingSkills.length === 0) {
-            if (currentLevel < 3) setCurrentLevel((p) => p + 1);
-            return;
-        }
-
-        const skill = remainingSkills[0];
-        const id = Date.now();
-        const { x, y } = getHeadMouth();
-
-        setBursts((prev) => [...prev, { id, x, y }]);
-        setTimeout(() => {
-            setBursts((prev) => prev.filter((b) => b.id !== id));
-        }, 700);
-
-        setPoppedSkills((prev) => [...prev, { id, skill, originX: x, originY: y }]);
-    }, [isActive, isInitialized, remainingSkills, currentLevel, getHeadMouth]); // ✅ 의존성 추가
-
-    // 나머지 코드는 그대로...
-
-    // (기존 useEffect들과 return 문 유지)
-    // 새 스킬 추가 시 물리 객체 등록
     const registerPhysicsObject = useCallback((id: number, skill: any, originX: number, originY: number, elem: HTMLDivElement | null) => {
         if (!elem || physicsObjectsRef.current.has(id)) return;
 
@@ -274,8 +315,14 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         });
     }, []);
 
+    // ✅ popSkill - remainingSkills를 내부에서 계산
     const popSkill = useCallback(() => {
-        if (!isActive) return;
+        if (!isActive || !isInitialized) return;
+
+        // 함수 내부에서 계산
+        const poppedIds = poppedSkills.map((p) => p.skill.id);
+        const currentLevelSkills = SKILLS_DATA.filter((s) => s.level === currentLevel);
+        const remainingSkills = currentLevelSkills.filter((s) => !poppedIds.includes(s.id));
 
         if (remainingSkills.length === 0) {
             if (currentLevel < 3) setCurrentLevel((p) => p + 1);
@@ -292,7 +339,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         }, 700);
 
         setPoppedSkills((prev) => [...prev, { id, skill, originX: x, originY: y }]);
-    }, [isActive, remainingSkills, currentLevel, getHeadMouth]);
+    }, [isActive, isInitialized, currentLevel, getHeadMouth, poppedSkills]);
 
     // isActive 꺼질 때 리셋
     useEffect(() => {
@@ -303,7 +350,6 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         baseExpressionRef.current = "neutral";
         onExpressionChange?.("neutral");
 
-        // 물리 객체 클리어
         physicsObjectsRef.current.clear();
     }, [isActive, onExpressionChange, setShaking]);
 
@@ -346,6 +392,9 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         }
     }, [shakeTrigger, isActive, popSkill, onExpressionChange, applyBaseExpression, setShaking, currentLevel, getLevelExpression]);
 
+    // ✅ poppedIds 계산을 여기서
+    const poppedIds = poppedSkills.map((p) => p.skill.id);
+
     useEffect(() => {
         if (poppedIds.length >= SKILLS_DATA.length) onSkillsCollected?.();
     }, [poppedIds.length, onSkillsCollected]);
@@ -365,7 +414,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                                 className="text-5xl font-bold italic mb-2"
                                 style={{ fontFamily: "Kanit, sans-serif" }}
                             >
-                                What’s in MK’s head?
+                                What's in MK's head?
                             </h2>
                             <p className="text-lg">머리를 잡고 마구 흔들어주세요!</p>
                         </motion.div>
@@ -382,7 +431,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                         >
                             <p className="text-5xl font-bold text-[#f0f0f0] italic"
                                 style={{ fontFamily: "Kanit, sans-serif" }}>
-                                This is MK’s skill set
+                                This is MK's skill set
                             </p>
                         </motion.div>
                     )}
@@ -434,7 +483,6 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                     );
                 })}
 
-                {/* ✅ 스킬 아이콘들 - 개별 RAF 없이 ref만 등록 */}
                 {!isExiting && poppedSkills.map((item) => (
                     <div
                         key={item.id}

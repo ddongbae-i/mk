@@ -1156,12 +1156,14 @@ const IntroSection: React.FC = () => {
         }, 2000);
       }
       else if (currentPhase === 27) {
-        // 🔥 갤러리에서 아래로 스크롤 (27 → 28)
+        // 🔥 갤러리 진행 중이면 아무것도 안 함 (갤러리가 자체적으로 처리)
+        if (galleryProgress > 0.02) return;
+
+        // 🔥 갤러리 끝나고 아래로 스크롤 → 컨택으로
         if (direction > 0) {
           isAnimatingRef.current = true;
           setPhase(28);
 
-          // 🔥 화면 흔들림: phase 전환 직후
           setTimeout(() => {
             setIsScreenShaking(true);
             console.log('🔥 SHAKE START');
@@ -1170,7 +1172,7 @@ const IntroSection: React.FC = () => {
               setIsScreenShaking(false);
               console.log('🔥 SHAKE END');
             }, 500);
-          }, 600);  // 착지 타이밍에 맞춤
+          }, 600);
 
           setTimeout(() => {
             isAnimatingRef.current = false;
@@ -1185,6 +1187,7 @@ const IntroSection: React.FC = () => {
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
       }
       else if (currentPhase === 27) {
+        // 🔥 갤러리 진행 중이면 복귀 막기
         if (galleryProgress > 0.02) return;
 
         isAnimatingRef.current = true;

@@ -1140,14 +1140,19 @@ const IntroSection: React.FC = () => {
         }
       }
       else if (currentPhase === 26) {
-        // 스킬 섹션 → 갤러리 섹션 (흡수 애니메이션 후 전환)
         isAnimatingRef.current = true;
 
-        // 🔥 딜레이 후 상태 변경 (부드러운 시작)
-        await new Promise(r => setTimeout(r, 50));
+        // 1단계: 스킬 섹션 exit 시작
         setIsSkillExiting(true);
 
-        setTimeout(() => { isAnimatingRef.current = false; }, 1800);  // 🔥 1800으로 증가
+        // 2단계: 얼굴이 프로그레스바 위치까지 이동하는 동안 phase 27로 전환
+        setTimeout(() => {
+          setPhase(27);
+        }, 1000); // 얼굴이 중간쯤 이동했을 때
+
+        setTimeout(() => {
+          isAnimatingRef.current = false;
+        }, 1800);
       }
     } else if (currentPhase === 27) {
       if (direction > 0) {
@@ -1172,17 +1177,19 @@ const IntroSection: React.FC = () => {
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
       }
     } else {
-
-      if (currentPhase === 27) {
-        // ✅ galleryProgress가 0보다 클 때는 GallerySection 내부 스크롤로 처리
+      if (currentPhase === 28) {
+        // 컨택 -> 갤러리 복귀
+        isAnimatingRef.current = true;
+        setPhase(27);
+        setTimeout(() => { isAnimatingRef.current = false; }, 800);
+      } else if (currentPhase === 27) {
         if (galleryProgress > 0.02) return;
 
         isAnimatingRef.current = true;
-        setSkillResetKey(prev => prev + 1);  // ✅ 스킬 섹션 리셋
+        setSkillResetKey(prev => prev + 1);
         setPhase(26);
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
       } else if (currentPhase === 26) {
-        // 스킬 섹션 -> 프로젝트 섹션으로 복귀
         isAnimatingRef.current = true;
         setPhase(25);
         setTimeout(() => { isAnimatingRef.current = false; }, 1000);
@@ -2262,103 +2269,94 @@ const IntroSection: React.FC = () => {
         }}
         animate={
           phase === 28 ? {
-            // ✅ 갤러리→컨택: 커지면서 쾅! 박힘
+            // 컨택 섹션: 크게 떨어짐
             left: "52%",
             top: "calc(50% + 30px)",
             x: "calc(280px)",
             y: "-50%",
-            scale: [0.12, 1.8, 0.15],  // 🔥 크기 변화 추가
-            rotateZ: [galleryProgress * 720, galleryProgress * 720 + 180, galleryProgress * 720 + 360],  // 🔥 회전
+            scale: [0.12, 1.8, 0.15],
+            rotateZ: [galleryProgress * 720, galleryProgress * 720 + 180, galleryProgress * 720 + 360],
             opacity: 1,
-          } :
-            phase >= 27 ? {
-              // ✅ 갤러리: 프로그레스바 위 + 마지막에서 통통 튀기
-              left: `${20 + galleryProgress * 60}%`,
-              top: "calc(100vh - 150px)",
-              x: "-50%",
-              y: galleryProgress >= 0.99 ? ["-50%", "calc(-50% - 15px)", "-50%"] : "-50%",  // ✅ 통통!
-              scale: 0.12,
-              rotateZ: galleryProgress * 720,
-              opacity: 1,
-            }
-              : phase >= 26 ? {
-                // ✅ 스택→갤러리: 자연스러운 경로 추가
-                left: isSkillExiting ? ["calc(50% - 350px)", "45%", "20%"] : "calc(50% - 350px)",
-                top: isSkillExiting ? ["calc(50% - 350px)", "65%", "calc(100vh - 150px)"] : "calc(50% - 350px)",
-                x: isSkillExiting ? [0, "-50%", "-50%"] : 0,
-                y: isSkillExiting ? [0, 30, -10, 0, -150] : 0,
-                scale: isSkillExiting ? [1.0, 0.98, 1.02, 1.0, 0.12] : 1.0,  // 🔥 부드러운 크기 변화
-                rotateZ: isSkillExiting ? [0, 90, 180, 270, 360] : 0,
-                opacity: isSkillExiting ? [1, 1, 1, 1, 1] : 1,  // 🔥 투명도 유지
-              }
-                : phase >= 23
-                  ? { left: "96%", top: "18%", x: "-50%", y: "-50%", scale: 1.2, }
-                  : phase >= 14
-                    ? {
-                      left: "25vw",
-                      top: "50%",
-                      x: "-50%",
-                      y: `calc(-30% + ${scrollOffset}px)`,
-                      scale: 0.85,
-                      rotateX: 0,
-                      rotateZ: 0,
-                      rotateY: 0
-                    }
-                    : phase >= 9
-                      ? { left: "50%", top: "45%", x: "-50%", y: "-50%", scale: 0.8, rotateZ: 0, rotateY: 0 }
-                      : { y: "150vh" }
+          } : phase === 27 ? {
+            // 갤러리 섹션: 프로그레스바 위에서 굴러감
+            left: `${20 + galleryProgress * 60}%`,
+            top: "calc(100vh - 150px)",
+            x: "-50%",
+            y: galleryProgress >= 0.99 ? ["-50%", "calc(-50% - 15px)", "-50%"] : "-50%",
+            scale: 0.12,
+            rotateZ: galleryProgress * 720,
+            opacity: 1,
+          } : phase === 26 && isSkillExiting ? {
+            // 스킬→갤러리 전환 중: 곡선 경로로 프로그레스바까지 이동
+            left: ["calc(50% - 350px)", "35%", "20%"],
+            top: ["calc(50% - 350px)", "70%", "calc(100vh - 150px)"],
+            x: [0, "-50%", "-50%"],
+            y: [0, 30, "-50%"],
+            scale: [1.0, 0.6, 0.12],
+            rotateZ: [0, 180, 360],
+            opacity: 1,
+          } : phase === 26 ? {
+            // 스킬 섹션 정상 위치
+            left: "calc(50% - 350px)",
+            top: "calc(50% - 350px)",
+            x: 0,
+            y: 0,
+            scale: 1.0,
+            rotateZ: 0,
+            opacity: 1,
+          } : phase >= 23 ? {
+            // 프로젝트 섹션
+            left: "96%",
+            top: "18%",
+            x: "-50%",
+            y: "-50%",
+            scale: 1.2,
+          } : phase >= 14 ? {
+            // 조립 가이드 섹션
+            left: "25vw",
+            top: "50%",
+            x: "-50%",
+            y: `calc(-30% + ${scrollOffset}px)`,
+            scale: 0.85,
+            rotateX: 0,
+            rotateZ: 0,
+            rotateY: 0,
+          } : phase >= 9 ? {
+            left: "50%",
+            top: "45%",
+            x: "-50%",
+            y: "-50%",
+            scale: 0.8,
+            rotateZ: 0,
+            rotateY: 0,
+          } : {
+            y: "150vh"
+          }
         }
         transition={
           phase === 28 ? {
-            duration: 0.8,  // 🔥 0.8초로 변경
-            ease: [0.6, 0.01, 0.05, 0.95],  // 🔥 급격한 착지
-            times: [0, 0.6, 1],  // 🔥 천천히→빠르게
+            duration: 0.8,
+            ease: [0.6, 0.01, 0.05, 0.95],
+            times: [0, 0.6, 1],
             scale: { duration: 0.8, times: [0, 0.6, 1], ease: [0.6, 0.01, 0.05, 0.95] },
             rotateZ: { duration: 0.8, ease: "easeInOut" }
-          } : phase >= 27 ? {
+          } : phase === 27 ? {
+            // 갤러리: 빠른 반응
             duration: 0.1,
-            y: galleryProgress >= 0.99 ? {  // ✅ 마지막에서만 통통
+            y: galleryProgress >= 0.99 ? {
               duration: 0.5,
               repeat: Infinity,
               repeatType: "reverse" as const,
               ease: "easeInOut",
             } : undefined,
+          } : phase === 26 && isSkillExiting ? {
+            // 스킬→갤러리 전환
+            duration: 1.8,
+            times: [0, 0.5, 1],
+            ease: [0.22, 1, 0.36, 1],
           } : {
             duration: 1.0,
             ease: "easeInOut",
-            ...(isSkillExiting && phase === 26 ? {
-              // 🔥 스택→갤러리: 부드러운 경로 애니메이션
-              left: {
-                duration: 2.0,  // 🔥 2초로 늘림
-                times: [0, 0.35, 1],  // 🔥 중간 지점 타이밍 조정
-                ease: [0.22, 1, 0.36, 1]
-              },
-              top: {
-                duration: 2.0,
-                times: [0, 0.35, 1],
-                ease: [0.22, 1, 0.36, 1]
-              },
-              x: {
-                duration: 2.0,
-                times: [0, 0.35, 1],
-                ease: [0.22, 1, 0.36, 1]
-              },
-              y: {
-                duration: 2.0,
-                times: [0, 0.2, 0.4, 0.7, 1],  // 🔥 5단계 타이밍
-                ease: [0.22, 1, 0.36, 1]  // 🔥 일관된 easing
-              },
-              scale: {
-                duration: 2.0,
-                times: [0, 0.2, 0.4, 0.7, 1],
-                ease: [0.22, 1, 0.36, 1]  // 🔥 일관된 easing
-              },
-              rotateZ: {
-                duration: 2.0,
-                times: [0, 0.25, 0.5, 0.75, 1],
-                ease: [0.22, 1, 0.36, 1]  // 🔥 일관된 easing
-              }
-            } : {})
           }
         }
       >

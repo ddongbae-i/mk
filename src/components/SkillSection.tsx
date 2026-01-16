@@ -104,7 +104,6 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     mouseVelocity = { x: 0, y: 0 },
     onExitComplete,
 }) => {
-    const [isInitialized, setIsInitialized] = useState(false);
     const [absorbingSkills, setAbsorbingSkills] = useState<{
         id: number;
         fromX: number;
@@ -126,21 +125,6 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     const isShakingRef = useRef(false);
     const shakeEndTimerRef = useRef<number | null>(null);
 
-    // 초기화
-    useEffect(() => {
-        if (!isActive) {
-            setIsInitialized(false);
-            return;
-        }
-
-        const initTimer = setTimeout(() => {
-            console.log('✅ SkillSection initialized');
-            setIsInitialized(true);
-        }, 100);
-
-        return () => clearTimeout(initTimer);
-    }, [isActive]);
-
     // isExiting 처리
     useEffect(() => {
         if (!isExiting || poppedSkills.length === 0) return;
@@ -155,6 +139,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         setTimeout(() => {
             const absorbed: typeof absorbingSkills = [];
 
+            // ✅ 각 스킬의 현재 위치를 그대로 사용
             physicsObjectsRef.current.forEach((obj) => {
                 if (obj.elemRef) {
                     const rect = obj.elemRef.getBoundingClientRect();
@@ -162,13 +147,6 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                         id: obj.id,
                         fromX: rect.left + rect.width / 2,
                         fromY: rect.top + rect.height / 2,
-                        skill: obj.skill,
-                    });
-                } else {
-                    absorbed.push({
-                        id: obj.id,
-                        fromX: obj.x,
-                        fromY: obj.y,
                         skill: obj.skill,
                     });
                 }
@@ -207,13 +185,10 @@ const SkillSection: React.FC<SkillSectionProps> = ({
             };
         }
 
-        el.getBoundingClientRect();
-
         const r = el.getBoundingClientRect();
         const centerX = r.left + r.width / 2;
         const centerY = r.top + r.height * 0.1;
 
-        console.log('✅ Head mouth position:', centerX, centerY);
         return { x: centerX, y: centerY };
     }, [headRef]);
 
@@ -233,9 +208,9 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         onShakingChange?.(v);
     }, [onShakingChange]);
 
-    // 물리 엔진
+    // ✅ 물리 엔진 - isInitialized 체크 제거
     useEffect(() => {
-        if (!isActive || !isInitialized) return;
+        if (!isActive) return;
 
         console.log('🔴 Physics loop STARTED');
         const windowHeight = window.innerHeight;
@@ -319,10 +294,21 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                 rafRef.current = null;
             }
         };
-    }, [isActive, isInitialized]);
+    }, [isActive]);
 
+    // ✅ 물리 객체 등록 - 즉시 등록
     const registerPhysicsObject = useCallback((id: number, skill: any, originX: number, originY: number, elem: HTMLDivElement | null) => {
-        if (!elem || physicsObjectsRef.current.has(id)) return;
+        if (!elem) {
+            console.warn('⚠️ Element not ready for skill:', skill.name);
+            return;
+        }
+
+        if (physicsObjectsRef.current.has(id)) {
+            console.log('⚠️ Already registered:', id);
+            return;
+        }
+
+        console.log('✅ Registering physics object:', skill.name, 'at', originX, originY);
 
         physicsObjectsRef.current.set(id, {
             id,
@@ -338,9 +324,10 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         });
     }, []);
 
+    // ✅ popSkill - 조건 완화
     const popSkill = useCallback(() => {
-        if (!isActive || !isInitialized) {
-            console.warn('⚠️ popSkill blocked: not ready');
+        if (!isActive) {
+            console.warn('⚠️ popSkill blocked: not active');
             return;
         }
 
@@ -349,7 +336,10 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         const remainingSkills = currentLevelSkills.filter((s) => !poppedIds.includes(s.id));
 
         if (remainingSkills.length === 0) {
-            if (currentLevel < 3) setCurrentLevel((p) => p + 1);
+            if (currentLevel < 3) {
+                console.log('⬆️ Level up:', currentLevel, '→', currentLevel + 1);
+                setCurrentLevel((p) => p + 1);
+            }
             return;
         }
 
@@ -357,7 +347,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         const id = Date.now();
 
         const headPos = getHeadMouth();
-        console.log('💥 Popping skill at:', headPos);
+        console.log('💥 Popping skill:', skill.name, 'at:', headPos);
 
         setBursts((prev) => [...prev, { id, x: headPos.x, y: headPos.y }]);
         setTimeout(() => {
@@ -370,7 +360,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
             originX: headPos.x,
             originY: headPos.y
         }]);
-    }, [isActive, isInitialized, currentLevel, getHeadMouth, poppedSkills]);
+    }, [isActive, currentLevel, getHeadMouth, poppedSkills]);
 
     useEffect(() => {
         if (isActive) return;
@@ -403,6 +393,8 @@ const SkillSection: React.FC<SkillSectionProps> = ({
             prevShakeTrigger.current = shakeTrigger;
             shakeCountRef.current += 1;
 
+            console.log('🔔 Shake detected! Count:', shakeCountRef.current);
+
             setShaking(true);
             const targetExpr = getLevelExpression(currentLevel);
             onExpressionChange?.(targetExpr);
@@ -413,16 +405,18 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                 applyBaseExpression();
             }, 250);
 
-            if (shakeCountRef.current % 1 === 0) {
-                popSkill();
-            }
+            // ✅ 매 흔들림마다 스킬 튀어나옴
+            popSkill();
         }
     }, [shakeTrigger, isActive, popSkill, onExpressionChange, applyBaseExpression, setShaking, currentLevel, getLevelExpression]);
 
     const poppedIds = poppedSkills.map((p) => p.skill.id);
 
     useEffect(() => {
-        if (poppedIds.length >= SKILLS_DATA.length) onSkillsCollected?.();
+        if (poppedIds.length >= SKILLS_DATA.length) {
+            console.log('🎉 All skills collected!');
+            onSkillsCollected?.();
+        }
     }, [poppedIds.length, onSkillsCollected]);
 
     return (
@@ -465,6 +459,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                     <BurstEffect key={burst.id} x={burst.x} y={burst.y} />
                 ))}
 
+                {/* ✅ 흡수 애니메이션 - 각자 제자리에서 출발 */}
                 {isExiting && absorbingSkills.map((item, index) => {
                     const headCenter = headRef?.current
                         ? {
@@ -479,13 +474,13 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                             className="absolute pointer-events-none z-[300]"
                             style={{ left: 0, top: 0 }}
                             initial={{
-                                x: item.fromX - 70,
+                                x: item.fromX - 70,  // ✅ 각 스킬의 현재 위치에서 시작
                                 y: item.fromY - 70,
                                 scale: 1,
                                 opacity: 1,
                             }}
                             animate={{
-                                x: headCenter.x - 70,
+                                x: headCenter.x - 70,  // ✅ 머리 중심으로 날아감
                                 y: headCenter.y - 70,
                                 scale: 0,
                                 opacity: 0,
@@ -506,6 +501,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                     );
                 })}
 
+                {/* ✅ 물리 객체들 */}
                 {!isExiting && poppedSkills.map((item) => (
                     <div
                         key={item.id}

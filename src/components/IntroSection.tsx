@@ -883,11 +883,15 @@ const IntroSection: React.FC = () => {
 
     // ✅ 3. 스택 섹션으로 직접 이동 시 초기화 추가
     if (target === 26) {
-      setSkillResetKey(prev => prev + 1);  // 스킬 섹션 리셋
+      setSkillResetKey(prev => prev + 1);
       setIsSkillExiting(false);
       setSkillsCollected(false);
-      setSpinY(360);  // 회전 애니메이션 트리거
-      setHeadPosition({  // ✅ 얼굴 위치 초기화
+
+      // ✅ 짧은 딜레이 추가
+      await new Promise(r => setTimeout(r, 50));
+
+      setSpinY(360);
+      setHeadPosition({
         x: window.innerWidth / 2,
         y: window.innerHeight * 0.3
       });

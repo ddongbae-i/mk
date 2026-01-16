@@ -96,7 +96,7 @@ interface SkillSectionProps {
 
 const SkillSection: React.FC<SkillSectionProps> = ({
     isActive,
-    isExiting = false,  // ← 기본값
+    isExiting = false,
     onSkillsCollected,
     onExpressionChange,
     onShakingChange,
@@ -104,8 +104,10 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     headRef,
     mousePos = { x: 0, y: 0 },
     mouseVelocity = { x: 0, y: 0 },
-    onExitComplete,  // ← 추가
+    onExitComplete,
 }) => {
+    // ✅ 1. 마운트 상태 추가
+    const [isInitialized, setIsInitialized] = useState(false);
 
     const [absorbingSkills, setAbsorbingSkills] = useState<{
         id: number;
@@ -118,93 +120,34 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     const [bursts, setBursts] = useState<{ id: number; x: number; y: number }[]>([]);
     const [currentLevel, setCurrentLevel] = useState(1);
 
-    // ✅ 단일 물리 시스템 - 모든 스킬을 하나의 Map으로 관리
     const physicsObjectsRef = useRef<Map<number, PhysicsObject>>(new Map());
     const rafRef = useRef<number | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // mousePos/mouseVelocity를 ref로 저장 (리렌더 방지)
     const mousePosRef = useRef(mousePos);
     const mouseVelocityRef = useRef(mouseVelocity);
 
+    // ✅ 2. 초기화 useEffect 추가 (가장 먼저 실행)
     useEffect(() => {
-        if (!isExiting || poppedSkills.length === 0) return;
-
-        // 물리 루프 중지
-        if (rafRef.current) {
-            cancelAnimationFrame(rafRef.current);
-            rafRef.current = null;
+        if (!isActive) {
+            setIsInitialized(false);
+            return;
         }
 
-        // 현재 위치 캡처해서 흡수 애니메이션 시작
-        const absorbed: typeof absorbingSkills = [];
-        physicsObjectsRef.current.forEach((obj) => {
-            absorbed.push({
-                id: obj.id,
-                fromX: obj.x,
-                fromY: obj.y,
-                skill: obj.skill,
-            });
-        });
+        // 짧은 딜레이로 DOM과 headRef가 준비될 시간 확보
+        const initTimer = setTimeout(() => {
+            console.log('✅ SkillSection initialized');
+            setIsInitialized(true);
+        }, 100);
 
-        setAbsorbingSkills(absorbed);
+        return () => clearTimeout(initTimer);
+    }, [isActive]);
 
-        // 흡수 완료 후 콜백
-        const totalDuration = absorbed.length * 50 + 600; // delay + duration
-        setTimeout(() => {
-            // ✅ 스킬 아이콘들 완전히 클리어
-            setPoppedSkills([]);
-            setAbsorbingSkills([]);
-            physicsObjectsRef.current.clear();
-            onExitComplete?.();
-        }, totalDuration);
-
-    }, [isExiting, poppedSkills.length, onExitComplete]);
-
+    // ✅ 3. 물리 엔진 useEffect 수정 - isInitialized 조건 추가
     useEffect(() => {
-        mousePosRef.current = mousePos;
-    }, [mousePos]);
+        // 초기화 전에는 물리 엔진 시작 안 함
+        if (!isActive || !isInitialized) return;
 
-    useEffect(() => {
-        mouseVelocityRef.current = mouseVelocity;
-    }, [mouseVelocity]);
-
-    const shakeCountRef = useRef(0);
-    const prevShakeTrigger = useRef(shakeTrigger);
-    const baseExpressionRef = useRef<Expression>("neutral");
-    const isShakingRef = useRef(false);
-    const shakeEndTimerRef = useRef<number | null>(null);
-
-    const getHeadMouth = useCallback(() => {
-        const el = headRef?.current;
-        if (!el) return { x: window.innerWidth / 2, y: window.innerHeight * 0.3 };
-        const r = el.getBoundingClientRect();
-        return { x: r.left + r.width / 2, y: r.top + r.height * 0.1 };
-    }, [headRef]);
-
-    const poppedIds = poppedSkills.map((p) => p.skill.id);
-    const currentLevelSkills = SKILLS_DATA.filter((s) => s.level === currentLevel);
-    const remainingSkills = currentLevelSkills.filter((s) => !poppedIds.includes(s.id));
-
-    const getLevelExpression = useCallback((level: number): Expression => {
-        if (level === 1) return "sad";
-        if (level === 2) return "neutral";
-        return "happy";
-    }, []);
-
-    const applyBaseExpression = useCallback(() => {
-        onExpressionChange?.(baseExpressionRef.current);
-    }, [onExpressionChange]);
-
-    const setShaking = useCallback((v: boolean) => {
-        if (isShakingRef.current === v) return;
-        isShakingRef.current = v;
-        onShakingChange?.(v);
-    }, [onShakingChange]);
-
-    // ✅ 단일 물리 루프 - 모든 객체를 한 번에 처리 (핵심 최적화!)
-    useEffect(() => {
-        if (!isActive) return;
         console.log('🔴 Physics loop STARTED');
         const windowHeight = window.innerHeight;
         const windowWidth = window.innerWidth;
@@ -218,18 +161,15 @@ const SkillSection: React.FC<SkillSectionProps> = ({
             const mousePos = mousePosRef.current;
             const mouseVelocity = mouseVelocityRef.current;
 
-            // ✅ 모든 물리 객체를 하나의 루프에서 처리
             physicsObjectsRef.current.forEach((obj) => {
                 if (!obj.elemRef) return;
 
                 let { x, y, vx, vy, rotation, rotVel } = obj;
 
-                // 중력
                 vy += gravity;
                 x += vx;
                 y += vy;
 
-                // 바닥 충돌
                 if (y >= floorY) {
                     y = floorY;
                     if (Math.abs(vy) > 2) {
@@ -242,11 +182,9 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                     vx *= groundFriction;
                 }
 
-                // 벽 충돌
                 if (x < 40) { x = 40; vx = Math.abs(vx) * bounce; }
                 if (x > windowWidth - 40) { x = windowWidth - 40; vx = -Math.abs(vx) * bounce; }
 
-                // 마우스 충돌
                 const dx = mousePos.x - x;
                 const dy = mousePos.y - y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
@@ -270,7 +208,6 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                 rotVel *= 0.995;
                 rotation += rotVel;
 
-                // 값 업데이트
                 obj.x = x;
                 obj.y = y;
                 obj.vx = vx;
@@ -278,7 +215,6 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                 obj.rotation = rotation;
                 obj.rotVel = rotVel;
 
-                // ✅ DOM 직접 업데이트 (setState 없음!)
                 obj.elemRef.style.transform = `translate(${x - 70}px, ${y - 70}px) rotate(${rotation}deg)`;
             });
 
@@ -294,8 +230,32 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                 rafRef.current = null;
             }
         };
-    }, [isActive]);
+    }, [isActive, isInitialized]); // ✅ isInitialized 의존성 추가
 
+    // ✅ 4. popSkill 함수 수정 - 초기화 체크 추가
+    const popSkill = useCallback(() => {
+        if (!isActive || !isInitialized) return; // ✅ 초기화 체크 추가
+
+        if (remainingSkills.length === 0) {
+            if (currentLevel < 3) setCurrentLevel((p) => p + 1);
+            return;
+        }
+
+        const skill = remainingSkills[0];
+        const id = Date.now();
+        const { x, y } = getHeadMouth();
+
+        setBursts((prev) => [...prev, { id, x, y }]);
+        setTimeout(() => {
+            setBursts((prev) => prev.filter((b) => b.id !== id));
+        }, 700);
+
+        setPoppedSkills((prev) => [...prev, { id, skill, originX: x, originY: y }]);
+    }, [isActive, isInitialized, remainingSkills, currentLevel, getHeadMouth]); // ✅ 의존성 추가
+
+    // 나머지 코드는 그대로...
+
+    // (기존 useEffect들과 return 문 유지)
     // 새 스킬 추가 시 물리 객체 등록
     const registerPhysicsObject = useCallback((id: number, skill: any, originX: number, originY: number, elem: HTMLDivElement | null) => {
         if (!elem || physicsObjectsRef.current.has(id)) return;

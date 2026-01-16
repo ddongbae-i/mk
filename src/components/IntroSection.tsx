@@ -918,7 +918,6 @@ const IntroSection: React.FC = () => {
     await Promise.all(jobs);
   };
 
-
   const [isScreenShaking, setIsScreenShaking] = useState(false);
   const headRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);

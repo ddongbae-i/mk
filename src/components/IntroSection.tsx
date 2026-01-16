@@ -887,8 +887,8 @@ const IntroSection: React.FC = () => {
       setIsSkillExiting(false);
       setSkillsCollected(false);
 
-      // ✅ 짧은 딜레이 추가
-      await new Promise(r => setTimeout(r, 50));
+      // ✅ 딜레이를 더 길게
+      await new Promise(r => setTimeout(r, 150));  // 50ms → 150ms
 
       setSpinY(360);
       setHeadPosition({

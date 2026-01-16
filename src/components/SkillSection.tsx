@@ -28,7 +28,6 @@ const SKILLS_DATA = [
 
 type Expression = "sad" | "neutral" | "happy" | "sweat" | "blank";
 
-// 💥 팡팡 이펙트
 const BurstEffect = ({ x, y }: { x: number; y: number }) => {
     const particles = Array.from({ length: 12 }, (_, i) => ({
         id: i,
@@ -67,7 +66,6 @@ const BurstEffect = ({ x, y }: { x: number; y: number }) => {
     );
 };
 
-// 물리 객체 타입
 interface PhysicsObject {
     id: number;
     skill: any;
@@ -106,16 +104,13 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     mouseVelocity = { x: 0, y: 0 },
     onExitComplete,
 }) => {
-    // ✅ 초기화 상태
     const [isInitialized, setIsInitialized] = useState(false);
-
     const [absorbingSkills, setAbsorbingSkills] = useState<{
         id: number;
         fromX: number;
         fromY: number;
         skill: any;
     }[]>([]);
-
     const [poppedSkills, setPoppedSkills] = useState<{ id: number; skill: any; originX: number; originY: number }[]>([]);
     const [bursts, setBursts] = useState<{ id: number; x: number; y: number }[]>([]);
     const [currentLevel, setCurrentLevel] = useState(1);
@@ -123,17 +118,15 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     const physicsObjectsRef = useRef<Map<number, PhysicsObject>>(new Map());
     const rafRef = useRef<number | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-
     const mousePosRef = useRef(mousePos);
     const mouseVelocityRef = useRef(mouseVelocity);
-
     const shakeCountRef = useRef(0);
     const prevShakeTrigger = useRef(shakeTrigger);
     const baseExpressionRef = useRef<Expression>("neutral");
     const isShakingRef = useRef(false);
     const shakeEndTimerRef = useRef<number | null>(null);
 
-    // ✅ 초기화 로직
+    // 초기화
     useEffect(() => {
         if (!isActive) {
             setIsInitialized(false);
@@ -152,30 +145,47 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     useEffect(() => {
         if (!isExiting || poppedSkills.length === 0) return;
 
+        console.log('🔥 Starting exit animation');
+
         if (rafRef.current) {
             cancelAnimationFrame(rafRef.current);
             rafRef.current = null;
         }
 
-        const absorbed: typeof absorbingSkills = [];
-        physicsObjectsRef.current.forEach((obj) => {
-            absorbed.push({
-                id: obj.id,
-                fromX: obj.x,
-                fromY: obj.y,
-                skill: obj.skill,
-            });
-        });
-
-        setAbsorbingSkills(absorbed);
-
-        const totalDuration = absorbed.length * 50 + 600;
         setTimeout(() => {
-            setPoppedSkills([]);
-            setAbsorbingSkills([]);
-            physicsObjectsRef.current.clear();
-            onExitComplete?.();
-        }, totalDuration);
+            const absorbed: typeof absorbingSkills = [];
+
+            physicsObjectsRef.current.forEach((obj) => {
+                if (obj.elemRef) {
+                    const rect = obj.elemRef.getBoundingClientRect();
+                    absorbed.push({
+                        id: obj.id,
+                        fromX: rect.left + rect.width / 2,
+                        fromY: rect.top + rect.height / 2,
+                        skill: obj.skill,
+                    });
+                } else {
+                    absorbed.push({
+                        id: obj.id,
+                        fromX: obj.x,
+                        fromY: obj.y,
+                        skill: obj.skill,
+                    });
+                }
+            });
+
+            console.log('📦 Absorbed skills count:', absorbed.length);
+            setAbsorbingSkills(absorbed);
+
+            const totalDuration = absorbed.length * 50 + 600;
+            setTimeout(() => {
+                setPoppedSkills([]);
+                setAbsorbingSkills([]);
+                physicsObjectsRef.current.clear();
+                console.log('✅ Exit complete');
+                onExitComplete?.();
+            }, totalDuration);
+        }, 50);
 
     }, [isExiting, poppedSkills.length, onExitComplete]);
 
@@ -189,9 +199,22 @@ const SkillSection: React.FC<SkillSectionProps> = ({
 
     const getHeadMouth = useCallback(() => {
         const el = headRef?.current;
-        if (!el) return { x: window.innerWidth / 2, y: window.innerHeight * 0.3 };
+        if (!el) {
+            console.warn('⚠️ headRef not ready, using fallback');
+            return {
+                x: window.innerWidth / 2,
+                y: window.innerHeight * 0.3
+            };
+        }
+
+        el.getBoundingClientRect();
+
         const r = el.getBoundingClientRect();
-        return { x: r.left + r.width / 2, y: r.top + r.height * 0.1 };
+        const centerX = r.left + r.width / 2;
+        const centerY = r.top + r.height * 0.1;
+
+        console.log('✅ Head mouth position:', centerX, centerY);
+        return { x: centerX, y: centerY };
     }, [headRef]);
 
     const getLevelExpression = useCallback((level: number): Expression => {
@@ -210,7 +233,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         onShakingChange?.(v);
     }, [onShakingChange]);
 
-    // ✅ 물리 엔진 - isInitialized 추가
+    // 물리 엔진
     useEffect(() => {
         if (!isActive || !isInitialized) return;
 
@@ -315,11 +338,12 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         });
     }, []);
 
-    // ✅ popSkill - remainingSkills를 내부에서 계산
     const popSkill = useCallback(() => {
-        if (!isActive || !isInitialized) return;
+        if (!isActive || !isInitialized) {
+            console.warn('⚠️ popSkill blocked: not ready');
+            return;
+        }
 
-        // 함수 내부에서 계산
         const poppedIds = poppedSkills.map((p) => p.skill.id);
         const currentLevelSkills = SKILLS_DATA.filter((s) => s.level === currentLevel);
         const remainingSkills = currentLevelSkills.filter((s) => !poppedIds.includes(s.id));
@@ -331,17 +355,23 @@ const SkillSection: React.FC<SkillSectionProps> = ({
 
         const skill = remainingSkills[0];
         const id = Date.now();
-        const { x, y } = getHeadMouth();
 
-        setBursts((prev) => [...prev, { id, x, y }]);
+        const headPos = getHeadMouth();
+        console.log('💥 Popping skill at:', headPos);
+
+        setBursts((prev) => [...prev, { id, x: headPos.x, y: headPos.y }]);
         setTimeout(() => {
             setBursts((prev) => prev.filter((b) => b.id !== id));
         }, 700);
 
-        setPoppedSkills((prev) => [...prev, { id, skill, originX: x, originY: y }]);
+        setPoppedSkills((prev) => [...prev, {
+            id,
+            skill,
+            originX: headPos.x,
+            originY: headPos.y
+        }]);
     }, [isActive, isInitialized, currentLevel, getHeadMouth, poppedSkills]);
 
-    // isActive 꺼질 때 리셋
     useEffect(() => {
         if (isActive) return;
 
@@ -349,11 +379,9 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         setShaking(false);
         baseExpressionRef.current = "neutral";
         onExpressionChange?.("neutral");
-
         physicsObjectsRef.current.clear();
     }, [isActive, onExpressionChange, setShaking]);
 
-    // 레벨 변경 시 표정
     useEffect(() => {
         if (!isActive) return;
 
@@ -368,7 +396,6 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         }
     }, [currentLevel, isActive, poppedSkills.length, getLevelExpression, onExpressionChange]);
 
-    // 흔들기 로직
     useEffect(() => {
         if (!isActive) return;
 
@@ -392,7 +419,6 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         }
     }, [shakeTrigger, isActive, popSkill, onExpressionChange, applyBaseExpression, setShaking, currentLevel, getLevelExpression]);
 
-    // ✅ poppedIds 계산을 여기서
     const poppedIds = poppedSkills.map((p) => p.skill.id);
 
     useEffect(() => {
@@ -410,10 +436,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                             animate={{ y: 0, opacity: 1 }}
                             exit={{ opacity: 0 }}
                         >
-                            <h2
-                                className="text-5xl font-bold italic mb-2"
-                                style={{ fontFamily: "Kanit, sans-serif" }}
-                            >
+                            <h2 className="text-5xl font-bold italic mb-2" style={{ fontFamily: "Kanit, sans-serif" }}>
                                 What's in MK's head?
                             </h2>
                             <p className="text-lg">머리를 잡고 마구 흔들어주세요!</p>
@@ -429,8 +452,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                             animate={{ scale: 1, opacity: 1 }}
                             transition={{ type: "spring", stiffness: 300 }}
                         >
-                            <p className="text-5xl font-bold text-[#f0f0f0] italic"
-                                style={{ fontFamily: "Kanit, sans-serif" }}>
+                            <p className="text-5xl font-bold text-[#f0f0f0] italic" style={{ fontFamily: "Kanit, sans-serif" }}>
                                 This is MK's skill set
                             </p>
                         </motion.div>
@@ -442,6 +464,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                 {bursts.map((burst) => (
                     <BurstEffect key={burst.id} x={burst.x} y={burst.y} />
                 ))}
+
                 {isExiting && absorbingSkills.map((item, index) => {
                     const headCenter = headRef?.current
                         ? {

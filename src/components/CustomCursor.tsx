@@ -1,18 +1,15 @@
+// CustomCursor.tsx
 import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useMotionValue, useSpring } from "framer-motion";
 
 type HoverState = "default" | "pointer" | "lego-head";
 
-/**
- * ✅ 사용법
- * - 기본: 페이지가 더 내려갈 수 있으면(바닥이 아니면) canScrollDown=true
- * - 특정 섹션 기준으로 하고 싶으면:
- *    <section data-scroll-hint="true"> ... </section>
- *   이 섹션이 "스크롤 더 가능" 상태일 때만 힌트가 뜸.
- */
-export const CustomCursor = () => {
+export const CustomCursor = ({
+    canScroll = true // 🔥 외부에서 제어
+}: {
+    canScroll?: boolean
+}) => {
     const [hoverState, setHoverState] = useState<HoverState>("default");
-    const [canScrollDown, setCanScrollDown] = useState(false);
 
     const mouseX = useMotionValue(-100);
     const mouseY = useMotionValue(-100);
@@ -20,9 +17,7 @@ export const CustomCursor = () => {
     const cursorX = useSpring(mouseX, { damping: 26, stiffness: 520, mass: 0.7 });
     const cursorY = useSpring(mouseY, { damping: 26, stiffness: 520, mass: 0.7 });
 
-    const rafRef = useRef<number | null>(null);
-
-    // ====== 1) hoverState 감지 ======
+    // ====== hoverState 감지 ======
     useEffect(() => {
         const moveCursor = (e: MouseEvent) => {
             mouseX.set(e.clientX);
@@ -46,83 +41,11 @@ export const CustomCursor = () => {
         return () => window.removeEventListener("mousemove", moveCursor as any);
     }, [mouseX, mouseY]);
 
-    // ====== 2) "스크롤 해야 하는 상황" 계산 ======
-    useEffect(() => {
-        const threshold = 20; // 바닥 근처면 힌트 끔(여유)
-
-        const computePage = () => {
-            const el = document.documentElement;
-            const scrollTop = window.scrollY || el.scrollTop || 0;
-            const viewportH = window.innerHeight || 0;
-            const totalH = el.scrollHeight || 0;
-
-            const remaining = totalH - (scrollTop + viewportH);
-            const scrollable = totalH > viewportH + 4;
-
-            return scrollable && remaining > threshold;
-        };
-
-        const computeSection = (section: HTMLElement) => {
-            // 섹션이 "자체 스크롤"을 갖는 경우: scrollHeight > clientHeight
-            const remaining = section.scrollHeight - (section.scrollTop + section.clientHeight);
-            const scrollable = section.scrollHeight > section.clientHeight + 2;
-
-            // 섹션이 뷰포트에 어느 정도 들어와있을 때만 힌트 주고 싶으면 여기서 조건 추가 가능
-            return scrollable && remaining > threshold;
-        };
-
-        const getActiveHintTarget = () => {
-            // 우선순위 1) data-scroll-hint="true" 요소 중 화면에 가장 가까운/보이는 것
-            const candidates = Array.from(
-                document.querySelectorAll<HTMLElement>('[data-scroll-hint="true"]')
-            );
-
-            if (candidates.length === 0) return null;
-
-            // 뷰포트 안에 걸쳐 있는 요소 우선
-            const inView = candidates
-                .map((el) => ({ el, rect: el.getBoundingClientRect() }))
-                .filter(({ rect }) => rect.bottom > 0 && rect.top < window.innerHeight);
-
-            if (inView.length === 0) return null;
-
-            // 화면 상단에 가장 가까운 요소 선택
-            inView.sort((a, b) => Math.abs(a.rect.top) - Math.abs(b.rect.top));
-            return inView[0].el;
-        };
-
-        const compute = () => {
-            const section = getActiveHintTarget();
-            if (section) return computeSection(section);
-            return computePage();
-        };
-
-        const onAnyScroll = () => {
-            if (rafRef.current) cancelAnimationFrame(rafRef.current);
-            rafRef.current = requestAnimationFrame(() => setCanScrollDown(compute()));
-        };
-
-        // 초기 계산
-        setCanScrollDown(compute());
-
-        window.addEventListener("scroll", onAnyScroll, { passive: true });
-        window.addEventListener("resize", onAnyScroll, { passive: true });
-
-        // 섹션 자체 스크롤도 잡아야 함 (캡처 단계에서 모든 스크롤 감지)
-        window.addEventListener("scroll", onAnyScroll, { passive: true, capture: true } as any);
-
-        return () => {
-            if (rafRef.current) cancelAnimationFrame(rafRef.current);
-            window.removeEventListener("scroll", onAnyScroll as any);
-            window.removeEventListener("resize", onAnyScroll as any);
-            window.removeEventListener("scroll", onAnyScroll as any, true);
-        };
-    }, []);
-
-    // ====== 디자인 파라미터 ======
-    const ORB = 58; // 🔥 기본 원: 크게 (니 의도대로)
+    const ORB = 58;
     const ORB_POINTER = 42;
-    const showScrollHint = hoverState === "default" && canScrollDown;
+
+    // 🔥 수정: default 상태 + canScroll일 때만 힌트 표시
+    const showScrollHint = hoverState === "default" && canScroll;
 
     return (
         <motion.div
@@ -149,42 +72,81 @@ export const CustomCursor = () => {
                     }}
                     transition={{ type: "spring", stiffness: 360, damping: 26 }}
                 >
-                    {/* 예쁜 하이라이트 */}
                     <div
                         className="absolute left-[22%] top-[18%] rounded-full bg-white/55"
                         style={{ width: ORB * 0.22, height: ORB * 0.22 }}
                     />
                 </motion.div>
 
-                {/* 스크롤 해야 할 때만 나오는 꼬리 */}
+                {/* 🔥 스크롤 힌트 - 강화 버전 */}
+
                 <AnimatePresence>
                     {showScrollHint && (
                         <>
+                            {/* 펄스 링 효과 */}
                             <motion.div
-                                className="absolute left-1/2 -translate-x-1/2 rounded-full bg-white"
-                                style={{
-                                    top: ORB - 10,
-                                    width: 16,
-                                    filter: "drop-shadow(0 10px 22px rgba(255,255,255,0.14))",
+                                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white/50"
+                                initial={{ width: ORB, height: ORB, opacity: 0 }}
+                                animate={{
+                                    width: ORB + 40,
+                                    height: ORB + 40,
+                                    opacity: [0, 0.6, 0]
                                 }}
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: 42, opacity: 0.92 }}
-                                exit={{ height: 0, opacity: 0 }}
-                                transition={{ type: "spring", stiffness: 300, damping: 22 }}
+                                transition={{
+                                    duration: 2,
+                                    repeat: Infinity,
+                                    ease: "easeOut"
+                                }}
                             />
+
+                            {/* 두 번째 펄스 링 */}
                             <motion.div
-                                className="absolute left-1/2 -translate-x-1/2 rounded-full bg-white"
-                                style={{
-                                    top: ORB - 10 + 42 - 10,
-                                    width: 18,
-                                    height: 18,
-                                    filter: "drop-shadow(0 12px 26px rgba(255,255,255,0.14))",
+                                className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full border-[1.5px] border-white/40"
+                                initial={{ width: ORB, height: ORB, opacity: 0 }}
+                                animate={{
+                                    width: ORB + 30,
+                                    height: ORB + 30,
+                                    opacity: [0, 0.5, 0]
                                 }}
-                                initial={{ scale: 0.7, opacity: 0 }}
-                                animate={{ scale: 1, opacity: 0.9 }}
-                                exit={{ scale: 0.7, opacity: 0 }}
-                                transition={{ type: "spring", stiffness: 360, damping: 24 }}
+                                transition={{
+                                    duration: 2,
+                                    repeat: Infinity,
+                                    ease: "easeOut",
+                                    delay: 0.4
+                                }}
                             />
+
+                            {/* 🔥 세모만 - 원 중앙 아래에서 위아래로 */}
+                            <motion.div
+                                className="absolute"
+                                style={{
+                                    left: "35%",
+                                    top: `${ORB - 2}px`, // 원 바로 아래
+                                    transform: "translateX(-50%)",
+                                    filter: "drop-shadow(0 8px 16px rgba(255,255,255,0.4))",
+                                }}
+                                initial={{ opacity: 0 }}
+                                animate={{
+                                    opacity: 1,
+                                    y: [0, 12, 0]
+                                }}
+                                exit={{ opacity: 0 }}
+                                transition={{
+                                    opacity: { duration: 0.3 },
+                                    y: {
+                                        duration: 1.5,
+                                        repeat: Infinity,
+                                        ease: "easeInOut",
+                                    }
+                                }}
+                            >
+                                <svg width="20" height="14" viewBox="0 0 20 14">
+                                    <path
+                                        d="M10 14L0 0h20L10 14z"
+                                        fill="white"
+                                    />
+                                </svg>
+                            </motion.div>
                         </>
                     )}
                 </AnimatePresence>

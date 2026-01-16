@@ -845,6 +845,7 @@ const IntroSection: React.FC = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [didIntroMenuAnim, setDidIntroMenuAnim] = useState(false);
 
+
   const safeAnimate = async (selector: string, keyframes: any, options?: any) => {
     const el = document.querySelector(selector);
     if (!el) return;
@@ -901,6 +902,7 @@ const IntroSection: React.FC = () => {
     }, 600);
   }
 
+
   const resetMenuBlocks = async () => {
     const jobs: Promise<any>[] = [];
     for (let i = 0; i < 5; i++) {
@@ -915,6 +917,7 @@ const IntroSection: React.FC = () => {
     }
     await Promise.all(jobs);
   };
+
 
   const [isScreenShaking, setIsScreenShaking] = useState(false);
   const headRef = useRef<HTMLDivElement>(null);
@@ -1158,24 +1161,24 @@ const IntroSection: React.FC = () => {
     } else if (currentPhase === 27) {
       if (direction > 0) {
         isAnimatingRef.current = true;
+
+        // 🔥 1단계: phase 먼저 변경
         setPhase(28);
 
-        // 🔥 화면 흔들림 트리거
+        // 🔥 2단계: 약간 딜레이 후 흔들림 트리거
         setTimeout(() => {
           setIsScreenShaking(true);
-          setTimeout(() => setIsScreenShaking(false), 400);
-        }, 600);  // 착지 타이밍
+          console.log('Screen shake triggered!'); // 디버깅용
 
-        setTimeout(() => { isAnimatingRef.current = false; }, 800);
-      }
-      else if (galleryProgress > 0.02) {
-        return;  // GallerySection이 알아서 처리
-      } else {
-        // 스킬 섹션으로 복귀
-        isAnimatingRef.current = true;
-        setSkillResetKey(prev => prev + 1);
-        setPhase(26);
-        setTimeout(() => { isAnimatingRef.current = false; }, 800);
+          setTimeout(() => {
+            setIsScreenShaking(false);
+            console.log('Screen shake ended!'); // 디버깅용
+          }, 500);
+        }, 400);
+
+        setTimeout(() => {
+          isAnimatingRef.current = false;
+        }, 1400);
       }
     } else {
       if (currentPhase === 28) {
@@ -1656,15 +1659,38 @@ const IntroSection: React.FC = () => {
       : (faceExpression === 'blank' || faceExpression === 'sweat')
         ? faceExpression
         : (isWinking ? 'sweat' : 'neutral');
+  const canScroll =
+    phase < 28 &&
+    !menuOpen &&
+    !isProjectOpen &&
+    !isAnimatingRef.current;
+
+  const shakeVariants = {
+    shake: {
+      x: [0, -10, 10, -10, 10, -5, 5, -5, 5, 0],
+      y: [0, 8, -8, 8, -8, 5, -5, 5, -5, 0],
+      transition: {
+        duration: 0.5,
+        ease: "easeInOut"
+      }
+    },
+    static: {
+      x: 0,
+      y: 0
+    }
+  };
+
+
   return (
-    <div
+    <motion.div
       ref={scope}
       tabIndex={0}
       onMouseMove={handleMouseMove}
-      className={`relative w-full h-full flex flex-col items-center justify-center bg-[#e5e5e5] overflow-hidden outline-none ${isScreenShaking ? 'animate-screen-shake' : ''  // 🔥 추가
-        }`}
+      className="relative w-full h-full flex flex-col items-center justify-center bg-[#e5e5e5] overflow-hidden outline-none"
+      variants={shakeVariants}
+      animate={isScreenShaking ? "shake" : "static"}
     >
-      <CustomCursor />
+      <CustomCursor canScroll={canScroll} />
       {/* Phase 15에서 자연 스크롤을 위한 내부 컨테이너 */}
       <div
         ref={scrollContainerRef}
@@ -2289,8 +2315,10 @@ const IntroSection: React.FC = () => {
             scale: [0.12, 1.8, 0.12],
             rotateZ: [galleryProgress * 720, galleryProgress * 720 + 180, galleryProgress * 720 + 360],
             opacity: 1,
+            // 🔥 추가: 작을 때는 약간 블러로 깨짐 숨기기
+            filter: "blur(0px)",
           } : phase === 27 ? {
-            // 🔥 수정: 갤러리 - 더 부드러운 진입
+            // 갤러리
             left: `${20 + galleryProgress * 60}%`,
             top: "calc(100vh - 150px)",
             x: "-50%",
@@ -2298,6 +2326,8 @@ const IntroSection: React.FC = () => {
             scale: 0.12,
             rotateZ: galleryProgress * 720,
             opacity: 1,
+            // 🔥 추가
+            filter: "blur(0px)",
           } : phase === 26 && isSkillExiting ? {
             // 🔥 스킬 흡수 중: 제자리 대기 (회전 없음)
             left: "calc(50% - 350px)",
@@ -2605,12 +2635,67 @@ const IntroSection: React.FC = () => {
 
 
       {/* 하단 안내 문구 */}
-      {phase === 0 && <motion.div className="absolute bottom-10 text-gray-400 font-kanit font-semibold text-sm animate-bounce uppercase tracking-widest">Scroll to Start</motion.div>}
-      {(phase === 3) && <motion.div className="absolute bottom-10 text-white/50 font-kanit text-xs uppercase tracking-widest" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>Scroll to Merge</motion.div>}
-      {(phase >= 4 && phase < 9) && <motion.div className="absolute bottom-10 text-white/50 font-kanit text-xs uppercase tracking-widest" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>Scroll to Explore</motion.div>}
-      {(phase === 9) && <motion.div className="absolute bottom-10 text-white/50 font-kanit text-xs uppercase tracking-widest" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>Scroll to Build</motion.div>}
-    </div >
+      {phase === 0 && (
+        <motion.div
+          className="absolute bottom-10 font-kanit font-semibold text-sm uppercase tracking-widest text-black/80"
+          style={{ textShadow: "0 1px 6px rgba(255,255,255,0.6)" }}
+          initial={{ opacity: 0, y: 12 }}
+          animate={{
+            opacity: [0.4, 1, 0.4],
+            y: [0, -6, 0],
+            scale: [1, 1.02, 1],
+          }}
+          transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
+        >
+          Scroll to Start
+        </motion.div>
+      )}
+
+      {phase === 3 && (
+        <motion.div
+          className="absolute bottom-10 font-kanit text-xs uppercase tracking-widest text-white/80"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{
+            opacity: [0.5, 1, 0.5],
+            y: [0, -4, 0],
+          }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+        >
+          Keep Scrolling
+        </motion.div>
+      )}
+
+      {phase >= 4 && phase < 9 && (
+        <motion.div
+          className="absolute bottom-10 font-kanit text-xs uppercase tracking-widest text-white/80"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{
+            opacity: [0.5, 1, 0.5],
+            y: [0, -4, 0],
+          }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+        >
+          Scroll to Continue
+        </motion.div>
+      )}
+
+      {phase === 9 && (
+        <motion.div
+          className="absolute bottom-10 font-kanit text-xs uppercase tracking-widest text-white/80"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{
+            opacity: [0.5, 1, 0.5],
+            y: [0, -4, 0],
+          }}
+          transition={{ duration: 1.6, repeat: Infinity, ease: "easeInOut" }}
+        >
+          Keep Scrolling
+        </motion.div>
+      )}
+
+
+
+    </motion.div>
   );
 };
-
 export default IntroSection;

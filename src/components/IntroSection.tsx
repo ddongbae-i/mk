@@ -1199,16 +1199,9 @@ const IntroSection: React.FC = () => {
       }
       else if (currentPhase === 26) {
         isAnimatingRef.current = true;
-        setIsSkillExiting(true);
-
-        setTimeout(() => {
-          setPhase(27);
-          setIsSkillExiting(false);
-        }, 1800);
-
-        setTimeout(() => {
-          isAnimatingRef.current = false;
-        }, 2500);
+        setPhase(25);  // ✅ 프로젝트 섹션으로!
+        setCurrentProject(2);  // ✅ 마지막 프로젝트부터 시작
+        setTimeout(() => { isAnimatingRef.current = false; }, 800);
       }
       else if (currentPhase === 25) {
         if (currentProject > 0) {

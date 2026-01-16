@@ -415,7 +415,7 @@ const ContactSection: React.FC<{
         animate={{ opacity: 1 }}
         transition={{ duration: 0.6, delay: 1.0 }}
       >
-        © 2025 KIM MINKYEONG. Built with LEGO blocks & passion.
+        © 2026 KIM MINKYEONG. Built with LEGO blocks & passion.
       </motion.div>
     </motion.div >
   );

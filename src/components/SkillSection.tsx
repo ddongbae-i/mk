@@ -28,6 +28,26 @@ const SKILLS_DATA = [
 
 type Expression = "sad" | "neutral" | "happy" | "sweat" | "blank";
 
+// ✅ 이미지 프리로딩 함수
+const preloadImages = (imageUrls: string[]) => {
+    return Promise.all(
+        imageUrls.map((url) => {
+            return new Promise<void>((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => {
+                    console.log('✅ Loaded:', url);
+                    resolve();
+                };
+                img.onerror = () => {
+                    console.error('❌ Failed to load:', url);
+                    reject();
+                };
+                img.src = url;
+            });
+        })
+    );
+};
+
 const BurstEffect = ({ x, y }: { x: number; y: number }) => {
     const particles = Array.from({ length: 12 }, (_, i) => ({
         id: i,
@@ -104,6 +124,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     mouseVelocity = { x: 0, y: 0 },
     onExitComplete,
 }) => {
+    const [imagesLoaded, setImagesLoaded] = useState(false);
     const [absorbingSkills, setAbsorbingSkills] = useState<{
         id: number;
         fromX: number;
@@ -125,21 +146,41 @@ const SkillSection: React.FC<SkillSectionProps> = ({
     const isShakingRef = useRef(false);
     const shakeEndTimerRef = useRef<number | null>(null);
 
-    // isExiting 처리
+    // ✅ 이미지 프리로딩
+    useEffect(() => {
+        if (!isActive) return;
+
+        console.log('🖼️ Starting image preload...');
+        const imageUrls = SKILLS_DATA.map(skill => skill.icon);
+
+        preloadImages(imageUrls)
+            .then(() => {
+                console.log('✅ All images loaded!');
+                setImagesLoaded(true);
+            })
+            .catch((err) => {
+                console.error('❌ Image preload failed:', err);
+                // 실패해도 진행
+                setImagesLoaded(true);
+            });
+    }, [isActive]);
+
+    // ✅ isExiting 처리 - 물리 객체를 먼저 중지하고 흡수 시작
     useEffect(() => {
         if (!isExiting || poppedSkills.length === 0) return;
 
-        console.log('🔥 Starting exit animation');
+        console.log('🔥 Starting exit animation, popped count:', poppedSkills.length);
 
+        // 1. 물리 엔진 중지
         if (rafRef.current) {
             cancelAnimationFrame(rafRef.current);
             rafRef.current = null;
         }
 
+        // 2. 현재 위치 수집 후 흡수 시작
         setTimeout(() => {
             const absorbed: typeof absorbingSkills = [];
 
-            // ✅ 각 스킬의 현재 위치를 그대로 사용
             physicsObjectsRef.current.forEach((obj) => {
                 if (obj.elemRef) {
                     const rect = obj.elemRef.getBoundingClientRect();
@@ -149,15 +190,17 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                         fromY: rect.top + rect.height / 2,
                         skill: obj.skill,
                     });
+                    console.log('📍 Skill position:', obj.skill.name, rect.left, rect.top);
                 }
             });
 
-            console.log('📦 Absorbed skills count:', absorbed.length);
+            console.log('📦 Total skills to absorb:', absorbed.length);
             setAbsorbingSkills(absorbed);
+            setPoppedSkills([]); // ✅ 물리 객체 숨기기
 
+            // 3. 흡수 완료 후 정리
             const totalDuration = absorbed.length * 50 + 600;
             setTimeout(() => {
-                setPoppedSkills([]);
                 setAbsorbingSkills([]);
                 physicsObjectsRef.current.clear();
                 console.log('✅ Exit complete');
@@ -208,9 +251,9 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         onShakingChange?.(v);
     }, [onShakingChange]);
 
-    // ✅ 물리 엔진 - isInitialized 체크 제거
+    // ✅ 물리 엔진
     useEffect(() => {
-        if (!isActive) return;
+        if (!isActive || !imagesLoaded) return;
 
         console.log('🔴 Physics loop STARTED');
         const windowHeight = window.innerHeight;
@@ -294,9 +337,8 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                 rafRef.current = null;
             }
         };
-    }, [isActive]);
+    }, [isActive, imagesLoaded]);
 
-    // ✅ 물리 객체 등록 - 즉시 등록
     const registerPhysicsObject = useCallback((id: number, skill: any, originX: number, originY: number, elem: HTMLDivElement | null) => {
         if (!elem) {
             console.warn('⚠️ Element not ready for skill:', skill.name);
@@ -304,7 +346,6 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         }
 
         if (physicsObjectsRef.current.has(id)) {
-            console.log('⚠️ Already registered:', id);
             return;
         }
 
@@ -324,10 +365,9 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         });
     }, []);
 
-    // ✅ popSkill - 조건 완화
     const popSkill = useCallback(() => {
-        if (!isActive) {
-            console.warn('⚠️ popSkill blocked: not active');
+        if (!isActive || !imagesLoaded) {
+            console.warn('⚠️ popSkill blocked: not ready');
             return;
         }
 
@@ -360,7 +400,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
             originX: headPos.x,
             originY: headPos.y
         }]);
-    }, [isActive, currentLevel, getHeadMouth, poppedSkills]);
+    }, [isActive, imagesLoaded, currentLevel, getHeadMouth, poppedSkills]);
 
     useEffect(() => {
         if (isActive) return;
@@ -405,7 +445,6 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                 applyBaseExpression();
             }, 250);
 
-            // ✅ 매 흔들림마다 스킬 튀어나옴
             popSkill();
         }
     }, [shakeTrigger, isActive, popSkill, onExpressionChange, applyBaseExpression, setShaking, currentLevel, getLevelExpression]);
@@ -421,9 +460,18 @@ const SkillSection: React.FC<SkillSectionProps> = ({
 
     return (
         <div className="absolute inset-0 z-[200] overflow-hidden">
+            {/* ✅ 로딩 표시 */}
+            {isActive && !imagesLoaded && (
+                <div className="absolute inset-0 flex items-center justify-center z-[300]">
+                    <div className="text-[#f0f0f0] text-2xl font-bold italic" style={{ fontFamily: "Kanit, sans-serif" }}>
+                        Loading skills...
+                    </div>
+                </div>
+            )}
+
             <div className="absolute inset-0 pointer-events-auto">
                 <AnimatePresence>
-                    {isActive && poppedSkills.length < SKILLS_DATA.length && (
+                    {isActive && imagesLoaded && poppedSkills.length < SKILLS_DATA.length && (
                         <motion.div
                             className="absolute top-24 w-full text-center text-[#f0f0f0] z-[250]"
                             initial={{ y: -20, opacity: 0 }}
@@ -459,28 +507,33 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                     <BurstEffect key={burst.id} x={burst.x} y={burst.y} />
                 ))}
 
-                {/* ✅ 흡수 애니메이션 - 각자 제자리에서 출발 */}
-                {isExiting && absorbingSkills.map((item, index) => {
+                {/* ✅ 흡수 애니메이션 */}
+                {absorbingSkills.length > 0 && absorbingSkills.map((item, index) => {
                     const headCenter = headRef?.current
-                        ? {
-                            x: headRef.current.getBoundingClientRect().left + headRef.current.getBoundingClientRect().width / 2,
-                            y: headRef.current.getBoundingClientRect().top + headRef.current.getBoundingClientRect().height * 0.1
-                        }
+                        ? (() => {
+                            const r = headRef.current.getBoundingClientRect();
+                            return {
+                                x: r.left + r.width / 2,
+                                y: r.top + r.height * 0.1
+                            };
+                        })()
                         : { x: window.innerWidth / 2, y: window.innerHeight * 0.3 };
+
+                    console.log('🎯 Absorbing:', item.skill.name, 'from', item.fromX, item.fromY, 'to', headCenter.x, headCenter.y);
 
                     return (
                         <motion.div
                             key={`absorb-${item.id}`}
-                            className="absolute pointer-events-none z-[300]"
+                            className="absolute pointer-events-none z-[350]"
                             style={{ left: 0, top: 0 }}
                             initial={{
-                                x: item.fromX - 70,  // ✅ 각 스킬의 현재 위치에서 시작
+                                x: item.fromX - 70,
                                 y: item.fromY - 70,
                                 scale: 1,
                                 opacity: 1,
                             }}
                             animate={{
-                                x: headCenter.x - 70,  // ✅ 머리 중심으로 날아감
+                                x: headCenter.x - 70,
                                 y: headCenter.y - 70,
                                 scale: 0,
                                 opacity: 0,
@@ -502,11 +555,13 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                 })}
 
                 {/* ✅ 물리 객체들 */}
-                {!isExiting && poppedSkills.map((item) => (
+                {poppedSkills.map((item) => (
                     <div
                         key={item.id}
                         ref={(el) => {
-                            if (el) registerPhysicsObject(item.id, item.skill, item.originX, item.originY, el);
+                            if (el && imagesLoaded) {
+                                registerPhysicsObject(item.id, item.skill, item.originX, item.originY, el);
+                            }
                         }}
                         className="absolute pointer-events-none z-[300]"
                         style={{
@@ -521,8 +576,6 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                             alt={item.skill.name}
                             className="w-[140px] h-[140px] object-contain"
                             style={{ filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.25))" }}
-                            loading="lazy"
-                            decoding="async"
                         />
                     </div>
                 ))}

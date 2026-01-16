@@ -3,18 +3,18 @@ import { motion, AnimatePresence } from "framer-motion";
 
 // ✅ 이미지 12개로 확장
 const GALLERY_IMAGES = [
-    { id: 1, src: "/gallery/01.png", title: "Project Alpha", category: "UI/UX" },
-    { id: 2, src: "/gallery/02.png", title: "Brand Identity", category: "Branding" },
-    { id: 3, src: "/gallery/03.png", title: "UI Components", category: "Design System" },
-    { id: 4, src: "/gallery/04.jpg", title: "Mobile App", category: "Mobile" },
-    { id: 5, src: "/gallery/05.png", title: "Dashboard", category: "Web App" },
-    { id: 6, src: "/gallery/06.png", title: "E-commerce", category: "Web" },
-    { id: 7, src: "/gallery/07.png", title: "Landing Page", category: "Marketing" },
-    { id: 8, src: "/gallery/08.png", title: "Portfolio", category: "Personal" },
-    { id: 9, src: "/gallery/09.jpg", title: "Design System", category: "UI Kit" },
-    { id: 10, src: "/gallery/10.jpg", title: "Branding", category: "Identity" },
-    { id: 11, src: "/gallery/11.png", title: "Web App", category: "SaaS" },
-    { id: 12, src: "/gallery/12.png", title: "Mobile Design", category: "App" },
+    { id: 1, src: "/gallery/01.png", title: "Product Visuals", category: "UI/UX" },
+    { id: 2, src: "/gallery/02.png", title: "Product Visuals", category: "Branding" },
+    { id: 3, src: "/gallery/03.png", title: "Product Visuals", category: "Design System" },
+    { id: 4, src: "/gallery/04.jpg", title: "Created with AI", category: "Mobile" },
+    { id: 5, src: "/gallery/05.png", title: "Created with AI", category: "Web App" },
+    { id: 6, src: "/gallery/06.png", title: "Created with AI", category: "Web" },
+    { id: 7, src: "/gallery/07.png", title: "Created with AI", category: "Marketing" },
+    { id: 8, src: "/gallery/08.png", title: "Created with AI", category: "Personal" },
+    { id: 9, src: "/gallery/09.jpg", title: "Created with AI", category: "UI Kit" },
+    { id: 10, src: "/gallery/10.jpg", title: "Created with AI", category: "Identity" },
+    { id: 11, src: "/gallery/11.png", title: "Off-Work Inspirations", category: "SaaS" },
+    { id: 12, src: "/gallery/12.png", title: "Off-Work Inspirations", category: "App" },
 ];
 
 interface GallerySectionProps {
@@ -304,9 +304,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                                             >
                                                 {image.title}
                                             </h3>
-                                            <p className="text-white/70 text-sm font-medium uppercase tracking-wider">
-                                                {image.category}
-                                            </p>
                                         </motion.div>
                                     )}
                                 </AnimatePresence>

@@ -851,7 +851,6 @@ const IntroSection: React.FC = () => {
     await animate(selector, keyframes, options);
   };
 
-  // 590줄 근처: handleMenuClick 함수 수정
   const handleMenuClick = async (index: number) => {
     if (isAnimatingRef.current) return;
 
@@ -887,7 +886,7 @@ const IntroSection: React.FC = () => {
       setIsSkillExiting(false);
       setSkillsCollected(false);
       setSpinY(360);  // 회전 애니메이션 트리거
-      setHeadPosition({
+      setHeadPosition({  // ✅ 얼굴 위치 초기화
         x: window.innerWidth / 2,
         y: window.innerHeight * 0.3
       });
@@ -2255,13 +2254,12 @@ const IntroSection: React.FC = () => {
         }}
         animate={
           phase === 28 ? {
-            // ✅ 컨택: 갤러리 위치에서 meaningful 옆으로 이동하며 커졌다 쿵!
             left: "52%",
             top: "calc(50% + 30px)",
             x: "calc(280px)",
             y: "-50%",
-            scale: [0.12, 1.5, 0.1],  // ✅ 작은 상태에서 크게 커졌다가 쿵!
-            rotateZ: galleryProgress * 720,  // ✅ 회전 유지 (갤러리에서 이어짐)
+            scale: 0.12,  // ✅ 갤러리 크기 유지한 채로 이동
+            rotateZ: galleryProgress * 720,
             opacity: 1,
           } :
             phase >= 27 ? {
@@ -2302,9 +2300,8 @@ const IntroSection: React.FC = () => {
         }
         transition={
           phase === 28 ? {
-            duration: 0.7,
-            ease: [0.6, 0.01, 0.05, 0.9],
-            times: [0, 0.5, 1],  // ✅ 천천히 커지다가 → 빠르게 쿵!
+            duration: 1.2,  // ✅ 천천히
+            ease: [0.22, 1, 0.36, 1],  // ✅ 부드러운 easeOutQuart
           } : phase >= 27 ? {
             duration: 0.1,
             y: galleryProgress >= 0.99 ? {  // ✅ 마지막에서만 통통
@@ -2317,9 +2314,9 @@ const IntroSection: React.FC = () => {
             duration: 1.0,
             ease: "easeInOut",
             ...(isSkillExiting && phase === 26 ? {
-              y: { duration: 1.0, times: [0, 0.25, 0.5, 0.75, 1], ease: "easeInOut" },
-              scale: { duration: 1.0, ease: "easeOut" },
-              rotateZ: { duration: 1.0, ease: [0.45, 0, 0.55, 1] }  // ✅ 스킬→갤러리 회전
+              y: { duration: 1.5, times: [0, 0.25, 0.5, 0.75, 1], ease: "easeInOut" },  // ✅ 1.5초로 느리게
+              scale: { duration: 1.5, ease: "easeOut" },
+              rotateZ: { duration: 1.5, ease: [0.45, 0, 0.55, 1] }
             } : {})
           }
         }

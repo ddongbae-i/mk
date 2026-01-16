@@ -215,10 +215,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                                 style={{
                                     clipPath:
                                         "polygon(0 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%)",
-
-                                    // ✅ (요청한 2번) 얇은 라이트 프레임 + 기존 그림자 유지/보강
-                                    // - 센터: 더 선명한 분리 + 골드 글로우
-                                    // - 비센터: 아주 약한 프레임만
                                     boxShadow: isCenter
                                         ? "0 20px 40px -12px rgba(252,187,9,0.30), 0 0 0 1px rgba(255,255,255,0.06)"
                                         : "0 15px 30px -10px rgba(0,0,0,0.50), 0 0 0 1px rgba(255,255,255,0.03)",
@@ -244,14 +240,39 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                                         {String(index + 1).padStart(2, "0")}
                                     </span>
                                 </motion.div>
+
+
+                                <AnimatePresence>
+                                    {selectedImage !== index && (  // ✅ 모달 열릴 때만 숨김
+                                        <motion.div
+                                            className="absolute bottom-0 left-0 right-0 p-6 z-10"
+                                            initial={{ opacity: 0, y: 20 }}
+                                            animate={{ opacity: 1, y: 0 }}
+                                            exit={{ opacity: 0, y: 10 }}
+                                            transition={{ duration: 0.3 }}
+                                        >
+                                            <h3
+                                                className="text-white font-bold text-2xl mb-1"
+                                                style={{ fontFamily: "Kanit, sans-serif" }}
+                                            >
+                                                {image.title}
+                                            </h3>
+                                            <p className="text-white/70 text-sm font-medium uppercase tracking-wider">
+                                                {image.category}
+                                            </p>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
 
-                            {isCenter && (
-                                <motion.div
-                                    className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-12 h-1 bg-[#FCBB09]"
-                                    layoutId="activeIndicator"
-                                />
-                            )}
+                            {
+                                isCenter && (
+                                    <motion.div
+                                        className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-12 h-1 bg-[#FCBB09]"
+                                        layoutId="activeIndicator"
+                                    />
+                                )
+                            }
                         </motion.div>
                     );
                 })}
@@ -397,7 +418,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                     </motion.div>
                 )}
             </AnimatePresence>
-        </div>
+        </div >
     );
 };
 

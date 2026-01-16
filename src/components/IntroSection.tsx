@@ -1142,10 +1142,13 @@ const IntroSection: React.FC = () => {
       else if (currentPhase === 26) {
         // 스킬 섹션 → 갤러리 섹션 (흡수 애니메이션 후 전환)
         isAnimatingRef.current = true;
-        setIsSkillExiting(true);  // 흡수 시작! onExitComplete에서 phase(27)로 전환됨
-        setTimeout(() => { isAnimatingRef.current = false; }, 1500);
-      }
 
+        // 🔥 딜레이 후 상태 변경 (부드러운 시작)
+        await new Promise(r => setTimeout(r, 50));
+        setIsSkillExiting(true);
+
+        setTimeout(() => { isAnimatingRef.current = false; }, 1800);  // 🔥 1800으로 증가
+      }
     } else if (currentPhase === 27) {
       if (direction > 0) {
         isAnimatingRef.current = true;
@@ -2280,13 +2283,13 @@ const IntroSection: React.FC = () => {
             }
               : phase >= 26 ? {
                 // ✅ 스택→갤러리: 자연스러운 경로 추가
-                left: isSkillExiting ? ["calc(50% - 350px)", "45%", "20%"] : "calc(50% - 350px)",  // 🔥 3단계 경로
-                top: isSkillExiting ? ["calc(50% - 350px)", "65%", "calc(100vh - 150px)"] : "calc(50% - 350px)",  // 🔥 아래로
-                x: isSkillExiting ? [0, "-50%", "-50%"] : 0,  // 🔥 중앙 정렬
+                left: isSkillExiting ? ["calc(50% - 350px)", "45%", "20%"] : "calc(50% - 350px)",
+                top: isSkillExiting ? ["calc(50% - 350px)", "65%", "calc(100vh - 150px)"] : "calc(50% - 350px)",
+                x: isSkillExiting ? [0, "-50%", "-50%"] : 0,
                 y: isSkillExiting ? [0, 30, -10, 0, -150] : 0,
-                scale: isSkillExiting ? [1.0, 0.95, 1.05, 1.0, 0.12] : 1.0,
-                rotateZ: isSkillExiting ? [0, 90, 180, 270, 360] : 0,  // 🔥 부드러운 회전
-                opacity: 1,
+                scale: isSkillExiting ? [1.0, 0.98, 1.02, 1.0, 0.12] : 1.0,  // 🔥 부드러운 크기 변화
+                rotateZ: isSkillExiting ? [0, 90, 180, 270, 360] : 0,
+                opacity: isSkillExiting ? [1, 1, 1, 1, 1] : 1,  // 🔥 투명도 유지
               }
                 : phase >= 23
                   ? { left: "96%", top: "18%", x: "-50%", y: "-50%", scale: 1.2, }
@@ -2325,12 +2328,36 @@ const IntroSection: React.FC = () => {
             ease: "easeInOut",
             ...(isSkillExiting && phase === 26 ? {
               // 🔥 스택→갤러리: 부드러운 경로 애니메이션
-              left: { duration: 1.8, times: [0, 0.4, 1], ease: [0.22, 1, 0.36, 1] },
-              top: { duration: 1.8, times: [0, 0.4, 1], ease: [0.22, 1, 0.36, 1] },
-              x: { duration: 1.8, times: [0, 0.4, 1], ease: [0.22, 1, 0.36, 1] },
-              y: { duration: 1.8, times: [0, 0.25, 0.5, 0.75, 1], ease: "easeInOut" },
-              scale: { duration: 1.8, times: [0, 0.25, 0.5, 0.75, 1], ease: "easeOut" },
-              rotateZ: { duration: 1.8, times: [0, 0.25, 0.5, 0.75, 1], ease: [0.45, 0, 0.55, 1] }
+              left: {
+                duration: 2.0,  // 🔥 2초로 늘림
+                times: [0, 0.35, 1],  // 🔥 중간 지점 타이밍 조정
+                ease: [0.22, 1, 0.36, 1]
+              },
+              top: {
+                duration: 2.0,
+                times: [0, 0.35, 1],
+                ease: [0.22, 1, 0.36, 1]
+              },
+              x: {
+                duration: 2.0,
+                times: [0, 0.35, 1],
+                ease: [0.22, 1, 0.36, 1]
+              },
+              y: {
+                duration: 2.0,
+                times: [0, 0.2, 0.4, 0.7, 1],  // 🔥 5단계 타이밍
+                ease: [0.22, 1, 0.36, 1]  // 🔥 일관된 easing
+              },
+              scale: {
+                duration: 2.0,
+                times: [0, 0.2, 0.4, 0.7, 1],
+                ease: [0.22, 1, 0.36, 1]  // 🔥 일관된 easing
+              },
+              rotateZ: {
+                duration: 2.0,
+                times: [0, 0.25, 0.5, 0.75, 1],
+                ease: [0.22, 1, 0.36, 1]  // 🔥 일관된 easing
+              }
             } : {})
           }
         }

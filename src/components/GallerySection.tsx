@@ -60,6 +60,37 @@ const GallerySection: React.FC<GallerySectionProps> = ({
         onFaceRotation?.(faceRotation);
     }, [currentStep, progress, faceRotation, onProgressChange, onFaceRotation]);
 
+    const handleKeyDown = useCallback(
+        (e: KeyboardEvent) => {
+            if (!isActive || isFalling) return;
+
+            let direction = 0;
+            if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+                direction = 1;
+            } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+                direction = -1;
+            } else {
+                return;  // 관련 없는 키는 무시
+            }
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            const newStep = Math.max(0, Math.min(MAX_STEP, currentStepRef.current + direction));
+            setCurrentStep(newStep);
+
+            if (newStep >= MAX_STEP && direction > 0 && !isFalling) {
+                setIsFalling(true);
+                onFaceExpression?.("sweat");
+
+                setTimeout(() => {
+                    onGalleryEnd?.();
+                }, 800);
+            }
+        },
+        [isActive, isFalling, onGalleryEnd, onFaceExpression, MAX_STEP]
+    );
+
     const handleWheel = useCallback(
         (e: WheelEvent) => {
             if (!isActive || isFalling) return;
@@ -88,8 +119,15 @@ const GallerySection: React.FC<GallerySectionProps> = ({
         if (!isActive) return;
 
         window.addEventListener("wheel", handleWheel, { passive: false });
-        return () => window.removeEventListener("wheel", handleWheel);
-    }, [isActive, handleWheel]);
+        window.addEventListener("keydown", handleKeyDown);  // 🔥 추가
+
+        return () => {
+            window.removeEventListener("wheel", handleWheel);
+            window.removeEventListener("keydown", handleKeyDown);  // 🔥 추가
+        };
+    }, [isActive, handleWheel, handleKeyDown]);
+
+
 
     const isDragging = useRef(false);
     const startX = useRef(0);
@@ -218,6 +256,10 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                                     boxShadow: isCenter
                                         ? "0 20px 40px -12px rgba(252,187,9,0.30), 0 0 0 1px rgba(255,255,255,0.06)"
                                         : "0 15px 30px -10px rgba(0,0,0,0.50), 0 0 0 1px rgba(255,255,255,0.03)",
+                                    // 🔥 추가
+                                    imageRendering: "auto",
+                                    backfaceVisibility: "hidden",
+                                    transform: "translateZ(0)",
                                 }}
                             >
                                 <img
@@ -226,6 +268,11 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                                     className="w-full h-full object-cover transition-all duration-500 group-hover:scale-110"
                                     loading="lazy"
                                     decoding="async"
+                                    // 🔥 추가
+                                    style={{
+                                        imageRendering: "auto",
+                                        backfaceVisibility: "hidden",
+                                    }}
                                 />
 
                                 <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />

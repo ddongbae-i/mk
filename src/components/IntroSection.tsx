@@ -2118,13 +2118,14 @@ const IntroSection: React.FC = () => {
             className="w-[70px] h-[70px] flex items-center justify-center pointer-events-auto rounded-full transition-colors duration-500"
             animate={{
               backgroundColor:
-                phase >= 27 ? "#FCBB09" :
-                  phase >= 26 ? "rgb(26, 26, 46)" :
-                    phase >= 23 ? "#ffc147" :
-                      phase >= 17 ? "#8F1E20" :
-                        phase >= 14 ? "#8F1E20" :
-                          phase > 9 ? "#8F1E20" :
-                            "rgba(255, 255, 255, 0)",
+                phase >= 28 ? "#8F1E20" :
+                  phase >= 27 ? "#FCBB09" :
+                    phase >= 26 ? "rgb(26, 26, 46)" :
+                      phase >= 23 ? "#ffc147" :
+                        phase >= 17 ? "#8F1E20" :
+                          phase >= 14 ? "#8F1E20" :
+                            phase > 9 ? "#8F1E20" :
+                              "rgba(255, 255, 255, 0)",
             }}
             data-hoverable="true"
           >
@@ -2285,7 +2286,7 @@ const IntroSection: React.FC = () => {
             top: "calc(50% + 30px)",
             x: "calc(280px)",
             y: "-50%",
-            scale: [0.12, 1.8, 0.15],
+            scale: [0.12, 1.8, 0.12],
             rotateZ: [galleryProgress * 720, galleryProgress * 720 + 180, galleryProgress * 720 + 360],
             opacity: 1,
           } : phase === 27 ? {

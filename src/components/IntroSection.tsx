@@ -916,7 +916,7 @@ const IntroSection: React.FC = () => {
     await Promise.all(jobs);
   };
 
-
+  const [isScreenShaking, setIsScreenShaking] = useState(false);
   const headRef = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const [isNaturalScrolling, setIsNaturalScrolling] = useState(false);
@@ -1147,13 +1147,18 @@ const IntroSection: React.FC = () => {
       }
 
     } else if (currentPhase === 27) {
-      // ✅ 스크롤 다운: 컨택 섹션으로
       if (direction > 0) {
         isAnimatingRef.current = true;
         setPhase(28);
+
+        // 🔥 화면 흔들림 트리거
+        setTimeout(() => {
+          setIsScreenShaking(true);
+          setTimeout(() => setIsScreenShaking(false), 400);
+        }, 600);  // 착지 타이밍
+
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
       }
-      // ✅ 스크롤 업: galleryProgress가 0보다 클 때는 GallerySection 내부 처리
       else if (galleryProgress > 0.02) {
         return;  // GallerySection이 알아서 처리
       } else {
@@ -1635,8 +1640,8 @@ const IntroSection: React.FC = () => {
       ref={scope}
       tabIndex={0}
       onMouseMove={handleMouseMove}
-      className="relative w-full h-full flex flex-col items-center justify-center bg-[#e5e5e5] overflow-hidden outline-none"
-
+      className={`relative w-full h-full flex flex-col items-center justify-center bg-[#e5e5e5] overflow-hidden outline-none ${isScreenShaking ? 'animate-screen-shake' : ''  // 🔥 추가
+        }`}
     >
       <CustomCursor />
       {/* Phase 15에서 자연 스크롤을 위한 내부 컨테이너 */}
@@ -2254,12 +2259,13 @@ const IntroSection: React.FC = () => {
         }}
         animate={
           phase === 28 ? {
+            // ✅ 갤러리→컨택: 커지면서 쾅! 박힘
             left: "52%",
             top: "calc(50% + 30px)",
             x: "calc(280px)",
             y: "-50%",
-            scale: 0.12,  // ✅ 갤러리 크기 유지한 채로 이동
-            rotateZ: galleryProgress * 720,
+            scale: [0.12, 1.8, 0.15],  // 🔥 크기 변화 추가
+            rotateZ: [galleryProgress * 720, galleryProgress * 720 + 180, galleryProgress * 720 + 360],  // 🔥 회전
             opacity: 1,
           } :
             phase >= 27 ? {
@@ -2273,12 +2279,13 @@ const IntroSection: React.FC = () => {
               opacity: 1,
             }
               : phase >= 26 ? {
-                left: "calc(50% - 350px)",
-                top: "calc(50% - 350px)",
-                x: 0,
+                // ✅ 스택→갤러리: 자연스러운 경로 추가
+                left: isSkillExiting ? ["calc(50% - 350px)", "45%", "20%"] : "calc(50% - 350px)",  // 🔥 3단계 경로
+                top: isSkillExiting ? ["calc(50% - 350px)", "65%", "calc(100vh - 150px)"] : "calc(50% - 350px)",  // 🔥 아래로
+                x: isSkillExiting ? [0, "-50%", "-50%"] : 0,  // 🔥 중앙 정렬
                 y: isSkillExiting ? [0, 30, -10, 0, -150] : 0,
                 scale: isSkillExiting ? [1.0, 0.95, 1.05, 1.0, 0.12] : 1.0,
-                rotateZ: isSkillExiting ? [0, 0, 0, 0, 360] : 0,  // ✅ 스킬→갤러리에서 회전!
+                rotateZ: isSkillExiting ? [0, 90, 180, 270, 360] : 0,  // 🔥 부드러운 회전
                 opacity: 1,
               }
                 : phase >= 23
@@ -2300,8 +2307,11 @@ const IntroSection: React.FC = () => {
         }
         transition={
           phase === 28 ? {
-            duration: 1.2,  // ✅ 천천히
-            ease: [0.22, 1, 0.36, 1],  // ✅ 부드러운 easeOutQuart
+            duration: 0.8,  // 🔥 0.8초로 변경
+            ease: [0.6, 0.01, 0.05, 0.95],  // 🔥 급격한 착지
+            times: [0, 0.6, 1],  // 🔥 천천히→빠르게
+            scale: { duration: 0.8, times: [0, 0.6, 1], ease: [0.6, 0.01, 0.05, 0.95] },
+            rotateZ: { duration: 0.8, ease: "easeInOut" }
           } : phase >= 27 ? {
             duration: 0.1,
             y: galleryProgress >= 0.99 ? {  // ✅ 마지막에서만 통통
@@ -2314,9 +2324,13 @@ const IntroSection: React.FC = () => {
             duration: 1.0,
             ease: "easeInOut",
             ...(isSkillExiting && phase === 26 ? {
-              y: { duration: 1.5, times: [0, 0.25, 0.5, 0.75, 1], ease: "easeInOut" },  // ✅ 1.5초로 느리게
-              scale: { duration: 1.5, ease: "easeOut" },
-              rotateZ: { duration: 1.5, ease: [0.45, 0, 0.55, 1] }
+              // 🔥 스택→갤러리: 부드러운 경로 애니메이션
+              left: { duration: 1.8, times: [0, 0.4, 1], ease: [0.22, 1, 0.36, 1] },
+              top: { duration: 1.8, times: [0, 0.4, 1], ease: [0.22, 1, 0.36, 1] },
+              x: { duration: 1.8, times: [0, 0.4, 1], ease: [0.22, 1, 0.36, 1] },
+              y: { duration: 1.8, times: [0, 0.25, 0.5, 0.75, 1], ease: "easeInOut" },
+              scale: { duration: 1.8, times: [0, 0.25, 0.5, 0.75, 1], ease: "easeOut" },
+              rotateZ: { duration: 1.8, times: [0, 0.25, 0.5, 0.75, 1], ease: [0.45, 0, 0.55, 1] }
             } : {})
           }
         }

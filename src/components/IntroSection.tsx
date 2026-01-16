@@ -2118,7 +2118,7 @@ const IntroSection: React.FC = () => {
             className="w-[70px] h-[70px] flex items-center justify-center pointer-events-auto rounded-full transition-colors duration-500"
             animate={{
               backgroundColor:
-                phase >= 27 ? "#8F1E20" :
+                phase >= 27 ? "#FCBB09" :
                   phase >= 26 ? "rgb(26, 26, 46)" :
                     phase >= 23 ? "#ffc147" :
                       phase >= 17 ? "#8F1E20" :
@@ -2263,7 +2263,7 @@ const IntroSection: React.FC = () => {
           width: "700px",
           height: "700px",
           perspective: 1000,
-          zIndex: 100,
+          zIndex: phase === 27 ? 90 : 100,  // 🔥 갤러리에서는 z-index 90
           overflow: "visible",
           cursor: phase === 26 ? "grab" : "default",
           touchAction: "none",

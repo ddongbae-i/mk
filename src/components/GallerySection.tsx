@@ -309,14 +309,6 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                                 </AnimatePresence>
                             </div>
 
-                            {
-                                isCenter && (
-                                    <motion.div
-                                        className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-12 h-1 bg-[#FCBB09]"
-                                        layoutId="activeIndicator"
-                                    />
-                                )
-                            }
                         </motion.div>
                     );
                 })}

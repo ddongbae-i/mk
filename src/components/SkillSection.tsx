@@ -407,7 +407,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                             >
                                 What’s in MK’s head?
                             </h2>
-                            <p className="text-lg">머리를 마구 흔들어주세요!</p>
+                            <p className="text-lg">머리를 잡고 마구 흔들어주세요!</p>
                         </motion.div>
                     )}
                 </AnimatePresence>

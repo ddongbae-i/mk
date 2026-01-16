@@ -1156,10 +1156,13 @@ const IntroSection: React.FC = () => {
         }, 2000);
       }
       else if (currentPhase === 27) {
-        // 🔥 갤러리 진행 중이면 아무것도 안 함 (갤러리가 자체적으로 처리)
-        if (galleryProgress > 0.02) return;
+        // 🔥 갤러리 진행 중이면 스크롤 무시
+        if (galleryProgress < 0.99) {
+          // 갤러리가 끝나지 않았으면 아무것도 안 함
+          return;
+        }
 
-        // 🔥 갤러리 끝나고 아래로 스크롤 → 컨택으로
+        // 🔥 갤러리 완료 후 아래로 스크롤 → 컨택으로
         if (direction > 0) {
           isAnimatingRef.current = true;
           setPhase(28);

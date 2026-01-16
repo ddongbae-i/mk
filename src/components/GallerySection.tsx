@@ -40,6 +40,36 @@ const GallerySection: React.FC<GallerySectionProps> = ({
     const [isFalling, setIsFalling] = useState(false);
     const currentStepRef = useRef(0);
 
+    const handleModalWheel = useCallback(
+        (e: WheelEvent) => {
+            if (selectedImage === null) return;
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            const direction = e.deltaY > 0 ? 1 : -1;
+
+            if (direction > 0 && selectedImage < GALLERY_IMAGES.length - 1) {
+                setSelectedImage(selectedImage + 1);
+            } else if (direction < 0 && selectedImage > 0) {
+                setSelectedImage(selectedImage - 1);
+            } else {
+                setSelectedImage(null);
+            }
+        },
+        [selectedImage]
+    );
+
+    useEffect(() => {
+        if (selectedImage === null) return;
+
+        window.addEventListener("wheel", handleModalWheel, { passive: false });
+
+        return () => {
+            window.removeEventListener("wheel", handleModalWheel);
+        };
+    }, [selectedImage, handleModalWheel]);
+
     const MAX_STEP = GALLERY_IMAGES.length;
 
     const IMAGE_WIDTH = 500;

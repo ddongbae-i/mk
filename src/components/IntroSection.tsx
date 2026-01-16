@@ -1192,8 +1192,18 @@ const IntroSection: React.FC = () => {
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
       } else if (currentPhase === 26) {
         isAnimatingRef.current = true;
-        setPhase(25);
-        setTimeout(() => { isAnimatingRef.current = false; }, 1000);
+
+        setIsSkillExiting(true);
+
+        // 🔥 수정: 더 긴 대기 시간
+        setTimeout(() => {
+          setPhase(27);
+          setIsSkillExiting(false);
+        }, 1800);
+
+        setTimeout(() => {
+          isAnimatingRef.current = false;
+        }, 2500);
       }
       else if (currentPhase === 25) {
         if (currentProject > 0) {
@@ -2270,7 +2280,7 @@ const IntroSection: React.FC = () => {
         }}
         animate={
           phase === 28 ? {
-            // 컨택 섹션: 크게 떨어짐
+            // 컨택
             left: "52%",
             top: "calc(50% + 30px)",
             x: "calc(280px)",
@@ -2279,25 +2289,25 @@ const IntroSection: React.FC = () => {
             rotateZ: [galleryProgress * 720, galleryProgress * 720 + 180, galleryProgress * 720 + 360],
             opacity: 1,
           } : phase === 27 ? {
-            // 갤러리: 프로그레스바 위
+            // 🔥 수정: 갤러리 - 더 부드러운 진입
             left: `${20 + galleryProgress * 60}%`,
             top: "calc(100vh - 150px)",
             x: "-50%",
-            y: galleryProgress >= 0.99 ? ["-50%", "calc(-50% - 15px)", "-50%"] : "-50%",
+            y: "-50%",
             scale: 0.12,
             rotateZ: galleryProgress * 720,
             opacity: 1,
           } : phase === 26 && isSkillExiting ? {
-            // 🔥 스킬 흡수 중: 제자리 대기
-            left: "calc(50% - 350px)",
-            top: "calc(50% - 350px)",
-            x: 0,
-            y: 0,
-            scale: 1.0,
-            rotateZ: 0,
+            // 스킬 흡수 중: 제자리 대기 후 천천히 아래로
+            left: ["calc(50% - 350px)", "calc(50% - 350px)", "20%"],
+            top: ["calc(50% - 350px)", "calc(50% - 100px)", "calc(100vh - 150px)"],
+            x: [0, 0, "-50%"],
+            y: [0, 0, "-50%"],
+            scale: [1.0, 0.8, 0.12],
+            rotateZ: [0, 180, 720],
             opacity: 1,
           } : phase === 26 ? {
-            // 스킬 섹션 정상
+            // 스킬 섹션
             left: "calc(50% - 350px)",
             top: "calc(50% - 350px)",
             x: 0,
@@ -2342,8 +2352,9 @@ const IntroSection: React.FC = () => {
             scale: { duration: 0.8, times: [0, 0.6, 1], ease: [0.6, 0.01, 0.05, 0.95] },
             rotateZ: { duration: 0.8, ease: "easeInOut" }
           } : phase === 27 ? {
-            // 갤러리: 빠른 반응
-            duration: 0.1,
+            // 🔥 수정: 갤러리 진입 시 부드럽게
+            duration: 0.8,
+            ease: [0.22, 1, 0.36, 1],
             y: galleryProgress >= 0.99 ? {
               duration: 0.5,
               repeat: Infinity,
@@ -2351,9 +2362,9 @@ const IntroSection: React.FC = () => {
               ease: "easeInOut",
             } : undefined,
           } : phase === 26 && isSkillExiting ? {
-            // 스킬→갤러리 전환
-            duration: 1.8,
-            times: [0, 0.5, 1],
+            // 🔥 수정: 스킬→갤러리 더 부드럽게
+            duration: 2.5,
+            times: [0, 0.4, 1],
             ease: [0.22, 1, 0.36, 1],
           } : {
             duration: 1.0,

@@ -1144,11 +1144,8 @@ const IntroSection: React.FC = () => {
       }
       else if (currentPhase === 26) {
         isAnimatingRef.current = true;
-
-        // 🔥 수정: 스킬 흡수 시작
         setIsSkillExiting(true);
 
-        // 🔥 수정: 흡수 완료 후 갤러리로 전환
         setTimeout(() => {
           setPhase(27);
           setIsSkillExiting(false);
@@ -1158,47 +1155,47 @@ const IntroSection: React.FC = () => {
           isAnimatingRef.current = false;
         }, 2000);
       }
-    } else if (currentPhase === 27) {
-      if (direction > 0) {
-        isAnimatingRef.current = true;
+      else if (currentPhase === 27) {
+        // 🔥 갤러리에서 아래로 스크롤 (27 → 28)
+        if (direction > 0) {
+          isAnimatingRef.current = true;
+          setPhase(28);
 
-        // 🔥 1단계: phase 먼저 변경
-        setPhase(28);
+          // 🔥 화면 흔들림: phase 전환 직후
+          setTimeout(() => {
+            setIsScreenShaking(true);
+            console.log('🔥 SHAKE START');
 
-        // 🔥 2단계: 약간 딜레이 후 흔들림 트리거
-        setTimeout(() => {
-          setIsScreenShaking(true);
-          console.log('Screen shake triggered!'); // 디버깅용
+            setTimeout(() => {
+              setIsScreenShaking(false);
+              console.log('🔥 SHAKE END');
+            }, 500);
+          }, 600);  // 착지 타이밍에 맞춤
 
           setTimeout(() => {
-            setIsScreenShaking(false);
-            console.log('Screen shake ended!'); // 디버깅용
-          }, 500);
-        }, 400);
-
-        setTimeout(() => {
-          isAnimatingRef.current = false;
-        }, 1400);
+            isAnimatingRef.current = false;
+          }, 1400);
+        }
       }
     } else {
+      // 🔥 역방향 스크롤들
       if (currentPhase === 28) {
-        // 컨택 -> 갤러리 복귀
         isAnimatingRef.current = true;
         setPhase(27);
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
-      } else if (currentPhase === 27) {
+      }
+      else if (currentPhase === 27) {
         if (galleryProgress > 0.02) return;
 
         isAnimatingRef.current = true;
         setSkillResetKey(prev => prev + 1);
         setPhase(26);
         setTimeout(() => { isAnimatingRef.current = false; }, 800);
-      } else if (currentPhase === 26) {
+      }
+      else if (currentPhase === 26) {
         isAnimatingRef.current = true;
-
         setIsSkillExiting(true);
 
-        // 🔥 수정: 더 긴 대기 시간
         setTimeout(() => {
           setPhase(27);
           setIsSkillExiting(false);
@@ -2315,10 +2312,9 @@ const IntroSection: React.FC = () => {
             scale: [0.12, 1.8, 0.12],
             rotateZ: [galleryProgress * 720, galleryProgress * 720 + 180, galleryProgress * 720 + 360],
             opacity: 1,
-            // 🔥 추가: 작을 때는 약간 블러로 깨짐 숨기기
             filter: "blur(0px)",
           } : phase === 27 ? {
-            // 갤러리
+            // 🔥 수정: 갤러리 - 기존 그대로
             left: `${20 + galleryProgress * 60}%`,
             top: "calc(100vh - 150px)",
             x: "-50%",
@@ -2326,18 +2322,16 @@ const IntroSection: React.FC = () => {
             scale: 0.12,
             rotateZ: galleryProgress * 720,
             opacity: 1,
-            // 🔥 추가
             filter: "blur(0px)",
           } : phase === 26 && isSkillExiting ? {
-            // 🔥 스킬 흡수 중: 제자리 대기 (회전 없음)
-            left: "calc(50% - 350px)",
-            top: "calc(50% - 350px)",
-            x: 0,
+            // 🔥 수정: 스킬 흡수 중 - 슝 날아가는 효과
+            left: "50%",
+            top: "-20%",  // 위로 빠르게!
+            x: "-50%",
             y: 0,
-            scale: 1.0,
-            rotateZ: 0,  // 🔥 회전 고정
-            rotateX: 0,
-            rotateY: 0,
+            scale: 0.3,  // 작아지면서
+            rotateZ: 720,  // 두 바퀴 회전
+            rotateX: 30,  // 약간 기울어짐
             opacity: 1,
           } : phase === 26 ? {
             // 스킬 섹션
@@ -2385,7 +2379,6 @@ const IntroSection: React.FC = () => {
             scale: { duration: 0.8, times: [0, 0.6, 1], ease: [0.6, 0.01, 0.05, 0.95] },
             rotateZ: { duration: 0.8, ease: "easeInOut" }
           } : phase === 27 ? {
-            // 🔥 수정: 갤러리 진입 시 부드럽게
             duration: 0.8,
             ease: [0.22, 1, 0.36, 1],
             y: galleryProgress >= 0.99 ? {
@@ -2395,10 +2388,9 @@ const IntroSection: React.FC = () => {
               ease: "easeInOut",
             } : undefined,
           } : phase === 26 && isSkillExiting ? {
-            // 🔥 수정: 스킬→갤러리 더 부드럽게
-            duration: 2.5,
-            times: [0, 0.4, 1],
-            ease: [0.22, 1, 0.36, 1],
+            // 🔥 수정: 빠르고 탄력있게
+            duration: 1.2,
+            ease: [0.68, -0.55, 0.265, 1.55],  // easeInOutBack - 통통 튀는 느낌
           } : {
             duration: 1.0,
             ease: "easeInOut",

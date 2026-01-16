@@ -299,7 +299,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                                             transition={{ duration: 0.3 }}
                                         >
                                             <h3
-                                                className="text-white font-bold text-2xl mb-1"
+                                                className="text-white font-bold ytext-2xl mb-1"
                                                 style={{ fontFamily: "Kanit, sans-serif" }}
                                             >
                                                 {image.title}

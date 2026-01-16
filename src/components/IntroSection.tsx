@@ -1142,17 +1142,18 @@ const IntroSection: React.FC = () => {
       else if (currentPhase === 26) {
         isAnimatingRef.current = true;
 
-        // 1단계: 스킬 섹션 exit 시작
+        // 🔥 수정: 스킬 흡수 시작
         setIsSkillExiting(true);
 
-        // 2단계: 얼굴이 프로그레스바 위치까지 이동하는 동안 phase 27로 전환
+        // 🔥 수정: 흡수 완료 후 갤러리로 전환
         setTimeout(() => {
           setPhase(27);
-        }, 1000); // 얼굴이 중간쯤 이동했을 때
+          setIsSkillExiting(false);
+        }, 1500);
 
         setTimeout(() => {
           isAnimatingRef.current = false;
-        }, 1800);
+        }, 2000);
       }
     } else if (currentPhase === 27) {
       if (direction > 0) {
@@ -2278,7 +2279,7 @@ const IntroSection: React.FC = () => {
             rotateZ: [galleryProgress * 720, galleryProgress * 720 + 180, galleryProgress * 720 + 360],
             opacity: 1,
           } : phase === 27 ? {
-            // 갤러리 섹션: 프로그레스바 위에서 굴러감
+            // 갤러리: 프로그레스바 위
             left: `${20 + galleryProgress * 60}%`,
             top: "calc(100vh - 150px)",
             x: "-50%",
@@ -2287,16 +2288,16 @@ const IntroSection: React.FC = () => {
             rotateZ: galleryProgress * 720,
             opacity: 1,
           } : phase === 26 && isSkillExiting ? {
-            // 스킬→갤러리 전환 중: 곡선 경로로 프로그레스바까지 이동
-            left: ["calc(50% - 350px)", "35%", "20%"],
-            top: ["calc(50% - 350px)", "70%", "calc(100vh - 150px)"],
-            x: [0, "-50%", "-50%"],
-            y: [0, 30, "-50%"],
-            scale: [1.0, 0.6, 0.12],
-            rotateZ: [0, 180, 360],
+            // 🔥 스킬 흡수 중: 제자리 대기
+            left: "calc(50% - 350px)",
+            top: "calc(50% - 350px)",
+            x: 0,
+            y: 0,
+            scale: 1.0,
+            rotateZ: 0,
             opacity: 1,
           } : phase === 26 ? {
-            // 스킬 섹션 정상 위치
+            // 스킬 섹션 정상
             left: "calc(50% - 350px)",
             top: "calc(50% - 350px)",
             x: 0,

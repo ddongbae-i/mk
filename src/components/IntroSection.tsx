@@ -2263,7 +2263,7 @@ const IntroSection: React.FC = () => {
           width: "700px",
           height: "700px",
           perspective: 1000,
-          zIndex: phase === 27 ? 90 : 100,  // 🔥 갤러리에서는 z-index 90
+          zIndex: phase === 27 ? 95 : 100,  // 🔥 갤러리(27)에서만 95, 모달은 999
           overflow: "visible",
           cursor: phase === 26 ? "grab" : "default",
           touchAction: "none",
@@ -2298,13 +2298,15 @@ const IntroSection: React.FC = () => {
             rotateZ: galleryProgress * 720,
             opacity: 1,
           } : phase === 26 && isSkillExiting ? {
-            // 스킬 흡수 중: 제자리 대기 후 천천히 아래로
-            left: ["calc(50% - 350px)", "calc(50% - 350px)", "20%"],
-            top: ["calc(50% - 350px)", "calc(50% - 100px)", "calc(100vh - 150px)"],
-            x: [0, 0, "-50%"],
-            y: [0, 0, "-50%"],
-            scale: [1.0, 0.8, 0.12],
-            rotateZ: [0, 180, 720],
+            // 🔥 스킬 흡수 중: 제자리 대기 (회전 없음)
+            left: "calc(50% - 350px)",
+            top: "calc(50% - 350px)",
+            x: 0,
+            y: 0,
+            scale: 1.0,
+            rotateZ: 0,  // 🔥 회전 고정
+            rotateX: 0,
+            rotateY: 0,
             opacity: 1,
           } : phase === 26 ? {
             // 스킬 섹션

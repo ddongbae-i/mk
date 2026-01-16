@@ -350,6 +350,7 @@ const GallerySection: React.FC<GallerySectionProps> = ({
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={() => setSelectedImage(null)}
+                        onWheel={(e) => e.stopPropagation()}
                     >
                         <motion.div
                             className="relative"

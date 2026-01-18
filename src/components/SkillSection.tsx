@@ -165,7 +165,7 @@ const SkillSection: React.FC<SkillSectionProps> = ({
             });
     }, [isActive]);
 
-    // ✅ isExiting 처리 - 물리 객체를 먼저 중지하고 흡수 시작
+    // ✅ isExiting 처리 - 흡수 애니메이션 실행
     useEffect(() => {
         if (!isExiting || poppedSkills.length === 0) return;
 
@@ -175,9 +175,10 @@ const SkillSection: React.FC<SkillSectionProps> = ({
         if (rafRef.current) {
             cancelAnimationFrame(rafRef.current);
             rafRef.current = null;
+            console.log('⏸️ Physics loop stopped for absorption');
         }
 
-        // 2. 현재 위치 수집 후 흡수 시작
+        // 2. 약간의 딜레이 후 현재 위치 수집
         setTimeout(() => {
             const absorbed: typeof absorbingSkills = [];
 
@@ -190,23 +191,29 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                         fromY: rect.top + rect.height / 2,
                         skill: obj.skill,
                     });
-                    console.log('📍 Skill position:', obj.skill.name, rect.left, rect.top);
+                    console.log('📍 Skill position:', obj.skill.name, 'at', rect.left, rect.top);
                 }
             });
 
-            console.log('📦 Total skills to absorb:', absorbed.length);
+            console.log('📦 Starting absorption for', absorbed.length, 'skills');
+
+            // ✅ 먼저 흡수 애니메이션 시작
             setAbsorbingSkills(absorbed);
-            setPoppedSkills([]); // ✅ 물리 객체 숨기기
+
+            // ✅ 바로 물리 객체는 숨기기
+            setPoppedSkills([]);
 
             // 3. 흡수 완료 후 정리
-            const totalDuration = absorbed.length * 50 + 600;
+            const totalDuration = Math.max(absorbed.length * 50 + 800, 1200);
+            console.log('⏱️ Total absorption duration:', totalDuration);
+
             setTimeout(() => {
+                console.log('✅ Absorption complete, cleaning up');
                 setAbsorbingSkills([]);
                 physicsObjectsRef.current.clear();
-                console.log('✅ Exit complete');
                 onExitComplete?.();
             }, totalDuration);
-        }, 50);
+        }, 100);
 
     }, [isExiting, poppedSkills.length, onExitComplete]);
 
@@ -507,52 +514,69 @@ const SkillSection: React.FC<SkillSectionProps> = ({
                     <BurstEffect key={burst.id} x={burst.x} y={burst.y} />
                 ))}
 
-                {/* ✅ 흡수 애니메이션 */}
-                {absorbingSkills.length > 0 && absorbingSkills.map((item, index) => {
-                    const headCenter = headRef?.current
-                        ? (() => {
-                            const r = headRef.current.getBoundingClientRect();
-                            return {
-                                x: r.left + r.width / 2,
-                                y: r.top + r.height * 0.1
-                            };
-                        })()
-                        : { x: window.innerWidth / 2, y: window.innerHeight * 0.3 };
+                {/* ✅ 흡수 애니메이션 - 머리로 날아가면서 작아지고 사라짐 */}
+                <AnimatePresence>
+                    {absorbingSkills.map((item, index) => {
+                        const headCenter = headRef?.current
+                            ? (() => {
+                                const r = headRef.current.getBoundingClientRect();
+                                return {
+                                    x: r.left + r.width / 2,
+                                    y: r.top + r.height * 0.1
+                                };
+                            })()
+                            : { x: window.innerWidth / 2, y: window.innerHeight * 0.3 };
 
-                    console.log('🎯 Absorbing:', item.skill.name, 'from', item.fromX, item.fromY, 'to', headCenter.x, headCenter.y);
+                        console.log('🎯 Rendering absorption:', item.skill.name, 'from', item.fromX, item.fromY, 'to', headCenter.x, headCenter.y);
 
-                    return (
-                        <motion.div
-                            key={`absorb-${item.id}`}
-                            className="absolute pointer-events-none z-[350]"
-                            style={{ left: 0, top: 0 }}
-                            initial={{
-                                x: item.fromX - 70,
-                                y: item.fromY - 70,
-                                scale: 1,
-                                opacity: 1,
-                            }}
-                            animate={{
-                                x: headCenter.x - 70,
-                                y: headCenter.y - 70,
-                                scale: 0,
-                                opacity: 0,
-                            }}
-                            transition={{
-                                duration: 0.5,
-                                ease: [0.32, 0, 0.67, 0],
-                                delay: index * 0.04,
-                            }}
-                        >
-                            <img
-                                src={item.skill.icon}
-                                alt={item.skill.name}
-                                className="w-[140px] h-[140px] object-contain"
-                                style={{ filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.25))" }}
-                            />
-                        </motion.div>
-                    );
-                })}
+                        return (
+                            <motion.div
+                                key={`absorb-${item.id}`}
+                                className="absolute pointer-events-none"
+                                style={{
+                                    left: 0,
+                                    top: 0,
+                                    zIndex: 400  // ✅ 다른 모든 것보다 위에
+                                }}
+                                initial={{
+                                    x: item.fromX - 70,
+                                    y: item.fromY - 70,
+                                    scale: 1,
+                                    opacity: 1,
+                                }}
+                                animate={{
+                                    x: headCenter.x - 70,
+                                    y: headCenter.y - 70,
+                                    scale: 0.1,  // ✅ 거의 사라질 때까지 작아짐
+                                    opacity: [1, 0.8, 0],  // ✅ 중간까지 보이다가 마지막에 사라짐
+                                }}
+                                exit={{
+                                    scale: 0,
+                                    opacity: 0,
+                                }}
+                                transition={{
+                                    duration: 0.7,  // ✅ 조금 더 길게
+                                    ease: [0.22, 1, 0.36, 1],  // ✅ easeOutQuart - 부드럽게
+                                    delay: index * 0.06,  // ✅ 살짝 더 간격
+                                    opacity: {
+                                        duration: 0.7,
+                                        times: [0, 0.7, 1],  // ✅ 70%까지는 보이다가 마지막 30%에서 사라짐
+                                    }
+                                }}
+                            >
+                                <img
+                                    src={item.skill.icon}
+                                    alt={item.skill.name}
+                                    className="w-[140px] h-[140px] object-contain"
+                                    style={{
+                                        filter: "drop-shadow(0 8px 16px rgba(0,0,0,0.25))",
+                                        pointerEvents: "none"
+                                    }}
+                                />
+                            </motion.div>
+                        );
+                    })}
+                </AnimatePresence>
 
                 {/* ✅ 물리 객체들 */}
                 {poppedSkills.map((item) => (
